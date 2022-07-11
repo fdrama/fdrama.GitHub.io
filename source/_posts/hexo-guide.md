@@ -1,0 +1,210 @@
+---
+title: Hexo Guide
+date: 2022-07-11 17:33:53
+tags: [hexo, next]
+---
+
+欢迎来到我的博客!
+感谢[GithubPage](https://pages.github.com/) + [Hexo](https://hexo.io/zh-cn/) + [next](https://theme-next.js.org/)。
+感谢开源世界，让搭建一个属于自己的博客变的十分便捷。我以后也会在这里分享关于编程和生活的一些东西。
+
+以下是我个人搭建博客的步骤:
+
+## Hexo
+
+[Hexo](https://hexo.io/zh-cn/docs/) 是一个快速、简洁且高效的博客框架
+
+### 安装
+
+#### 前置准备
+
+- 安装nodeJs并配置
+
+    `http://nodejs.cn/learn/introduction-to-nodejs`
+
+    ```bash
+    # 查看是否安装成功
+    $ node -v 
+    ```
+
+- 安装Git并配置
+
+    `https://git-scm.com/`
+
+    ```bash
+    # 查看是否安装成功
+    $ git --version
+    ```
+
+- 安装Hexo
+
+    ```bash
+    # 全局安装
+    $ npm install -g hexo-cli
+
+    # 局部安装
+    $ npm install hexo
+
+    # 命令执行 两种方式
+      1. $ npx hexo <command>
+    
+    # Hexo 所在的目录下的 node_modules 添加到环境变量 直接使用 hexo <command> linux为例
+      2. echo 'PATH="$PATH:./node_modules/.bin"' >> ~/.profile
+    ```
+
+#### 启动
+
+1. 安装完hexo执行以下命令
+
+    ```bash
+    # 初始化 此folder 就是下面文档里的 ${hexo-site}
+    $ hexo init <folder>
+    $ cd <folder>
+    $ npm install
+    ```
+
+2. 执行完成后目标文件夹的目录结构
+
+    ```tree
+    .
+    ├── _config.yml
+    ├── package.json
+    ├── scaffolds
+    ├── source
+    |   ├── _drafts
+    |   └── _posts
+    └── themes
+    ```
+
+3. 运行*hexo server*访问 `http://localhost:4000/`
+
+### 配置
+
+#### 主题
+
+hexo 有很多主题 这里已Next为例
+
+1. 下载
+
+    ```bash
+    # 移动到hexo 安装目录
+    $ cd hexo-site
+    $ ls
+    _config.yml  node_modules  package-lock.json  package.json  scaffolds  source  themes
+    ```
+
+   - npm安装
+
+    ```bash
+    $ npm install hexo-theme-next
+    ```
+
+   - git安装
+
+    ```bash
+    $ git clone https://github.com/next-theme/hexo-theme-next themes/next
+    ```
+
+2. 配置
+
+现在有两个配置文件 *_config.yml*， 一个是hexo的配置文件，一个是next主题的配置文件，不同的安装方式，所在的目录不同
+(e.g. thems/next/_config.yml or node_modules/hexo-theme-next/_config.yml.
+
+不推荐直接修改主题里面的文件, 因为npm升级或者git更新会覆盖文件，hexo建议将主题文件复制到根目录并且修改名称为 ***_config.[theme].yml***
+
+```bash
+# Installed through npm
+$ cp node_modules/hexo-theme-next/_config.yml _config.next.yml
+# Installed through Git
+$ cp themes/next/_config.yml _config.next.yml
+```
+
+3. 修改配置文件 _config.yml
+
+```yml
+title: Hexo config file
+theme: next
+```
+
+##### Next
+
+[Next](https://theme-next.js.org/)
+
+### 插件
+
+#### 搜索
+
+[hexo-generator-searchdb](https://github.com/theme-next/hexo-generator-searchdb)
+
+1. 安装
+
+    ```bash
+    $ npm install hexo-generator-searchdb --save
+    ```
+
+2. 编辑 ***_config.yml*** 新增配置
+
+   ```yml
+    search:
+      path: search.xml
+      field: post
+      content: true
+      format: html
+   ```
+
+3. 编辑 ***_config_next.yml*** 文件
+
+   ```yml
+    local_search:
+      enable: true
+   ```
+
+### 部署
+
+#### Git
+
+##### git管理源码
+
+推荐使用 ***${username}.github.io*** 仓库管理源代码，两个分支 一个hexo保存源码信息， 一个main保存生成的静态文件用于部署。
+
+1. 在你的hexo 目录下执行 *git init*
+2. git checout ${branchname}
+3. git remote add ${name} `https://github.com/username/username.github.io`
+4. git add .
+5. git commit -m "init hexo";
+6. git push
+
+##### 部署静态文件
+
+Hexo 提供了快速方便的一键部署功能，让您只需一条命令就能将网站部署到服务器上。 这里推荐git部署
+
+1. 安装 hexo-deployer-git
+  
+    ```bash
+    # 安装
+    $ npm install hexo-deployer-git
+    ```
+
+2. 修改**_config.yml**文件里的deploy值
+
+    ```yml
+    deploy:
+    type: git
+    repo: https://github.com/{$username}/{$username}.GitHub.io # Repository
+    branch: main #[branch]
+    message: update Hexo Static Content #commit message
+    ```
+
+3. 生成站点文件并推送至远程库执行
+
+    ```bash
+    # 清理并发布
+    $ hexo clean && hexo deploy
+    ```
+
+4. 登入Github，请在库设置（Repository Settings）中将默认分支设置为*步骤2* _config.yml配置中的分支名称。
+5. 稍等片刻，您的站点就会显示在您的Github Pages中 `https://${username}.github.io`
+
+##### 这一切是如何发生的
+
+当执行 hexo deploy 时，Hexo 会将 public 目录中的文件和目录推送至 _config.yml 中指定的远端仓库和分支中，并且完全覆盖该分支下的已有内容。
