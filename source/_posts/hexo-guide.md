@@ -187,7 +187,7 @@ utterance(<https://utteranc.es/>) 原理: 在博客页面上输入评论，utter
        repo: Molers/BlogComment
        #主题
        theme: github-light
-       #映射配置
+       #映射配置 这里是跳转github后重定向的地址 取的是 url + 当前path名称，所以需要在_config.yml里配置 url为你网站的域名，才能正常跳转
        issue_term: pathname
    ```
 
