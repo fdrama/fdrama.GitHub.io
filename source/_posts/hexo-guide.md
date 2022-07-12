@@ -123,7 +123,7 @@ hexo 有很多主题 这里已Next为例 Next(<https://theme-next.js.org/>)
     theme: next
     ```
 
-4. 启动hexo s 查看页面样式已经发生变化
+4. 启动 *hexo s* 查看页面样式已经发生变化
 
 #### 页面
 
