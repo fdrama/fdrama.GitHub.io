@@ -164,6 +164,8 @@ hexo 有很多主题 这里已Next为例 Next(<https://theme-next.js.org/>)
 
 #### 评论
 
+hexo-next-utteranc (<https://github.com/theme-next/hexo-next-utteranc>)
+
 next 支持很多评论系统 disqus | disqusjs | changyan | livere | gitalk | utterances  这里以utterances为例
 
 utterance(<https://utteranc.es/>) 原理: 在博客页面上输入评论，utterance拿到这个评论后，自动的提交到上面刚创建仓库的Issues里。
@@ -189,6 +191,81 @@ utterance(<https://utteranc.es/>) 原理: 在博客页面上输入评论，utter
        theme: github-light
        #映射配置 这里是跳转github后重定向的地址 取的是 url + 当前path名称，所以需要在_config.yml里配置 url为你网站的域名，才能正常跳转
        issue_term: pathname
+   ```
+
+#### Rss
+
+hexo-generator-feed (<https://github.com/hexojs/hexo-generator-feed>)
+
+1. 安装
+
+    ```bash 下载 
+    $ npm install hexo-generator-feed --save
+    ```
+
+2. 配置
+
+   ```yml _config.yml
+    feed:
+       enable: true 
+       type: atom #制定类型
+       path: atom.xml  #生成路径
+       limit: 20 # 文章数量限制 0/false 表示所有文章
+       hub:
+       content:
+       content_limit: 140 #文章内容限制
+       content_limit_delim: ' '
+       order_by: -date #排序
+       icon: icon.png
+       autodiscovery: true
+       template:
+   ```
+
+3. 展示
+
+    两种展示位置, 一个在文章底部, 一个在菜单栏
+
+    ```yml _config.next.yml
+    follow_me:
+        # 文章底部
+       RSS: /atom.xml || fa fa-rss
+    
+    menu:
+        # 菜单栏
+       RSS: /atom.xml || fa fa-rs
+    ```
+
+#### 字体统计
+
+hexo-word-counter (<https://github.com/next-theme/hexo-word-counter>)
+
+1. 安装
+
+   ```bash
+   $ npm install hexo-word-counter
+   ```
+
+2. 配置 *_config.yml*
+
+   ```yml
+    symbols_count_time:
+       symbols: true
+       time: true
+       total_symbols: true
+       total_time: true
+       exclude_codeblock: false
+       awl: 4
+       wpm: 275
+       suffix: "mins."
+   ```
+
+3. 配置 *_config.next.yml
+
+   ```yml
+    symbols_count_time:
+       separated_meta: true
+       item_text_total: false
+       symbols: true
    ```
 
 ### 部署
