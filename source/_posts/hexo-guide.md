@@ -2,6 +2,7 @@
 title: Hexo Guide
 date: 2022-07-11 17:33:53
 tags: [hexo, next]
+categories: 指南
 ---
 
 欢迎来到我的博客!
@@ -18,18 +19,14 @@ tags: [hexo, next]
 
 #### 前置准备
 
-- 安装nodeJs并配置
-
-    `http://nodejs.cn/learn/introduction-to-nodejs`
+- 安装nodeJs并配置 (<http://nodejs.cn/learn/introduction-to-nodejs>)
 
     ```bash
     # 查看是否安装成功
     $ node -v 
     ```
 
-- 安装Git并配置
-
-    `https://git-scm.com/`
+- 安装Git并配置 `https://git-scm.com/`
 
     ```bash
     # 查看是否安装成功
@@ -76,15 +73,15 @@ tags: [hexo, next]
     └── themes
     ```
 
-3. 运行*hexo server*访问 `http://localhost:4000/`
+3. 运行*hexo server*访问 (<http://localhost:4000/>)
 
 ### 配置
 
 #### 主题
 
-hexo 有很多主题 这里已Next为例
+hexo 有很多主题 这里已Next为例 Next(<https://theme-next.js.org/>)
 
-1. 下载
+1. 安装
 
     ```bash
     # 移动到hexo 安装目录
@@ -107,34 +104,40 @@ hexo 有很多主题 这里已Next为例
 
 2. 配置
 
-现在有两个配置文件 *_config.yml*， 一个是hexo的配置文件，一个是next主题的配置文件，不同的安装方式，所在的目录不同
-(e.g. thems/next/_config.yml or node_modules/hexo-theme-next/_config.yml.
+    现在有两个配置文件 *_config.yml*， 一个是hexo的配置文件，一个是next主题的配置文件，不同的安装方式，所在的目录不同
+    (e.g. thems/next/_config.yml or node_modules/hexo-theme-next/_config.yml.
 
-不推荐直接修改主题里面的文件, 因为npm升级或者git更新会覆盖文件，hexo建议将主题文件复制到根目录并且修改名称为 ***_config.[theme].yml***
+    不推荐直接修改主题里面的文件, 因为npm升级或者git更新会覆盖文件，hexo建议将主题文件复制到根目录并且修改名称为 ***_config.[theme].yml***
 
-```bash
-# Installed through npm
-$ cp node_modules/hexo-theme-next/_config.yml _config.next.yml
-# Installed through Git
-$ cp themes/next/_config.yml _config.next.yml
-```
+    ```bash
+    # Installed through npm
+    $ cp node_modules/hexo-theme-next/_config.yml _config.next.yml
+    # Installed through Git
+    $ cp themes/next/_config.yml _config.next.yml
+    ```
 
 3. 修改配置文件 _config.yml
 
-```yml
-title: Hexo config file
-theme: next
-```
+    ```yml
+    title: Hexo config file
+    theme: next
+    ```
 
-##### Next
+4. 启动hexo s 查看页面样式已经发生变化
 
-[Next](https://theme-next.js.org/)
+#### 进阶
+
+##### 标签
+
+##### 分类
+
+##### 目录
 
 ### 插件
 
 #### 搜索
 
-[hexo-generator-searchdb](https://github.com/theme-next/hexo-generator-searchdb)
+[hexo-generator-searchdb](https://github.com/theme-next/hexo-generator-searchdb) 用于生成搜索索引文件，其中包含您的文章的所有必要数据。
 
 1. 安装
 
@@ -157,6 +160,35 @@ theme: next
    ```yml
     local_search:
       enable: true
+   ```
+
+#### 评论
+
+next 支持很多评论系统 disqus | disqusjs | changyan | livere | gitalk | utterances  这里以utterances为例
+
+utterance(<https://utteranc.es/>) 原理: 在博客页面上输入评论，utterance拿到这个评论后，自动的提交到上面刚创建仓库的Issues里。
+
+1. 授权
+
+点击(<https://github.com/apps/utterances>) 安装githubApp 并授权指定仓库
+
+1. 配置 *_config.next.yml*
+
+   ```yml
+   comments:
+     # Available values: tabs | buttons
+     style: tabs
+     # 指定评论系统
+     active: utterances
+
+    utterance:
+       enable: true
+       #仓库名字，格式：用户ID/仓库名称
+       repo: Molers/BlogComment
+       #主题
+       theme: github-light
+       #映射配置
+       issue_term: pathname
    ```
 
 ### 部署
@@ -189,10 +221,10 @@ Hexo 提供了快速方便的一键部署功能，让您只需一条命令就能
 
     ```yml
     deploy:
-    type: git
-    repo: https://github.com/{$username}/{$username}.GitHub.io # Repository
-    branch: main #[branch]
-    message: update Hexo Static Content #commit message
+       type: git
+       repo: https://github.com/{$username}/{$username}.github.io # Repository
+       branch: main #[branch]
+       message: update Hexo Static Content #commit message
     ```
 
 3. 生成站点文件并推送至远程库执行
@@ -208,3 +240,32 @@ Hexo 提供了快速方便的一键部署功能，让您只需一条命令就能
 ##### 这一切是如何发生的
 
 当执行 hexo deploy 时，Hexo 会将 public 目录中的文件和目录推送至 _config.yml 中指定的远端仓库和分支中，并且完全覆盖该分支下的已有内容。
+
+#### 疑难解答
+
+1. Spawn failed
+
+    ```log 问题
+        fatal: unable to access 'https://github.com/${username}/${username}.github.io/': OpenSSL SSL_read: Connection was reset, errno 10054
+        FATAL {
+        err: Error: Spawn failed
+            at ChildProcess.<anonymous> (E:\develop\hello\node_modules\hexo-util\lib\spawn.js:51:21)
+            at ChildProcess.emit (node:events:527:28)
+            at ChildProcess.cp.emit (E:\develop\hello\node_modules\cross-spawn\lib\enoent.js:34:29)
+            at Process.ChildProcess._handle.onexit (node:internal/child_process:291:12) {
+            code: 128
+        }
+        } Something's wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html
+
+    ```
+
+    ```bash 解决
+    # 切换到博客根目录
+    cd hexo-site
+    # 删除此文件
+    rm -rf .deploy_git/
+    # git 配置换行符转换
+    git config --global core.autocrlf false
+    # 部署
+    hexo clean && hexo g && hexo d
+    ```

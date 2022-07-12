@@ -297,7 +297,7 @@ related_posts:
 # Easily browse and edit blog source code online.
 post_edit:
   enable: false
-  url: https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/ # Link for view source
+  url: https://github.com/fdrama/fdrama.github.io/tree/hello-hexo/source/ # Link for view source
   #url: https://github.com/user-name/repo-name/edit/branch-name/subdirectory-name/ # Link for fork & edit
 
 # Show previous post and next post in post footer if exists
@@ -380,13 +380,13 @@ codeblock:
 back2top:
   enable: true
   # Back to top in sidebar.
-  sidebar: true
+  sidebar: false
   # Scroll percent label in b2t button.
   scrollpercent: true
 
 # Reading progress bar
 reading_progress:
-  enable: true
+  enable: false
   # Available values: left | right
   start_at: left
   # Available values: top | bottom
@@ -573,11 +573,11 @@ comments:
   style: tabs
   # Choose a comment system to be displayed by default.
   # Available values: disqus | disqusjs | changyan | livere | gitalk | utterances
-  active:
+  active: utterances
   # Setting `true` means remembering the comment system selected by the visitor.
   storage: true
   # Lazyload all comment systems.
-  lazyload: false
+  lazyload: true
   # Modify texts or order for any naves, here are some examples.
   nav:
     #disqus:
@@ -636,8 +636,8 @@ gitalk:
 # Utterances
 # For more information: https://utteranc.es
 utterances:
-  enable: false
-  repo: user-name/repo-name # Github repository owner and name
+  enable: true
+  repo: fdrama/fdrama.github.io # Github repository owner and name eg: user-name/repo-name
   # Available values: pathname | url | title | og:title
   issue_term: pathname
   # Available values: github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light
