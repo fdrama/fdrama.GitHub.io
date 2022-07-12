@@ -6,7 +6,8 @@ categories: 指南
 ---
 
 欢迎来到我的博客!
-感谢[GithubPage](https://pages.github.com/) + [Hexo](https://hexo.io/zh-cn/) + [next](https://theme-next.js.org/)。
+
+感谢 [GithubPage](https://pages.github.com/) + [Hexo](https://hexo.io/zh-cn/) + [next](https://theme-next.js.org/)。
 感谢开源世界，让搭建一个属于自己的博客变的十分便捷。我以后也会在这里分享关于编程和生活的一些东西。
 
 以下是我个人搭建博客的步骤:
@@ -356,7 +357,7 @@ Hexo 提供了快速方便的一键部署功能，让您只需一条命令就能
     ```yml
     deploy:
        type: git
-       repo: https://github.com/{$username}/{$username}.github.io # Repository
+       repo: git@github.com:{$username}/{$username}.github.io.git # Repository
        branch: main #[branch]
        message: update Hexo Static Content #commit message
     ```
@@ -402,4 +403,5 @@ Hexo 提供了快速方便的一键部署功能，让您只需一条命令就能
     git config --global core.autocrlf false
     # 部署
     hexo clean && hexo g && hexo d
+    # 修改部署的仓库地址http地址为git@github.com开通的地址
     ```
