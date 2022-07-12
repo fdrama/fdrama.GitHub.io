@@ -103,7 +103,7 @@ theme: next
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
     type: git
-    repo: https://github.com/fdrama/fdrama.github.io # Repository
+    repo: git@github.com:fdrama/fdrama.github.io.git # Repository
     branch: main #[branch]
     message: update Hexo Static Content #commit message
 

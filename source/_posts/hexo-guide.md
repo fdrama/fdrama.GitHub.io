@@ -125,13 +125,60 @@ hexo 有很多主题 这里已Next为例 Next(<https://theme-next.js.org/>)
 
 4. 启动hexo s 查看页面样式已经发生变化
 
-#### 进阶
+#### 页面
 
-##### 标签
+##### 标签页
 
-##### 分类
+1. 生成标签页
 
-##### 目录
+    ```bash
+    $ cd hexo-site
+    $ hexo new page tags
+
+    ```
+
+2. 配置标签页
+
+    修改生成的source/tags/index.md 指定type
+
+    ```yml
+    title: Tags
+    date: 2014-12-22 12:39:04
+    type: tags
+    ---
+    ```
+
+3. 编辑菜单 *_config.next.yml*
+
+   ```yml
+    menu:
+       home: / || fa fa-home
+       archives: /archives/ || fa fa-archive
+       tags: /tags/ || fa fa-tags
+
+    
+    tagcloud:
+       # 标签的样式
+       min: 12 # Minimum font size in px
+       max: 30 # Maximum font size in px
+       amount: 200 # Total amount of tags
+       orderby: name # Order of tags
+       order: 1 # Sort order
+   ```
+
+4. 在文章里使用标签
+
+    ```yml
+    ---
+    title: Hexo Guide
+    date: 2022-07-11 17:33:53
+    tags: [hexo, next]
+    ---
+    ```
+
+##### 分类页
+
+操作和上面的标签页一样, 只是把 ***tags*** 修改为 ***categories*** ,分类每个文章只支持一个
 
 ### 插件
 
@@ -172,9 +219,9 @@ utterance(<https://utteranc.es/>) 原理: 在博客页面上输入评论，utter
 
 1. 授权
 
-点击(<https://github.com/apps/utterances>) 安装githubApp 并授权指定仓库
+    点击(<https://github.com/apps/utterances>) 安装githubApp 并授权指定仓库
 
-1. 配置 *_config.next.yml*
+2. 配置 *_config.next.yml*
 
    ```yml
    comments:
@@ -191,6 +238,16 @@ utterance(<https://utteranc.es/>) 原理: 在博客页面上输入评论，utter
        theme: github-light
        #映射配置 这里是跳转github后重定向的地址 取的是 url + 当前path名称，所以需要在_config.yml里配置 url为你网站的域名，才能正常跳转
        issue_term: pathname
+   ```
+
+3. 让某些页面不支持comments 页头设置false就行
+
+   ```yml
+    ---
+    title: 404
+    date: 2022-07-11 17:38:27
+    comments: false
+    ---
    ```
 
 #### Rss
