@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>陋室</title>
+  <icon>https://fdrama.github.io/icon.png</icon>
+  
+  <link href="https://fdrama.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://fdrama.github.io/"/>
+  <updated>2022-07-12T07:29:17.990Z</updated>
+  <id>https://fdrama.github.io/</id>
+  
+  <author>
+    <name>fdrama</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hexo Guide</title>
+    <link href="https://fdrama.github.io/2022/07/11/hexo-guide/"/>
+    <id>https://fdrama.github.io/2022/07/11/hexo-guide/</id>
+    <published>2022-07-11T09:33:53.000Z</published>
+    <updated>2022-07-12T07:29:17.990Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;欢迎来到我的博客!&lt;br&gt;感谢&lt;a href=&quot;https://pages.github.com/&quot;&gt;GithubPage&lt;/a&gt; + &lt;a href=&quot;https://hexo.io/zh-cn/&quot;&gt;Hexo&lt;/a&gt; + &lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="指南" scheme="https://fdrama.github.io/categories/%E6%8C%87%E5%8D%97/"/>
+    
+    
+    <category term="hexo" scheme="https://fdrama.github.io/tags/hexo/"/>
+    
+    <category term="next" scheme="https://fdrama.github.io/tags/next/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://fdrama.github.io/2022/07/08/hello-world/"/>
+    <id>https://fdrama.github.io/2022/07/08/hello-world/</id>
+    <published>2022-07-08T09:51:02.133Z</published>
+    <updated>2022-07-11T09:28:45.402Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt;</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+</feed>
