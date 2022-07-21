@@ -44,10 +44,10 @@ categories: guide
     $ npm install hexo
 
     # 命令执行 两种方式
-      1. $ npx hexo <command>
-    
+    1. $ npx hexo <command>
+
     # Hexo 所在的目录下的 node_modules 添加到环境变量 直接使用 hexo <command> linux为例
-      2. echo 'PATH="$PATH:./node_modules/.bin"' >> ~/.profile
+    2. echo 'PATH="$PATH:./node_modules/.bin"' >> ~/.profile
     ```
 
 #### 启动
