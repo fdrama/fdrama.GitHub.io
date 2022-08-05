@@ -1,8 +1,8 @@
 ---
-title: Hexo+Next+GitPage 博客指南
+title: 博客指南
 date: 2022-07-11 17:33:53
 tags: [hexo, next, gitPage]
-categories: guide
+categories: 博客指南
 ---
 
 欢迎来到我的博客!
