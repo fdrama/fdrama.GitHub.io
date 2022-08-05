@@ -6,7 +6,7 @@
   <link href="https://fdrama.github.io/atom.xml" rel="self"/>
   
   <link href="https://fdrama.github.io/"/>
-  <updated>2022-07-12T08:22:35.536Z</updated>
+  <updated>2022-08-05T09:35:12.544Z</updated>
   <id>https://fdrama.github.io/</id>
   
   <author>
@@ -17,30 +17,58 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hexo Guide</title>
+    <title>计算机中的二进制</title>
+    <link href="https://fdrama.github.io/2022/08/05/binary/"/>
+    <id>https://fdrama.github.io/2022/08/05/binary/</id>
+    <published>2022-08-05T09:35:12.000Z</published>
+    <updated>2022-08-05T09:35:12.544Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;h2 id=&quot;什么是二进制-3&quot;&gt;什么是二进制&lt;/h2&gt;
+&lt;p&gt;所谓的</summary>
+        
+      
+    
+    
+    
+    <category term="计算机原理" scheme="https://fdrama.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/"/>
+    
+    
+    <category term="binary" scheme="https://fdrama.github.io/tags/binary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hexo+Next+GitPage 博客指南</title>
     <link href="https://fdrama.github.io/2022/07/11/hexo-guide/"/>
     <id>https://fdrama.github.io/2022/07/11/hexo-guide/</id>
     <published>2022-07-11T09:33:53.000Z</published>
-    <updated>2022-07-12T08:22:35.536Z</updated>
+    <updated>2022-07-22T06:05:14.870Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;p&gt;欢迎来到我的博客!&lt;/p&gt;
-&lt;p&gt;感谢 &lt;a href=&quot;https://pages.github.com/&quot;&gt;GithubPage&lt;/a&gt; + &lt;a href=&quot;https://hexo.io/zh-cn/&quot;&gt;Hexo&lt;/a&gt; + &lt;a</summary>
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;欢迎来到我的博客!&lt;/p&gt;
+&lt;p&gt;感谢 &lt;a</summary>
         
       
     
     
     
-    <category term="指南" scheme="https://fdrama.github.io/categories/%E6%8C%87%E5%8D%97/"/>
+    <category term="guide" scheme="https://fdrama.github.io/categories/guide/"/>
     
     
     <category term="hexo" scheme="https://fdrama.github.io/tags/hexo/"/>
     
     <category term="next" scheme="https://fdrama.github.io/tags/next/"/>
+    
+    <category term="gitPage" scheme="https://fdrama.github.io/tags/gitPage/"/>
     
   </entry>
   
