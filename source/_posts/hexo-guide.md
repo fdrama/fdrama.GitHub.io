@@ -326,6 +326,49 @@ hexo-word-counter (<https://github.com/next-theme/hexo-word-counter>)
        symbols: true
    ```
 
+#### 脚注
+
+hexo-footnotes (<https://github.com/LouisBarranqueiro/hexo-footnotes>)
+
+1. 安装
+
+   ```bash
+   $ npm install hexo-footnotes --save
+   ```
+
+#### 支持Latex公式
+
+hexo-footnotes (<https://github.com/LouisBarranqueiro/hexo-footnotes>)
+
+1. 配置 *_config.next.yml
+
+   ```yml
+    math:
+      every_page: false
+
+      mathjax:
+        enable: true
+            # Available values: none | ams | all
+        tags: none
+   ```
+
+2. 配置文档
+
+    ```yml
+    ---
+    mathjax: true
+    ---
+    ```
+
+3. 处理步骤
+
+    Hexo 中的 Markdown 引擎把 Markdown 变为 html 文件
+    MathJax 负责解释 html 的数学公式
+
+    第一步中，由于 backslash 在 Markdown 属于特殊字符，用于字符转义，所以两个 backslash 经过 Markdown 引擎处理，只剩下一个，等到 MathJax 引擎处理时，实际上 MathJax 只看到一个 backslash，MathJax 把它当作 LaTeX 中的空格，因此我们见到了上图所示的渲染结果。
+
+    知道了渲染错误的原因，解决办法也很简单，就是用四个 backslash 代替两个 backslash，确保 MathJax 的引擎看到的是两个 backslash，对于公式换行，把公式里的2个{\\} 变成4个{\\}
+
 ### 部署
 
 #### Git
