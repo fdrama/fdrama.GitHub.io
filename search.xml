@@ -3,7 +3,7 @@
   <entry>
     <title>计算机中的二进制</title>
     <url>/2022/08/05/binary/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是二进制-3">什么是二进制</h2>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是二进制">什么是二进制</h2>
 <p>所谓的 二进制，就是一种仅用 $1$ 和 $0$ 的排列组合来表示具体数值的，一种记数方法。</p>
 <p>例如下面这个数是一个<strong>八位无符号二进制数</strong>，它的每位都是非$1$即$0$的，不会出现$2$或者$3$这样的其它数字。但是仅通过$1$和$0$的组合是如何表示某个具体数值的？</p>
 <table>
@@ -33,7 +33,7 @@ $<br>
 V(D)&amp;=d_n\times10^n+d_{n-1}\times10^{n-1}+…+d_1\times10^1+d_0\times10^0+d_{-1}\times10^{-1}+d_{-2}\times10^{-2}+…+d_{-m}\times10^{-m}<br>
 \end{aligned}<br>
 $</p>
-<p>其中，$b_i$可以是$0,1,2,3,4,5,6,7,8,9$里十个数字符号的任何一个，其中$10$称为基数，这个每位分别乘上的固定数值，就是所谓的 <strong>位权（weight）</strong>，即 <strong>每位的权重</strong>。 具体地，从第0位开始，它的每位位权分别是$1, 10, 100, 1000…$，或者说是$10^0, 10^1, 10^2, 10^3…$。在十进制数进行运算时，它每位满十就需要向高位进一，即 <strong>逢十进一</strong></p>
+<p>其中，$d_i$可以是$0,1,2,3,4,5,6,7,8,9$里十个数字符号的任何一个，其中$10$称为基数，这个每位分别乘上的固定数值，就是所谓的 <strong>位权（weight）</strong>，即 <strong>每位的权重</strong>。 具体地，从第0位开始，它的每位位权分别是$1, 10, 100, 1000…$，或者说是$10^0, 10^1, 10^2, 10^3…$。在十进制数进行运算时，它每位满十就需要向高位进一，即 <strong>逢十进一</strong></p>
 <p>对于二进制来说其实他们的记数方法是一致的，我们看最开始的例子 $10101000_{2}$：</p>
 <p>$<br>
 \begin{aligned}<br>
@@ -52,7 +52,7 @@ V(B)&amp;=b_n\times2^n+b_{n-1}\times2^{n-1}+…+b_1\times2^1+b_0\times2^0+b_{-1}
 \end{aligned}<br>
 $</p>
 <p>其中，$b_i$只可以是$0$和$1$两种数字，其中$2$是基数，从第0位开始，二进制每位位权分别是$1, 2, 4, 8$，或者说 $2^0, 2^1,2^2,2^3…$ , 所以，二进制是 <strong>逢二进一</strong>。</p>
-<h3 id="进制-2">进制</h3>
+<h3 id="进制">进制</h3>
 <p>一般地，在某个数字系统中，若采用$R$个基本符号(0, 1, 2,…,R-1)表示各位上的数字，则称其位 <strong>R进制</strong>，$R$被称为数字系统的基，它采用 <strong>逢R进一</strong>的运算规则，对于每一个数位$i$， 第 $i$ 位的位权就是 $R^i$。</p>
 <p>计算机系统中，常用的进制有下列4种：</p>
 <table>
@@ -85,14 +85,14 @@ $</p>
 </tr>
 <tr>
 <td style="text-align:center">十六进制</td>
-<td style="text-align:center">10</td>
+<td style="text-align:center">16</td>
 <td style="text-align:center">$0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F$</td>
 <td style="text-align:center">H(Hexadecimal)</td>
 </tr>
 </tbody>
 </table>
 <p>查看下表<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></p>
-<h4 id="常用进制之间的转换-2">常用进制之间的转换</h4>
+<h4 id="常用进制之间的转换">常用进制之间的转换</h4>
 <p>计算机内部所有信息采用二进制编码表示，但在计算机外部世界，为了书写和阅读的方便，大都采用八、十或十六进制数表示形式。因此，必须实现进制之间的转换。</p>
 <ol>
 <li>
@@ -252,7 +252,7 @@ $</li>
       </tags>
   </entry>
   <entry>
-    <title>Hexo+Next+GitPage 博客指南</title>
+    <title>博客指南</title>
     <url>/2022/07/11/hexo-guide/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>欢迎来到我的博客!</p>
 <p>感谢 <a href="https://pages.github.com/">GithubPage</a> + <a href="https://hexo.io/zh-cn/">Hexo</a> + <a href="https://theme-next.js.org/">next</a>。<br>
@@ -485,7 +485,7 @@ MathJax 负责解释 html 的数学公式</p>
 </ol>
 ]]></content>
       <categories>
-        <category>guide</category>
+        <category>博客指南</category>
       </categories>
       <tags>
         <tag>hexo</tag>

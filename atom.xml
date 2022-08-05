@@ -6,7 +6,7 @@
   <link href="https://fdrama.github.io/atom.xml" rel="self"/>
   
   <link href="https://fdrama.github.io/"/>
-  <updated>2022-08-05T09:35:12.544Z</updated>
+  <updated>2022-08-05T09:55:51.447Z</updated>
   <id>https://fdrama.github.io/</id>
   
   <author>
@@ -21,14 +21,14 @@
     <link href="https://fdrama.github.io/2022/08/05/binary/"/>
     <id>https://fdrama.github.io/2022/08/05/binary/</id>
     <published>2022-08-05T09:35:12.000Z</published>
-    <updated>2022-08-05T09:35:12.544Z</updated>
+    <updated>2022-08-05T09:55:51.447Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;h2 id=&quot;什么是二进制-3&quot;&gt;什么是二进制&lt;/h2&gt;
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;h2 id=&quot;什么是二进制&quot;&gt;什么是二进制&lt;/h2&gt;
 &lt;p&gt;所谓的</summary>
         
       
@@ -43,11 +43,11 @@
   </entry>
   
   <entry>
-    <title>Hexo+Next+GitPage 博客指南</title>
+    <title>博客指南</title>
     <link href="https://fdrama.github.io/2022/07/11/hexo-guide/"/>
     <id>https://fdrama.github.io/2022/07/11/hexo-guide/</id>
     <published>2022-07-11T09:33:53.000Z</published>
-    <updated>2022-08-05T09:48:41.453Z</updated>
+    <updated>2022-08-05T09:56:15.006Z</updated>
     
     
       
@@ -61,7 +61,7 @@
     
     
     
-    <category term="guide" scheme="https://fdrama.github.io/categories/guide/"/>
+    <category term="博客指南" scheme="https://fdrama.github.io/categories/%E5%8D%9A%E5%AE%A2%E6%8C%87%E5%8D%97/"/>
     
     
     <category term="hexo" scheme="https://fdrama.github.io/tags/hexo/"/>
