@@ -1,5 +1,5 @@
 ---
-title: 计算机中的二进制(2)
+title: 计算机中的二进制（二）
 tags:
   - binary
   - math
