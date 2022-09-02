@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>计算机中的二进制</title>
+    <title>计算机中的二进制（一）</title>
     <url>/2022/08/05/binary/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是二进制">什么是二进制</h2>
 <p>所谓的 二进制，就是一种仅用 $1$ 和 $0$ 的排列组合来表示具体数值的，一种记数方法。</p>
-<p>例如下面这个数是一个<strong>八位无符号二进制数</strong>，它的每位都是非$1$即$0$的，不会出现$2$或者$3$这样的其它数字。但是仅通过$1$和$0$的组合是如何表示某个具体数值的？</p>
+<p>例如下面这个数是一个<strong>八位无符号二进制数</strong>，它的每位都是非$1$即$0$的，但是仅通过$1$和$0$的组合是如何表示某个具体数值的？</p>
 <table>
     <tr>
         <td>1</td>
@@ -18,7 +18,7 @@
         <td>0</td>
     </tr>
 </table>
-<p>我们先来回忆一下小学数学里的 $0,1,2,3,4,5,6,7,8,9$，比如 $456$ 这个数字，我们读作 <em>四百五十六</em>，那么 <em>四百五十六</em> 其实也是经过求值算出来的，具体如下：</p>
+<p>我们先来回忆一下小学数学里的 $0,1,2,3,4,5,6,7,8,9$，比如 $456$ 这个数字，我们读作 <strong>四百五十六</strong>，<em>四百五十六</em> 其实也是经过求值算出来的，具体如下：</p>
 <p>$<br>
 \begin{aligned}<br>
 456&amp;=400+50+6\\<br>
@@ -26,33 +26,38 @@
 \end{aligned}<br>
 $</p>
 <p>一般地，任意一个十进制数</p>
-<p>$D=d_nd_{n-1}…d_1d_0. d_{-1}d_{-2}…d_{-m}$ (m, n为正整数)</p>
+<p>$$<br>
+D=d_nd_{n-1}…d_1d_0. d_{-1}d_{-2}…d_{-m} \quad (m, n为正整数)<br>
+$$</p>
 <p>其值为<br>
-$<br>
+$$<br>
 \begin{aligned}<br>
 V(D)&amp;=d_n\times10^n+d_{n-1}\times10^{n-1}+…+d_1\times10^1+d_0\times10^0+d_{-1}\times10^{-1}+d_{-2}\times10^{-2}+…+d_{-m}\times10^{-m}<br>
 \end{aligned}<br>
-$</p>
-<p>其中，$d_i$可以是$0,1,2,3,4,5,6,7,8,9$里十个数字符号的任何一个，其中$10$称为基数，这个每位分别乘上的固定数值，就是所谓的 <strong>位权（weight）</strong>，即 <strong>每位的权重</strong>。 具体地，从第0位开始，它的每位位权分别是$1, 10, 100, 1000…$，或者说是$10^0, 10^1, 10^2, 10^3…$。在十进制数进行运算时，它每位满十就需要向高位进一，即 <strong>逢十进一</strong></p>
-<p>对于二进制来说其实他们的记数方法是一致的，我们看最开始的例子 $10101000_{2}$：</p>
+$$</p>
+<p>其中，$d_i$可以是$0,1,2,3,4,5,6,7,8,9$里十个数字符号的任何一个，其中$10$称为基数，这个每位分别乘上的固定数值，就是所谓的 <strong>位权（weight）</strong>，即 <strong>每位的权重</strong>。</p>
+<p>具体地，从第0位开始，它的每位位权分别是$1, 10, 100, 1000…$，或者说是$10^0, 10^1, 10^2, 10^3…$，在十进制数进行运算时，它每位满十就需要向高位进一，即 <strong>逢十进一</strong></p>
+<p>对于二进制来说其实他们的记数方法是一致的，我们看最开始的例子 $10101000_{B}$：</p>
 <p>$<br>
 \begin{aligned}<br>
-10101000_{2}&amp;=0\times2^0+0\times2^1+0\times2^2+1\times2^3+0\times2^4+1\times2^5+0\times2^6+1\times2^7 \\<br>
+10101000_{B}&amp;=0\times2^0+0\times2^1+0\times2^2+1\times2^3+0\times2^4+1\times2^5+0\times2^6+1\times2^7 \\<br>
 &amp;=0+0+0+8+0+32+0+128 \\<br>
 &amp;=168<br>
 \end{aligned}<br>
 $</p>
-<p>也就是说二进制<strong>10101000</strong> 对应的十进制是 $168$</p>
+<p>也就是说二进制$1010 \ 1000$ 对应的十进制是 $168$</p>
 <p>一般地，任意一个二进制数</p>
-<p>$B=b_nb_{n-1}…b_1b_0. b_{-1}b_{-2}…b_{-m}$ (m, n为正整数)</p>
+<p>$$<br>
+B=b_nb_{n-1}…b_1b_0. b_{-1}b_{-2}…b_{-m} \quad (m, n为正整数)<br>
+$$</p>
 <p>其值为<br>
-$<br>
+$$<br>
 \begin{aligned}<br>
 V(B)&amp;=b_n\times2^n+b_{n-1}\times2^{n-1}+…+b_1\times2^1+b_0\times2^0+b_{-1}\times2^{-1}+b_{-2}\times2^{-2}+…+b_{-m}\times2^{-m}<br>
 \end{aligned}<br>
-$</p>
+$$</p>
 <p>其中，$b_i$只可以是$0$和$1$两种数字，其中$2$是基数，从第0位开始，二进制每位位权分别是$1, 2, 4, 8$，或者说 $2^0, 2^1,2^2,2^3…$ , 所以，二进制是 <strong>逢二进一</strong>。</p>
-<h3 id="进制">进制</h3>
+<h2 id="进制">进制</h2>
 <p>一般地，在某个数字系统中，若采用$R$个基本符号(0, 1, 2,…,R-1)表示各位上的数字，则称其位 <strong>R进制</strong>，$R$被称为数字系统的基，它采用 <strong>逢R进一</strong>的运算规则，对于每一个数位$i$， 第 $i$ 位的位权就是 $R^i$。</p>
 <p>计算机系统中，常用的进制有下列4种：</p>
 <table>
@@ -92,163 +97,691 @@ $</p>
 </tbody>
 </table>
 <p>查看下表<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></p>
-<h4 id="常用进制之间的转换">常用进制之间的转换</h4>
+<h2 id="常用进制之间的转换">常用进制之间的转换</h2>
 <p>计算机内部所有信息采用二进制编码表示，但在计算机外部世界，为了书写和阅读的方便，大都采用八、十或十六进制数表示形式。因此，必须实现进制之间的转换。</p>
-<ol>
-<li>
-<p><strong>R进制数转换为十进制数</strong></p>
+<h3 id="R进制数转换为十进制数">R进制数转换为十进制数</h3>
 <p>任何一个R进制数转换为十进制数时，只需要 <strong>按位展开</strong> 即可。</p>
 <ul>
 <li><em>二进制转换十进制</em><br>
 $<br>
 \begin{aligned}<br>
-10101.01_{2}&amp;=1\times2^4+0\times2^3+1\times2^2+0\times2^1+1\times2^0+0\times2^{-1}+1\times2^{-2}\\<br>
+10101.01_{B}&amp;=1\times2^4+0\times2^3+1\times2^2+0\times2^1+1\times2^0+0\times2^{-1}+1\times2^{-2}\\<br>
 &amp;=16+0+4+0+1+0+0.25 \\<br>
-&amp;=21.25_{10}<br>
+&amp;=21.25_{D}<br>
 \end{aligned}<br>
 $</li>
+</ul>
+<hr>
+<ul>
 <li><em>八进制转换十进制</em><br>
 $<br>
 \begin{aligned}<br>
-307.6_{8}&amp;=3\times8^2+0\times8^1+7\times8^0+8\times8^{-1}\\<br>
+307.6_{O}&amp;=3\times8^2+0\times8^1+7\times8^0+6\times8^{-1}\\<br>
 &amp;=192+0+7+0.75\\<br>
-&amp;=199.75_{10}<br>
+&amp;=199.75_{D}<br>
 \end{aligned}<br>
 $</li>
+</ul>
+<hr>
+<ul>
 <li><em>十六进制转换十进制</em><br>
 $<br>
 \begin{aligned}<br>
-3A.C_{16}&amp;=3\times16^1+10\times16^0+12\times16^{-1}\\<br>
+3A.C_{H}&amp;=3\times16^1+10\times16^0+12\times16^{-1}\\<br>
 &amp;=48+10+0.75\\<br>
-&amp;=58.75_{10}<br>
+&amp;=58.75_{D}<br>
 \end{aligned}<br>
 $</li>
 </ul>
-</li>
-<li>
-<p><strong>R进制数转换为十进制数</strong></p>
+<h3 id="十进制数转换为R进制数">十进制数转换为R进制数</h3>
 <p>任何一个十进制数转换为R进制数时，要将整数和小数部分分别进行转换。</p>
 <ul>
-<li>2.1 <em>整数部分的转换</em></li>
+<li>
+<p><em>整数部分的转换</em></p>
+<p>整数部分的转换方法就是 <strong>除基取余，上右下左</strong>。也就是说，用要转换的十进制整数除以基数R，将得到的余数作为结果数据中各位的数字，直到商0为止。上面的余数（即先得到的余数）作为右边的低位数位，下面的余数作为左边的高位数位。</p>
+  <img src="/2022/08/05/binary/fc173747e8ee9e6e7f57cfc69458e042.jpg" class="" title="如图">
+</li>
 </ul>
-<p>整数部分的转换方法就是 <strong>除基取余，上右下左</strong>。也就是说，用要转换的十进制整数除以基数R，将得到的余数作为结果数据中各位的数字，直到余数位0为止。上面的余数（即先得到的余数）作为右边的低位数位，下面的余数作为左边的高位数位。</p>
+<hr>
 <ul>
-<li>2.2 <em>小数部分的转换</em></li>
-</ul>
-<p>小数部分的转换方法就是 <strong>乘基取整，上左下右</strong>。也就是说，用要转换的十进制小数乘以基数R，将得到的乘积整数部分作为结果数据中各位的数字，小数部分继续与基数R相乘，依此类推，直到某一步乘积的小数部分为0或已得到希望的位数为止。最后，将上面的整数部分作为左边的高位数位，下面的整数部分作为右边的低位数位。在转换过程中，可能乘积的小数部分总得不到0，即转换得到希望的位数后还有余数，这是得到的结果就是近似值。</p>
+<li>
+<p><em>小数部分的转换</em></p>
+<p>小数部分的转换方法就是 <strong>乘基取整，上左下右</strong>。也就是说，用要转换的十进制小数乘以基数R，将得到的乘积整数部分作为结果数据中各位的数字，小数部分继续与基数R相乘，依此类推，直到某一步乘积的小数部分为0或已得到希望的位数为止。</p>
+<p>最后，将上面的整数部分作为左边的高位数位，下面的整数部分作为右边的低位数位。在转换过程中，可能乘积的小数部分总得不到0，即转换得到希望的位数后还有余数，这是得到的结果就是近似值。</p>
+<p>例: 将十进制小数0.685分别转换为二进制和八进制数。</p>
+<p>$<br>
+\begin{aligned}<br>
+0.6875 \times 2 = 1.375 \quad &amp;整数位1 \\<br>
+0.375 \times 2 = 0.75 \quad   &amp;整数位0 \\<br>
+0.75 \times 2 = 1.5 \quad     &amp;整数位1 \\<br>
+0.5 \times 2 = 1 \quad        &amp;整数位1 \\<br>
+&amp;0.685_{D} = 0.1011_{B}  \quad 结果<br>
+\end{aligned}<br>
+$</p>
+<hr>
+<p>$<br>
+\begin{aligned}<br>
+0.6875 \times 8 = 5.5 \quad &amp;整数位5 \\<br>
+0.5 \times 8 = 4.0 \quad   &amp;整数位4 \\<br>
+&amp;0.685_{D} = 0.54_{O}  \quad 结果<br>
+\end{aligned}<br>
+$</p>
 </li>
 <li>
-<p><strong>二、八、十六进制的相互转换</strong></p>
+<p><em>整数、小数部分的转换</em></p>
+<p>只要将整数、小数部分分别转换，得到的转换后的整数和小数部分，然后将这两部分组合起来即可得到一个完整的数。</p>
+<p>例：将十进制835.6875转换为二进制和八进制数<br>
+$<br>
+\begin{aligned}<br>
+835.6875_{D}=1101000011.1011_{B}=1503.54_{O}<br>
+\end{aligned}<br>
+$</p>
+</li>
+</ul>
+<h3 id="二、八、十六进制的相互转换">二、八、十六进制的相互转换</h3>
 <ul>
 <li>
-<ol>
-<li>
-<p>八进制转换为二进制数</p>
+<p><em>八进制转换为二进制数</em></p>
 <p>只要把八进制数的每一位改写为对应的3位二进制数即可，保持高低位次序不变。对应关系如下：</p>
-<table>
-    <tr>
-        <td>八进制</td>
-        <td>0</td>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-        <td>4</td>
-        <td>5</td>
-        <td>6</td>
-        <td>7</td>
-    </tr>
-    <tr>
-        <td>二进制</td>
-        <td>000</td>
-        <td>001</td>
-        <td>010</td>
-        <td>011</td>
-        <td>100</td>
-        <td>101</td>
-        <td>110</td>
-        <td>111</td>
-    </tr>
-</table>
-<p>例：$13.72_{8}=(001011.111010)_{2}$</p>
+  <table>
+      <tr>
+          <td>八进制</td>
+          <td>0</td>
+          <td>1</td>
+          <td>2</td>
+          <td>3</td>
+          <td>4</td>
+          <td>5</td>
+          <td>6</td>
+          <td>7</td>
+      </tr>
+      <tr>
+          <td>二进制</td>
+          <td>000</td>
+          <td>001</td>
+          <td>010</td>
+          <td>011</td>
+          <td>100</td>
+          <td>101</td>
+          <td>110</td>
+          <td>111</td>
+      </tr>
+  </table>
+<p>例：$13.72_{O}=(001011.111010)_{B}$</p>
 </li>
-</ol>
-</li>
-<li>
-<ol start="2">
+</ul>
+<hr>
+<ul>
 <li>
 <p><em>十六进制转换为二进制</em></p>
 <p>和八进制转换二进制类型，只要把八进制数的每一位改写为对应的4位二进制数即可，保持高低位次序不变。对应关系如下：</p>
-<table>
-    <tr>
-        <td>十六进制</td>
-        <td>0</td>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-        <td>4</td>
-        <td>5</td>
-        <td>6</td>
-        <td>7</td>
-        <td>8</td>
-        <td>9</td>
-        <td>A</td>
-        <td>B</td>
-        <td>C</td>
-        <td>D</td>
-        <td>E</td>
-        <td>F</td>
-    </tr>
-    <tr>
-        <td>二进制</td>
-        <td>0000</td>
-        <td>0001</td>
-        <td>0010</td>
-        <td>0011</td>
-        <td>0100</td>
-        <td>0101</td>
-        <td>0110</td>
-        <td>0111</td>
-        <td>1000</td>
-        <td>1001</td>
-        <td>1010</td>
-        <td>1011</td>
-        <td>1100</td>
-        <td>1101</td>
-        <td>1110</td>
-        <td>1111</td>
-    </tr>
-</table>
-<p>例：$2B.C_{16}=(00101011.1100)_{2}$</p>
+  <table>
+      <tr>
+          <td>十六进制</td>
+          <td>0</td>
+          <td>1</td>
+          <td>2</td>
+          <td>3</td>
+          <td>4</td>
+          <td>5</td>
+          <td>6</td>
+          <td>7</td>
+          <td>8</td>
+          <td>9</td>
+          <td>A</td>
+          <td>B</td>
+          <td>C</td>
+          <td>D</td>
+          <td>E</td>
+          <td>F</td>
+      </tr>
+      <tr>
+          <td>二进制</td>
+          <td>0000</td>
+          <td>0001</td>
+          <td>0010</td>
+          <td>0011</td>
+          <td>0100</td>
+          <td>0101</td>
+          <td>0110</td>
+          <td>0111</td>
+          <td>1000</td>
+          <td>1001</td>
+          <td>1010</td>
+          <td>1011</td>
+          <td>1100</td>
+          <td>1101</td>
+          <td>1110</td>
+          <td>1111</td>
+      </tr>
+  </table>
+<p>例：$2B.C_{H}=(00101011.1100)_{B}$</p>
 </li>
-</ol>
-</li>
-<li>
-<ol start="3">
+</ul>
+<hr>
+<ul>
 <li>
 <p><em>二进制数转换为八进制数</em></p>
 <p>二进制转换成八进制时，整数部分由低向高位（从右到左）方向，每三位用一个等值的八位进制数进行替换，最后不足三位在高位补0凑满三位；小数部分从高位向低位（从左到右）方向，每三位用一个等值的八位进制数替换，最后不足三位时，在低位补0凑满三位。</p>
-<p>例：$10011.01_{2}=010011.010_{2}=(23.2)_{8}$</p>
+<p>例：$10011.01_{B}=010011.010_{B}=(23.2)_{O}$</p>
 </li>
-</ol>
-</li>
-<li>
-<ol start="4">
+</ul>
+<hr>
+<ul>
 <li>
 <p><em>二进制数转换为十六进制数</em></p>
 <p>同八进制相似，二进制转换成十六进制时，整数部分由低向高位（从右到左）方向，每四位用一个等值的十六位进制数进行替换，最后不足四位在高位补0凑满四位；小数部分从高位向低位（从左到右）方向，每四位用一个等值的十六进制数替换，最后不足四位时，在低位补0凑满四位。</p>
-<p>例：$11001.11_{2}=00011001.1100_{2}=(19.C)_{16}$</p>
-</li>
-</ol>
+<p>例：$11001.11_{B}=00011001.1100_{2}=(19.C)_{H}$</p>
 </li>
 </ul>
-</li>
+<h2 id="计算机中为什么使用二进制">计算机中为什么使用二进制</h2>
+<p>在计算机系统中，凡是要进行处理、存储和传输的信息，都是用二进制数进行编码的。也就是说，计算机内部采用的是二进制数表示方式。这样做的原因有以下三点：</p>
+<ol>
+<li>二进制数只有两种基本状态。使用有两个稳定状态的物理器件就可以表示二进制数的每一位，而制造有两个稳定状态的物理器件比要制造多个稳定状态的物理器件容易得多。<br>
+例如，用高、低两个电位，或用脉冲的有、无，或用脉冲的正、负极性等，都可以很方便、很可靠的表示&quot;0&quot;和&quot;1&quot;。</li>
+<li>二进制的编码、计数和运算规则都简单。可以开关电路实现，简单易行。</li>
+<li>&quot;1&quot;和&quot;0&quot;正好与逻辑命题的”真“，“假”两个值对应，为计算机中实现逻辑判断提供了便利条件。</li>
 </ol>
+<h2 id="常见单位">常见单位</h2>
+<p>上面我们讲了二进制，大家都知道计算机是以二进制存储以及发送接收数据的，二进制的一位，就叫做$1 bit$。<br>
+也就是说$bit$的含义就是二进制数中的一个数位，即$0$或者$1$。<strong>由于计算机的硬件决定，任何存储于计算机中的数据，其本质都是以二进制码存储</strong>。</p>
+<p>但是$bit（位）$实在太小了，还有其他常见的存储单位$Byte（字节）$、$KB（千字节）$、$MB（兆字节）$、$GB（千兆字节）$，换算如下，B是Byte的缩写:</p>
+<p>$<br>
+1B = 8bit \\<br>
+1KB = 1024B \\<br>
+1MB = 1024kB \\<br>
+1GB = 1024MB \\<br>
+1TB = 1024GB \\<br>
+$</p>
+<p>比如你的计算机内存是4GB，那么可以存储的位数为$4\times1024\times1024\times1024\times8$位,$1024$等于$2^{10}$, 即$32\times2^{30}$</p>
 <div id="footnotes"><hr><div id="footnotelist"><ol style="list-style:none; padding-left: 0;"><li id="fn:1"><span style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span style="display: inline-block; vertical-align: top;"><table><tr><td><strong>二进制</strong></td><td><strong>八进制</strong></td><td><strong>十进制</strong></td><td><strong>十六进制</strong></td></tr><tr><td>0000</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0001</td><td>1</td><td>1</td><td>1</td></tr><tr><td>0010</td><td>2</td><td>2</td><td>2</td></tr><tr><td>0011</td><td>3</td><td>3</td><td>3</td></tr><tr><td>0100</td><td>4</td><td>4</td><td>4</td></tr><tr><td>0101</td><td>5</td><td>5</td><td>5</td></tr><tr><td>0110</td><td>6</td><td>6</td><td>6</td></tr><tr><td>0111</td><td>7</td><td>7</td><td>7</td></tr><tr><td>1000</td><td>10</td><td>8</td><td>8</td></tr><tr><td>1001</td><td>11</td><td>9</td><td>9</td></tr><tr><td>1010</td><td>12</td><td>10</td><td>A</td></tr><tr><td>1011</td><td>13</td><td>11</td><td>B</td></tr><tr><td>1100</td><td>14</td><td>12</td><td>C</td></tr><tr><td>1101</td><td>15</td><td>13</td><td>D</td></tr><tr><td>1110</td><td>16</td><td>14</td><td>E</td></tr><tr><td>1111</td><td>17</td><td>15</td><td>F</td></tr></table></span><a href="#fnref:1" rev="footnote"> ↩</a></li></ol></div></div>]]></content>
       <categories>
         <category>计算机原理</category>
       </categories>
       <tags>
         <tag>binary</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>计算机中的二进制（二）</title>
+    <url>/2022/08/11/binary2/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>数据是对事实、概念或指令的一种特殊表达形式，这种特殊表达形式可由人工或自动化装置进行处理。在计算机内部，数字、文字、图形、图像、声音、视频等都不能直接由计算机进行处理和存储，它们必须采取”特殊的表达形式“才能由计算机进行通信、转换或加工处理。这种特殊的表达形式就是二进制编码形式，<strong>在计算机系统中的数据均是以二进制编码形式出现的</strong>。</p>
+<h2 id="二进制中的小数">二进制中的小数</h2>
+<p>前面讲过，计算机中只能识别和表示$0$和$1$，无法识别小数点，因此在计算机中处理日常中的小数数据，必须解决小数点的表示，计算机中通过采用相应的定点与浮点表示规则来解决这个问题。</p>
+<h3 id="定点表示">定点表示</h3>
+<p>定点表示法就是约定小数点的位置，且这个位置固定不变，小数点前、后的数字，分别用二进制表示，然后组合起来就可以把这个数字在计算机中存储起来，这种表示方式叫做「定点」表示法，用这种方法表示的数字叫做「定点数」。</p>
+<ol>
+<li>
+<p>对于整数，其小数点总是固定在数的最右边，忽略不写。</p>
+<p>$100_{D} = 01100100_{B}$</p>
+</li>
+<li>
+<p>对于纯小数，其小数点总是固定在数的最左边，因此可以采用一种”定点小数“来表示它。</p>
+<p>$0.125_{D} = 0.00100000_{B}$</p>
+</li>
+<li>
+<p>对于整数+小数形式，约定小数点位置</p>
+<p>假设8(bit)为例子，约定前5位表示整数部分，后3位表示小数部分<br>
+$1.5(D) = 00001 \ 100(B)$<br>
+$25.125(D) = 1100 \ 1001(B)$</p>
+<p>用一个定点数来表示整数+小数，分为以下步骤：</p>
+<ul>
+<li>在有限的bit宽度下，先约定小数点的位置</li>
+<li>整数部分和小数部分，分别转换为二进制表示</li>
+<li>两部分二进制组合起来即是结果</li>
+</ul>
+<p>但是整数位的5位二进制的最大值是$11111_{B}$，十进制则是$2^4-1=31_{D}$,小数位的3位二进制，最大的是$0.111_{B}$，即十进制的$0.875_{D}$。</p>
+<p>要表示更大范围的数，就需要扩大bit的宽度或者改变小数点的位置，小数点向后移动，整个数字范围就会扩大，但是小数部分的精度就会越来越低，没有办法表示类似$0.00001$这种高精度的值。</p>
+</li>
+</ol>
+<h3 id="浮点表示">浮点表示</h3>
+<p>在计算机内部，因为进行数据存储、运算和传输的部件的位数都是有限的，所以不管采用什么表数方法，都只能表示一定范围内的的有限个数。<br>
+定点数表示小数时，固定的小数点位置决定了固定位数的整数部分和小数部分，不利于同时表达特别大的数或者特别小的数。<br>
+因此，最终绝大多数现代的计算机系统都采纳了所谓的浮点数表达法。所以在计算机中，我们一般使用<strong>浮点数</strong>来表示小数。</p>
+<p>之前我们学习了定点数，其中「定点」指的是约定小数点位置固定不变。那浮点数的「浮点」就是指，其小数点的位置是可以是漂浮不定的。</p>
+<p>浮点数是采用<strong>科学计数法</strong>的方式来表示的，我们先以十进制小数举例，例如8.345，用科学计数法表示，可以有多种方式：</p>
+<p>$<br>
+\begin{aligned}<br>
+8.345&amp;=8.345\times10^0\\<br>
+&amp;=83.45\times10^-1\\<br>
+&amp;=834.5\times10^-2<br>
+\end{aligned}<br>
+$</p>
+<p>因为这种表达的多样性，因此有必要对其加以规范化以达到统一表达的目标。规范的浮点数表达方式具有如下形式：</p>
+<p>$$<br>
+\pm d.dd…d \times \beta^{e} (0 \leq d_{i} &lt; \beta)<br>
+$$</p>
+<p>其中，d.dd…d 为有效数字，$β$为基数，$e$为指数。<br>
+有效数字中数字的个数称为精度，我们可以用$p$来表示，即可称为$p$位有效数字精度。每个数字$d$介于$0$和基数$β$之间，可以写成以下形式：<br>
+$$<br>
+\pm (d_0 + d_{1}\beta^{-1}+…+d_{p-1}\beta^{-(p-1)}) \times \beta^{e} (0 \leq d_{i} &lt; \beta)<br>
+$$</p>
+<p>其中，对十进制的浮点数，即基数$β$等于$10$的浮点数而言，上面的表达式非常容易理解。<br>
+如 12.34，我们可以根据上面的表达式表达为：$1×10^1+2×10^0+3×10^{-1}+4×10^{-2}$，其规范浮点数表达为$1.234×10^1$。</p>
+<p>使用同样的规则，对于二进制数，我们也可以用科学计数法表示，也就是说把基数$10$换成$2$即可。而每个数字$d$只能在$0$和$1$之间取值。如二进制数$1001.101$，我们可以根据上面的表达式表达为：$1×2^3+0×2^2+0×2^1+1×2^0+1×2^{-1}+0×2^{-2}+1×2^{-3}$，其规范浮点数表达为 $1.001101×2^3$。</p>
+<h3 id="IEEE-浮点数标准">IEEE 浮点数标准</h3>
+<p>直到 20 世纪 80 年代（即在没有制定 IEEE 754 标准之前），业界还没有一个统一的浮点数标准。相反，很多计算机制造商根据自己的需要来设计自己的浮点数表示规则，以及浮点数的执行运算细节。另外，他们常常并不太关注运算的精确性，而把实现的速度和简易性看得比数字的精确性更重要，而这就给代码的可移植性造成了重大的障碍。</p>
+<p>一个统一的标准应用而生：IEEE 于 1985 年制订了二进制浮点运算标准 IEEE 754，该标准限定指数的底为 2，并于同年被美国引用为 ANSI 标准。目前，几乎所有的计算机都支持 IEEE 754 标准，它大大地改善了科学应用程序的可移植性。</p>
+<p>IEEE 浮点数标准是从逻辑上用三元组{S，E，M}来表示一个数 V 的。</p>
+<p>$<br>
+V = (-1)^S\times M \times 2^E  (1 \leq M &lt; 2)<br>
+$</p>
+<p>其中各个变量的含义如下：</p>
+<ul>
+<li>S(Sign)：符号位，取值 0 或 1，决定一个数字的符号，0 表示正，1 表示负；</li>
+<li>M(Mantissa)：尾数位，也称为有效数字位，是二进制小数；</li>
+<li>E(Exponent)：指数，用整数表示，是 2 的幂（可能是负数），它的作用是对浮点数加权，E的值确定小数的位置；</li>
+</ul>
+<p>在计算机中，把浮点数的位表示划分为3段：</p>
+<ul>
+<li>一个单独的符号位 s；</li>
+<li>k 位的阶码字段 $exp=e_{k−1}…e_1e_0$ 编码阶码 $E$；</li>
+<li>n 位小数字段 $frac=f_{n−1}…f_1f_0$ 编码尾数$M$，编码出来的值依赖于阶码字段的值是否等于0；</li>
+</ul>
+<table width="%50">
+    <tr>
+        <td width="10%">S（符号位）</td>
+        <td width="15%">E（指数位）</td>
+        <td width="25%">M（尾数位）</td>
+    </tr>
+</table>
+<p>举例来说：</p>
+<p>10进制中的$9.0$在二进制中写成$1001.0$，也就是 $1.001×2^3$，按照上面的格式，可以算出 $S=0, M=1.001, E=3$。</p>
+<p>IEEE754规定，对于32位的浮点数，最高的1位是符号位$S$，接着的8位是指数$E$，剩下的23位为有效数字$M$。</p>
+<img src="/2022/08/11/binary2/v2-32e425cdb908c47586267e59228fcd22_720w.png" class="" title="bin-32">
+<p>对于64位的浮点数，最高的1位是符号位$S$，接着的11位是指数$E$，剩下的52位为有效数字$M$。</p>
+<img src="/2022/08/11/binary2/bin-64.png" class="" title="bin-64">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>名称</strong></th>
+<th style="text-align:center"><strong>类型</strong></th>
+<th style="text-align:center"><strong>位数</strong></th>
+<th style="text-align:center"><strong>符号位</strong></th>
+<th style="text-align:center"><strong>指数位</strong></th>
+<th style="text-align:center"><strong>尾数位</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">双精度浮点数</td>
+<td style="text-align:center">float</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">23</td>
+</tr>
+<tr>
+<td style="text-align:center">双精度浮点数</td>
+<td style="text-align:center">double</td>
+<td style="text-align:center">64</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">52</td>
+</tr>
+</tbody>
+</table>
+<p>对于上述位的表示，根据阶段$exp$的表示，IEEE754浮点数包含三种状态：</p>
+<p>以32位浮点数为例, 其内存状态分为3部分: 1位符号位 8位指数位 23位尾数位</p>
+<ol>
+<li>
+<p>如果8位指数位全为0, 就代表当前数是个非规格数。 用于表示0, 以及非常靠近0的数, 比如1E-38.</p>
+</li>
+<li>
+<p>如果8位指数位全为1, 就代表当前数是个特殊数。 用于表示&quot;无穷&quot;和&quot;NaN&quot;:</p>
+</li>
+<li>
+<p>如果8位指数不全为0, 也不全为1(也就是除去以上两种状态外, 剩下的所有状态), 这个数就是规格数。 用于表示最常见的数值, 比如1.2, 34567, 7.996, 0.2. 但规格数不能表示0和非常靠近0的数.</p>
+</li>
+</ol>
+<img src="/2022/08/11/binary2/v2-e122b76cc864dec6b9317a1bb0e76f9b_r.png" class="" title="浮点数">
+<p>↑ 绿色区域就是32位浮点数中规格数的取值范围, 可见它取不到0和靠近0的极小数</p>
+<p>↑ 红色区域包含0和靠近0的极小数, 红色区域其实是非规格数的取值范围。</p>
+<p>下面分别对三种状态进行详细展开：</p>
+<h4 id="规格化的值（normal-number）">规格化的值（normal number）</h4>
+<p>这是一般的情况，当$exp$的二进制表示中<strong>既不全为0，也不全为1</strong>（单精度格式8位，数值为255；双精度格式11位，数值为2047）时，都是规格化数组。<br>
+这种情况下，阶码字段被解释为以偏置（biased）形式表示的有符号整数。</p>
+<h5 id="指数偏移量（exponent-bias）">指数偏移量（exponent bias）</h5>
+<p><em>指数偏移量</em> 指浮点数表示法中的指数域的编码值为指数的实际值加上某个固定的值，IEEE标准规定该固定值为$2^{k-1}-1$ ，其中的$k$为存储指数的比特的长度。</p>
+<p>那么偏移量解决的时什么问题呢，以float为例，指数E的指数位为8位bit，那么表示的范围是$[0, 2^8-1]$，即$[0, 255]$，指数可以为正数，也可以为负数，因此范围就是$[-127,127]$，但是二进制是无符号的，为了解决负数表示的问题，由不引入其他概念，就引入了偏移量（移码、偏置码）的概念，用无符号数来表示有符号数；</p>
+<p>也就是说，阶码的值是$E=e-Bias$，其中$e$是无符号数。</p>
+<p>例如指数$E=-126$ , 那么在指数域的表示就应该是$-126+127=1_{D}={00000001}<em>2$；同样，指数$E=127$，那么指数域的表示就应该是$127+127=254</em>{D}=11111110_{2}$</p>
+<p>因为偏移量的存在由此产生指数的取值范围是：单精度为 $-126 \leq E \leq +127$，双精度为 $-1022 \leq E \leq +1023$。</p>
+<h5 id="隐藏位">隐藏位</h5>
+<p>小数字段$frac$被解释为描述小数值$f$， 其中$0 \leq f &lt;1$，其二进制表示为$0.f_{n−1}⋯f_{1}f_{0}$，也就是二进制小数点在最高有效位的左边。<br>
+尾数定义为$M=1+f$。我们可以把$M$看成是一个$1.f_{n−1}f_{n−2}…f_{0}$的数字。尾数$M$的第一位总是$1$（$1 \leq M &lt;2$），因此这个$1$可以省略不写，它是个<em>隐藏位</em>，这样单精度23位尾数可以表示了24位有效数字，双精度52位尾数可以表示53位有效数字。</p>
+<p>我们来举例说明一下，$8.25$用 float 表示的二进制应该是什么样子的：</p>
+<p>$<br>
+\begin{aligned}<br>
+8_{D} = 1000_{2}  \quad &amp;先转换整数位 \\<br>
+0.25_{D} = 0.1_{2} \quad &amp;再转换小数位 \\<br>
+8.25_{D} = 1000.01_{2}  \quad &amp;组合起来 \\<br>
+1000.01 = 1.00001 \times 2^3 &amp;书写成科学计数法方式 \\<br>
+\end{aligned}<br>
+$</p>
+<p>因为8.25是正数，所以$S=0$，指数$E=3$，所以指数段为$3+127=130_{D}=10000010_{B}$，有效数字省略掉小数点左侧的$1$之后为00001，然后在右侧用零补齐。因此所得的最终结果为：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">0</th>
+<th style="text-align:center">10000010</th>
+<th style="text-align:center">00001000000000000000000</th>
+</tr>
+</thead>
+</table>
+<p>也可以转换成16进制数，每4位一组划分：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">0100</th>
+<th style="text-align:center">0001</th>
+<th style="text-align:center">0000</th>
+<th style="text-align:center">0100</th>
+<th style="text-align:center">0000</th>
+<th style="text-align:center">0000</th>
+<th style="text-align:center">0000</th>
+<th style="text-align:center">0000</th>
+</tr>
+</thead>
+</table>
+<p>即$41040000_{H}$</p>
+<img src="/2022/08/11/binary2/float.jpg" class="" title="float">
+<p>推荐一个工具地址<a href="https://www.h-schmidt.net/FloatConverter/IEEE754.html">FloatConverter</a>，可以清楚查看浮点数的二进制形式。</p>
+<p>也可以用java代码验证下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    System.out.println(Math.getExponent(<span class="number">8.25</span>)); <span class="comment">//指数E 3</span></span><br><span class="line">    System.out.println(Integer.toBinaryString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//二进制码正数省略了最前面的0 -&gt; 1000001000001000000000000000000</span></span><br><span class="line">    System.out.println(Integer.toHexString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//十六进制码 41040000</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>32位浮点数中, 规格数的取值范围: $(-2\times2^{127},-1\times2^{-126}] \cup [1\times2^{-126},2\times2^{127}) $</p>
+<p>我们知道规格数的尾数大于等于1，一个始终大于1的数 乘以 一个始终大于0的数, 永远无法等于0，事实上，$1(尾数最小值) \times 2^-167(指数最小值) = 2^{-167}$</p>
+<p>$2^{-167}$就是当前我们能表示的最小值，使用规格数时, 我们除了无法表示0, 也无法表示(0, 2^-167)之间的, 靠近0的极小数…，非规格化数解决了这个问题。</p>
+<h4 id="非规格化的值（subnormal-number）">非规格化的值（subnormal number）</h4>
+<p>当阶码位全为0时，表示的数就是非规格化的形式。这种情况下，阶码的值是$E=1−Bias$，和规格化数的阶码计算方式不一致，后面会讲到原因。<br>
+float是-126，double是-1022，而有效数字的值是$M=f$，也就是小数字段的值不包括隐含的1，范围是[0,1)。</p>
+<img src="/2022/08/11/binary2/2-1PZ511393c48.jpg" class="" title="unnormal">
+<p>非规格化的取值范围：所以尾数位的取值范围是[0.00000000000000000000000, 0.11111111111111111111111] (二进制)</p>
+<p>非规格数尾数的取值范围是[0, 1), 指数固定为-126. 这就很简单了, 让尾数取0不就能表示数值0了:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">符号位S</th>
+<th style="text-align:right">指数</th>
+<th style="text-align:center">实际指数</th>
+<th style="text-align:center">指数域E</th>
+<th style="text-align:center">尾数域M</th>
+<th style="text-align:center">数值</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:right">$e=e_{min}-1$</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0000 0000</td>
+<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
+<td style="text-align:center">+0</td>
+<td style="text-align:center">正数0</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:right">$e=e_{min}-1$</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0000 0000</td>
+<td style="text-align:center">100 0000 0000 0000 0000 0000</td>
+<td style="text-align:center">-0</td>
+<td style="text-align:center">负数0</td>
+</tr>
+</tbody>
+</table>
+<p>非规格数的取值范围: ($-1\times2^{-126}$,$1\times2^{-126}$)</p>
+<p>结合上面提到的规格数的取值范围：$(-2\times2^{127},-1\times2^{-126}] \cup [1\times2^{-126},2\times2^{127})$</p>
+<p>刚好组成一个完整的范围：$(-2\times2^{127},2\times2^{127})$</p>
+<p>非规格化数有两个用途。</p>
+<ol>
+<li>它们提供了一种表示数值0的方法，因为使用规格化数时，必须总是使$M \geq 1$，这样就不能表示0。实际上，+0.0的浮点表示的位模式为全0：符号位是0，阶码字段全为0（表示是一个非规格化的值），而小数域也全为0，这就得到$M=f=0$。但当符号位为1，其他域全为0时，会得到−0.0。根据IEEE的浮点格式，值 +0.0 和 −0.0在某些方面被认为是不同的，而在其他方面是相同的。</li>
+<li>另外一个功能是表示哪些非常接近于$0.0$的数。它们提供了一种属性，称为<strong>逐渐溢出</strong>（gradual underflow），其中，可能的数值分布均匀地接近于 0.0。</li>
+</ol>
+<h4 id="逐渐溢出（gradual-underflow）">逐渐溢出（gradual underflow）</h4>
+<p>前文说过, 非规格数尾数的取值范围是[0, 1), 指数固定-126，所以是尾数的变化在导致非规格数的值变大。</p>
+<p>$0 \ 00000000 \ 00000000000000000000001$ &gt; $0 \ 00000000 \ 00000000000000000000000$</p>
+<p>$0 \ 00000000 \ 11111111111111111111111$ 这是非规格数的最大值，此时尾数(带上隐藏的整数部分0.)其实是0.11111111111111111111111, 是个比1小一点点的数, 记做$(1 - \epsilon)$，此时非规格数的值就是: $(1-\epsilon) \times 2^{-126}$</p>
+<p>我们再往前前进一格, 就会进入<em>规格化数</em>的范围： $0 \ 00000001 \ 00000000000000000000000$ ，这是一个最小规格化数，其尾数位的值: 其实隐藏了1，或者说, 此时真正的尾数应该是1.00000000000000000000000 , 也就是1。其指数位的值是1, 则实际指数应该是$1-bias=1-127=-126$。</p>
+<p>我们来看一下：非规格化数的最大值是： $(1-\epsilon) \times 2^{-126}$，规格化数的最小值是： $1\times 2^{-126}$，两者实现了非常平滑的过度，非规格化数一点点逐渐变大，最后其最大值平稳的衔接上了规格化数的最小值。这种特性就叫做<em>逐渐溢出</em>。</p>
+<p>这就解释了两个问题：</p>
+<ol>
+<li>
+<p>为什么规定非规格数的尾数前隐藏的整数部分是 0. 而规格数尾数前隐藏的整数部分是1.</p>
+<p>因为非规格化数的尾数取值范围是[0,1)，而规格化数的尾数取值范围是[1,2)，两者平滑过度，紧密衔接。</p>
+</li>
+<li>
+<p>为什么非规格数的真实指数的计算公式是$1-bias$, 而规格数的真实指数的计算公式是$2^{k-1}-1 (k是存储指数的有效位数)$</p>
+<p>以32位浮点数为例：非规格化数的指数固定位-126，而规格化数的指数是[-126,127]，两者也平滑衔接。</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>描述</strong></th>
+<th style="text-align:center"><strong>指数段</strong></th>
+<th style="text-align:center"><strong>E</strong></th>
+<th style="text-align:center"><strong>小数段</strong></th>
+<th style="text-align:center"><strong>M</strong></th>
+<th style="text-align:center"><strong>二进制值</strong></th>
+<th style="text-align:center"><strong>十进制值</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">最小非规格化值</td>
+<td style="text-align:center">00000000</td>
+<td style="text-align:center">-126</td>
+<td style="text-align:center">00000000000000000000001</td>
+<td style="text-align:center">0.000000000000000000001</td>
+<td style="text-align:center">$-1 \times (2-2^{-23}) \times 2^{-126} $</td>
+<td style="text-align:center">$1.40129846432e-45$</td>
+</tr>
+<tr>
+<td style="text-align:center">最大非规格化值</td>
+<td style="text-align:center">00000000</td>
+<td style="text-align:center">-126</td>
+<td style="text-align:center">11111111111111111111111</td>
+<td style="text-align:center">0.11111111111111111111111</td>
+<td style="text-align:center">$(1-\epsilon) \times 2^{-126}$ ^[2]</td>
+<td style="text-align:center">$1.17549421069e-38$</td>
+</tr>
+<tr>
+<td style="text-align:center">最小规格化值</td>
+<td style="text-align:center">00000001</td>
+<td style="text-align:center">-126</td>
+<td style="text-align:center">00000000000000000000000</td>
+<td style="text-align:center">1.00000000000000000000000</td>
+<td style="text-align:center">$1\times 2^{-126}$</td>
+<td style="text-align:center">$2.35098856151e-38$</td>
+</tr>
+<tr>
+<td style="text-align:center">最大规格化值</td>
+<td style="text-align:center">11111110</td>
+<td style="text-align:center">127</td>
+<td style="text-align:center">11111111111111111111111</td>
+<td style="text-align:center">1.1111111111111111111111</td>
+<td style="text-align:center">$(2-\epsilon) \times 2^{127}$</td>
+<td style="text-align:center">$3.40282346639e+38$</td>
+</tr>
+</tbody>
+</table>
+<h4 id="特殊数值（non-number）">特殊数值（non-number）</h4>
+<p>IEEE 标准指定了以下特殊值:$\pm 0,+\infty,-\infty,NaN$，（如下表所示，以float为例）。<br>
+当阶码全为1时出现的。当小数域全为0时，得到的值表示无穷。当把两个非常大的数相乘，或者除以0时，无穷可以表示溢出的结果。当小数域为非零时，结果值被称为”NAN“。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">符号位S</th>
+<th style="text-align:right">指数</th>
+<th style="text-align:center">实际指数</th>
+<th style="text-align:center">指数域E</th>
+<th style="text-align:center">尾数域M</th>
+<th style="text-align:center">数值</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:right">$e=e^{max}+1$</td>
+<td style="text-align:center">255</td>
+<td style="text-align:center">1111 1111</td>
+<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
+<td style="text-align:center">$+\infty$</td>
+<td style="text-align:center">正无穷大</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:right">$e=e^{max}+1$</td>
+<td style="text-align:center">255</td>
+<td style="text-align:center">1111 1111</td>
+<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
+<td style="text-align:center">$-\infty$</td>
+<td style="text-align:center">负无穷大</td>
+</tr>
+<tr>
+<td style="text-align:center">*</td>
+<td style="text-align:right">$e=e^{max}+1$</td>
+<td style="text-align:center">255</td>
+<td style="text-align:center">1111 1111</td>
+<td style="text-align:center">非0</td>
+<td style="text-align:center">NaN</td>
+<td style="text-align:center">非数字，用来表示一些特殊情况</td>
+</tr>
+</tbody>
+</table>
+<p>当要存储的数大于规格数取值范围的最大值时, 就会被记做+infinity, 比如2^128, 刚刚超过规格数的取值范围的最大值, 就会被记做+infinity</p>
+<p>当要存储的数小于规格数取值范围的最小值时, 就会被记做-infinity, 比如-2^128, 刚刚小于规格数的取值范围的最小值, 就会被记做-infinity</p>
+<p>规格化数的最大值是：$0 \ 11111110 \ 11111111111111111111111$，尾数位其实是1.11111111111111111111111, 非常接近2, 记做$2-\epsilon$，指数是127，</p>
+<p>所以最大值记作$(2-\epsilon) \times 2^{127}$。+infinity的内存状态则是:$0 \ 11111111 \ 00000000000000000000000$, 尾数其实是: 1.00000000000000000000000, 等于1，指数是128，可见规格数的最大值也能和$+infinity$平滑衔接. $-infinity$同理。</p>
+<p>三种状态结合起来就表示了整个数轴：</p>
+<img src="/2022/08/11/binary2/v2-1b6f26cad2e694e143016cbe6094c80e_r.png" class="" title="数轴">
+<p>NaN 简单说一下，其实就是一种标记状态，表示计算出来的不是一个数字，例如$\sqrt{-1}$</p>
+<p>下表是一些IEEE754示例：</p>
+<img src="/2022/08/11/binary2/v2-6a0cba57252a92ddbd8afc9fd4b2922a_r.jpg" class="" title="example">
+<h3 id="浮点数精度问题">浮点数精度问题</h3>
+<p>了解了浮点数在计算机中如何存储的后，就可以发现浮点数必定存在精度问题，因为有效位数的限制，超过的部分会被舍弃，就会出现精度丢失。</p>
+<p>例如：0.4，我们来用float表示一下，先转换成二进制：</p>
+<p>$<br>
+\begin{aligned}<br>
+0_{D} = 0_{B}  \quad &amp;先转换整数位 \\<br>
+0.4_{D} = 0.11001100110011001100110…<em>{B} \quad &amp;再转换小数位 \\<br>
+0.4</em>{D} = 0.011001100110011001100110…<em>{B} （0011 无限循环） \quad &amp;组合起来 \\<br>
+0.011001100110011001100110</em>{B} = 1.1001100110011001100110… \times 2^{-2} &amp;书写成科学计数法方式 \\<br>
+\end{aligned}<br>
+$</p>
+<p>因为8.25是正数，所以$S=0$，指数$E=-2$，所以指数段为$-2+127=125_{D}=01111101_{B}$，有效数字省略掉小数点左侧的$1$之后为10011001100110011001100…，由于单精度浮点数尾数只有23位，所以需要舍入（舍入方法见后），由于第24位为1，且之后不全为0，所以需要向第23位进1完成上舍入：1.10011001100110011001101。因此所得的最终结果为：$00111110110011001100110011001101$ (此时就出现了精度损失)。</p>
+<h3 id="浮点数的范围">浮点数的范围</h3>
+<p>我们再来看一下，用浮点数表示一个数字，其范围和精度能有多大？</p>
+<p>以float为例，它能表示的最大数肯定是指数域$E=127$，尾数域$M=1.111…1（小数点后23个1）$</p>
+<h3 id="浮点数的计算">浮点数的计算</h3>
+<h4 id="浮点数舍入方式">浮点数舍入方式</h4>
+<p>舍入误差是指运算得到的近似值和精确值之间的差异。大家知道，由于计算机的字长有限，因此在进行数值计算的过程中，对计算得到的中间结果数据要使用相关的舍入规则来取近似值，而这导致计算结果产生误差。</p>
+<p>在浮点数的舍入问题上，IEEE浮点格式定义了 4 种不同的舍入方式，如下表所示。其中，默认的舍入方法是向偶数舍入，而其他三种可用于计算上界和下界。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>名称</strong></th>
+<th style="text-align:center"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">向偶数舍入</td>
+<td style="text-align:center">也称为向最接近的值舍入，会将结果舍入为最接近且可以表示的值</td>
+</tr>
+<tr>
+<td style="text-align:center">向0舍入</td>
+<td style="text-align:center">会将结果朝0方向舍入</td>
+</tr>
+<tr>
+<td style="text-align:center">向上舍入</td>
+<td style="text-align:center">向$+\infty$方向舍入，会将结果朝正无穷大的方向舍入</td>
+</tr>
+<tr>
+<td style="text-align:center">向下舍入</td>
+<td style="text-align:center">向$-\infty$方向舍入，会将结果朝负无穷大的方向舍入</td>
+</tr>
+</tbody>
+</table>
+<p>举例说明:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>方式</strong></th>
+<th style="text-align:center"><strong>1.40</strong></th>
+<th style="text-align:center"><strong>1.60</strong></th>
+<th style="text-align:center"><strong>1.50</strong></th>
+<th style="text-align:center"><strong>2.50</strong></th>
+<th style="text-align:center"><strong>-1.50</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">向偶舍入</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">-2</td>
+</tr>
+<tr>
+<td style="text-align:center">向零舍入</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">-1</td>
+</tr>
+<tr>
+<td style="text-align:center">向下舍入</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">-2</td>
+</tr>
+<tr>
+<td style="text-align:center">向上舍入</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">-1</td>
+</tr>
+</tbody>
+</table>
+<p>为什么要使中间值向偶舍入呢？因为使用向上舍入或者向下舍入，会在计算这些值的平均数中引入统计偏差。如果两个数的中间值始终用向上舍入，那么得到的一组数的平均值将比这些数本身的平均值略高一些；相反，向下舍入得到的一组数的平均值将比这些数本身的平均值略低一些。</p>
+<p>向偶舍入在大多数情况中避免了这种统计偏差，在50%的时间里，它将向上舍入，而在50%的时间里，它将向下舍入。</p>
+<p>以23位尾数位的单精度浮点数为例，舍入时需要重点参考第24位</p>
+<ul>
+<li>
+<p>若第24位为1，且第24位之后全部为0。此时就要使第23位为0：若第23位本来就是0则不管，若第23位为1，则第24位就要向第23位进一位，这样第23位就可以为0</p>
+</li>
+<li>
+<p>若第24位为1，且第24位之后不全为0，则第24位就要向第23位进一完成上舍入。</p>
+</li>
+<li>
+<p>若第24位为0，此时直接舍去不进位，称为下舍入。</p>
+</li>
+</ul>
+<h3 id="小结">小结</h3>
+<h2 id="参考文章">参考文章</h2>
+<p><a href="https://zhuanlan.zhihu.com/p/339949186">什么是浮点数</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/338588296">什么是定点数</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/349572768">一文读懂浮点数</a></p>
+<p><a href="http://www.ideabuffer.cn/2017/05/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA/">计算机中浮点数的二进制表示</a></p>
+<p><a href="http://c.biancheng.net/view/314.html">IEEE 754浮点数标准详解</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/343049681">IEEE规范</a></p>
+<div id="footnotes"><hr><div id="footnotelist"><ol style="list-style:none; padding-left: 0;"><li id="fn:1"><span style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span style="display: inline-block; vertical-align: top;">Float和Double的最小值和最大值都是以科学记数法的形式输出的，结尾的&quot;E+数字&quot;表示E之前的数字要乘以10的多少次方。例如：$19971400000000=1.99714×10^{13}$。计算器表达10的幂是一般是用$E$或e，也就是$1.99714E13=19971400000000$。</span><a href="#fnref:1" rev="footnote"> ↩</a></li><li id="fn:2"><span style="display: inline-block; vertical-align: top; padding-right: 10px;">2.</span><span style="display: inline-block; vertical-align: top;">机器码ε表示1与大于1的最小浮点数之差，。不同精度定义的机器ε不同，float $\epsilon=2^{-23}$， double $\epsilon=2^{-52}$</span><a href="#fnref:2" rev="footnote"> ↩</a></li></ol></div></div>]]></content>
+      <categories>
+        <category>计算机原理</category>
+      </categories>
+      <tags>
+        <tag>binary</tag>
+        <tag>math</tag>
       </tags>
   </entry>
   <entry>
