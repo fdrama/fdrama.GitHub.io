@@ -1,5 +1,5 @@
 ---
-title: 计算机中的二进制(3)
+title: 计算机中的二进制-负数
 tags: [binary, math]
 categories: 计算机原理
 ---

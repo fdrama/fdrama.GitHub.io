@@ -1,5 +1,5 @@
 ---
-title: 计算机中的二进制（一）
+title: 计算机中的二进制-整数
 tags: [binary]
 categories: 计算机原理
 mathjax: true
