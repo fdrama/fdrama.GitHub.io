@@ -223,7 +223,7 @@ public class SingletonSerializedTest {
 }
 ```
 
-序列化破坏了单例模式，但是可以通过readResolve()解决
+序列化破坏了单例模式，但是可以通过readResolve()解决。
 
 ```java
 protected Object readResolve() {
