@@ -170,7 +170,7 @@ $$
         \begin{aligned}
         0.6875 \times 8 = 5.5 \quad &整数位5 \\\\
         0.5 \times 8 = 4.0 \quad   &整数位4 \\\\
-        &0.685_{D} = 0.54_{O}  \quad 结果
+        &0.6875_{D} = 0.54_{O}  \quad 结果
         \end{aligned}
     $
 
