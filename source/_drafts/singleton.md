@@ -1,13 +1,20 @@
 ---
 title: 单例模式
-tags: 设计模式
+tags: [design, singleton]
+categories: 设计模式
 ---
+
+> Java单例模式是常见设计模式之一，从定义上看，它似乎是一种简单的设计模式，但当涉及到实现时，它会带来很多问题。在本文中，我们将了解单例设计模式的原则，探索实现单例设计模式的不同方法，以及使用它的一些最佳实践。
+
+## 单例模式原则
 
 - 私有构造方法，限制其他类实例化该类。
 - 私有静态示例变量，该类的唯一实例。
 - 公共静态方法，返回该类的唯一实例。
 
-## 饿汉
+## 单例模式实现
+
+### 饿汉
 
 在类加载的时候创建实例。快速初始化的缺点是，即使应用程序可能没有使用该方法，也会创建该实例。
 
@@ -28,7 +35,7 @@ public class EagerInitializedSingleton {
 
 ```
 
-## 静态代码块
+### 静态代码块
 
 静态代码块和上面的饿汉基本一致，就是可以进行异常处理，当然缺点也一样。
 
@@ -54,7 +61,7 @@ public class StaticBlockSingleton {
 }
 ```
 
-## 懒汉
+### 懒汉
 
 在调用方法的时候才会创建实例。
 
@@ -76,7 +83,7 @@ public class LazyInitializedSingleton {
 
 在多线程环境下，如果多个线程同时在if条件中，调用会存在线程安全问题，会破坏单例模式。
 
-## 线程安全
+### 线程安全
 
 ```java
 public class ThreadSafeSingleton {
@@ -107,7 +114,7 @@ public class ThreadSafeSingleton {
 }
 ```
 
-## 静态内部类
+### 静态内部类
 
 注意包含单例类实例的私有内部静态类。当加载单例类时，SingletonHelper类不会加载到内存中，只有当有人调用getInstance()方法时，该类才会加载并创建单例类实例。这是单例类使用最广泛的方法，因为它不需要同步。
 
@@ -158,7 +165,7 @@ public class ReflectionSingletonTest {
 }
 ```
 
-## 枚举
+### 枚举
 
 因为Java确保任何enum值在Java程序中只实例化一次。因为Java Enum值是全局可访问的，所以单例也是如此。
 
@@ -166,10 +173,14 @@ public class ReflectionSingletonTest {
 public enum EnumSingleton {
 
     INSTANCE;
+
+    public static void doSomething() {
+        // do something
+    }
 }
 ```
 
-## 序列化和单例
+### 序列化和单例
 
 ```java
 import java.io.Serializable;
