@@ -21,12 +21,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"fdrama.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":true,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="数据是对事实、概念或指令的一种特殊表达形式，这种特殊表达形式可由人工或自动化装置进行处理。在计算机内部，数字、文字、图形、图像、声音、视频等都不能直接由计算机进行处理和存储，它们必须采取”特殊的表达形式“才能由计算机进行通信、转换或加工处理。这种特殊的表达形式就是二进制编码形式，在计算机系统中的数据均是以二进制编码形式出现的。 二进制中的小数 前面讲过，计算机中只能识别和表示$0$和$1$，无法识">
+    <meta name="description" content="数据是对事实、概念或指令的一种特殊表达形式，这种特殊表达形式可由人工或自动化装置进行处理。在计算机内部，数字、文字、图形、图像、声音、视频等都不能直接由计算机进行处理和存储，它们必须采取”特殊的表达形式“才能由计算机进行通信、转换或加工处理。这种特殊的表达形式就是二进制编码形式，在计算机系统中的数据均是以二进制编码形式出现的。 这一节我们思考以下问题：  计算机如何表示小数点 什么是浮点数 浮点数">
 <meta property="og:type" content="article">
-<meta property="og:title" content="计算机中的二进制（二）">
+<meta property="og:title" content="计算机中的二进制-浮点数">
 <meta property="og:url" content="https://fdrama.github.io/2022/08/11/binary2/index.html">
 <meta property="og:site_name" content="随园">
-<meta property="og:description" content="数据是对事实、概念或指令的一种特殊表达形式，这种特殊表达形式可由人工或自动化装置进行处理。在计算机内部，数字、文字、图形、图像、声音、视频等都不能直接由计算机进行处理和存储，它们必须采取”特殊的表达形式“才能由计算机进行通信、转换或加工处理。这种特殊的表达形式就是二进制编码形式，在计算机系统中的数据均是以二进制编码形式出现的。 二进制中的小数 前面讲过，计算机中只能识别和表示$0$和$1$，无法识">
+<meta property="og:description" content="数据是对事实、概念或指令的一种特殊表达形式，这种特殊表达形式可由人工或自动化装置进行处理。在计算机内部，数字、文字、图形、图像、声音、视频等都不能直接由计算机进行处理和存储，它们必须采取”特殊的表达形式“才能由计算机进行通信、转换或加工处理。这种特殊的表达形式就是二进制编码形式，在计算机系统中的数据均是以二进制编码形式出现的。 这一节我们思考以下问题：  计算机如何表示小数点 什么是浮点数 浮点数">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://fdrama.github.io/2022/08/11/binary2/v2-32e425cdb908c47586267e59228fcd22_720w.png">
 <meta property="og:image" content="https://fdrama.github.io/2022/08/11/binary2/bin-64.png">
@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://fdrama.github.io/2022/08/11/binary2/v2-1b6f26cad2e694e143016cbe6094c80e_r.png">
 <meta property="og:image" content="https://fdrama.github.io/2022/08/11/binary2/v2-6a0cba57252a92ddbd8afc9fd4b2922a_r.jpg">
 <meta property="article:published_time" content="2022-08-11T09:52:20.000Z">
-<meta property="article:modified_time" content="2022-09-02T10:10:01.452Z">
+<meta property="article:modified_time" content="2022-10-18T10:00:17.041Z">
 <meta property="article:author" content="穷野">
 <meta property="article:tag" content="binary">
 <meta property="article:tag" content="math">
@@ -48,10 +48,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://fdrama.github.io/2022/08/11/binary2/","path":"2022/08/11/binary2/","title":"计算机中的二进制（二）"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://fdrama.github.io/2022/08/11/binary2/","path":"2022/08/11/binary2/","title":"计算机中的二进制-浮点数"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>计算机中的二进制（二） | 随园</title>
+<title>计算机中的二进制-浮点数 | 随园</title>
   
 
 
@@ -154,7 +154,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%B8%AD%E7%9A%84%E5%B0%8F%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">二进制中的小数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%82%B9%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.1.</span> <span class="nav-text">定点表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.2.</span> <span class="nav-text">浮点表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IEEE-%E6%B5%AE%E7%82%B9%E6%95%B0%E6%A0%87%E5%87%86"><span class="nav-number">1.3.</span> <span class="nav-text">IEEE 浮点数标准</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%84%E6%A0%BC%E5%8C%96%E7%9A%84%E5%80%BC%EF%BC%88normal-number%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">规格化的值（normal number）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E5%81%8F%E7%A7%BB%E9%87%8F%EF%BC%88exponent-bias%EF%BC%89"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">指数偏移量（exponent bias）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E4%BD%8D"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">隐藏位</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E8%A7%84%E6%A0%BC%E5%8C%96%E7%9A%84%E5%80%BC%EF%BC%88subnormal-number%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">非规格化的值（subnormal number）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%90%E6%B8%90%E6%BA%A2%E5%87%BA%EF%BC%88gradual-underflow%EF%BC%89"><span class="nav-number">1.3.3.</span> <span class="nav-text">逐渐溢出（gradual underflow）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E6%95%B0%E5%80%BC%EF%BC%88non-number%EF%BC%89"><span class="nav-number">1.3.4.</span> <span class="nav-text">特殊数值（non-number）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.</span> <span class="nav-text">浮点数精度问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E8%8C%83%E5%9B%B4"><span class="nav-number">1.5.</span> <span class="nav-text">浮点数的范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-number">1.6.</span> <span class="nav-text">浮点数的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E8%88%8D%E5%85%A5%E6%96%B9%E5%BC%8F"><span class="nav-number">1.6.1.</span> <span class="nav-text">浮点数舍入方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">2.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%B8%AD%E7%9A%84%E5%B0%8F%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">二进制中的小数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%82%B9%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.1.</span> <span class="nav-text">定点表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.2.</span> <span class="nav-text">浮点表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IEEE-%E6%B5%AE%E7%82%B9%E6%95%B0%E6%A0%87%E5%87%86"><span class="nav-number">1.3.</span> <span class="nav-text">IEEE 浮点数标准</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%84%E6%A0%BC%E5%8C%96%E7%9A%84%E5%80%BC%EF%BC%88normal-number%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">规格化的值（normal number）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E5%81%8F%E7%A7%BB%E9%87%8F%EF%BC%88exponent-bias%EF%BC%89"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">指数偏移量（exponent bias）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E4%BD%8D"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">隐藏位</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E8%A7%84%E6%A0%BC%E5%8C%96%E7%9A%84%E5%80%BC%EF%BC%88subnormal-number%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">非规格化的值（subnormal number）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%90%E6%B8%90%E6%BA%A2%E5%87%BA%EF%BC%88gradual-underflow%EF%BC%89"><span class="nav-number">1.3.3.</span> <span class="nav-text">逐渐溢出（gradual underflow）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E6%95%B0%E5%80%BC%EF%BC%88non-number%EF%BC%89"><span class="nav-number">1.3.4.</span> <span class="nav-text">特殊数值（non-number）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.</span> <span class="nav-text">浮点数精度问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E8%8C%83%E5%9B%B4"><span class="nav-number">1.5.</span> <span class="nav-text">浮点数的范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-number">1.6.</span> <span class="nav-text">浮点数的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A0%E5%87%8F%E8%BF%90%E7%AE%97"><span class="nav-number">1.6.1.</span> <span class="nav-text">加减运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B9%98%E9%99%A4%E8%BF%90%E7%AE%97"><span class="nav-number">1.6.2.</span> <span class="nav-text">乘除运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E8%88%8D%E5%85%A5%E6%96%B9%E5%BC%8F"><span class="nav-number">1.6.3.</span> <span class="nav-text">浮点数舍入方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">2.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -169,12 +169,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -228,12 +228,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="计算机中的二进制（二） | 随园">
+      <meta itemprop="name" content="计算机中的二进制-浮点数 | 随园">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          计算机中的二进制（二）
+          计算机中的二进制-浮点数
         </h1>
 
         <div class="post-meta-container">
@@ -262,7 +262,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>9.7k</span>
+      <span>10k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -281,6 +281,14 @@
     
     <div class="post-body" itemprop="articleBody">
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>数据是对事实、概念或指令的一种特殊表达形式，这种特殊表达形式可由人工或自动化装置进行处理。在计算机内部，数字、文字、图形、图像、声音、视频等都不能直接由计算机进行处理和存储，它们必须采取”特殊的表达形式“才能由计算机进行通信、转换或加工处理。这种特殊的表达形式就是二进制编码形式，<strong>在计算机系统中的数据均是以二进制编码形式出现的</strong>。</p>
+<p>这一节我们思考以下问题：</p>
+<ul>
+<li>计算机如何表示小数点</li>
+<li>什么是浮点数</li>
+<li>浮点数的为什么存在精度问题</li>
+<li>为什么32位的float表示范围比64位的long类型还大</li>
+<li>计算机中浮点数是如何运算的</li>
+</ul>
 <h2 id="二进制中的小数">二进制中的小数</h2>
 <p>前面讲过，计算机中只能识别和表示$0$和$1$，无法识别小数点，因此在计算机中处理日常中的小数数据，必须解决小数点的表示，计算机中通过采用相应的定点与浮点表示规则来解决这个问题。</p>
 <h3 id="定点表示">定点表示</h3>
@@ -414,13 +422,12 @@ $</p>
 <p>↑ 红色区域包含0和靠近0的极小数, 红色区域其实是非规格数的取值范围。</p>
 <p>下面分别对三种状态进行详细展开：</p>
 <h4 id="规格化的值（normal-number）">规格化的值（normal number）</h4>
-<p>这是一般的情况，当$exp$的二进制表示中<strong>既不全为0，也不全为1</strong>（单精度格式8位，数值为255；双精度格式11位，数值为2047）时，都是规格化数组。<br>
-这种情况下，阶码字段被解释为以偏置（biased）形式表示的有符号整数。</p>
+<p>这是一般的情况，当$exp$的二进制表示中<strong>既不全为0，也不全为1</strong>都是规格化数组。这种情况下，阶码字段被解释为以偏置（biased）形式表示的有符号整数。</p>
 <h5 id="指数偏移量（exponent-bias）">指数偏移量（exponent bias）</h5>
 <p><em>指数偏移量</em> 指浮点数表示法中的指数域的编码值为指数的实际值加上某个固定的值，IEEE标准规定该固定值为$2^{k-1}-1$ ，其中的$k$为存储指数的比特的长度。</p>
-<p>那么偏移量解决的时什么问题呢，以float为例，指数E的指数位为8位bit，那么表示的范围是$[0, 2^8-1]$，即$[0, 255]$，指数可以为正数，也可以为负数，因此范围就是$[-127,127]$，但是二进制是无符号的，为了解决负数表示的问题，由不引入其他概念，就引入了偏移量（移码、偏置码）的概念，用无符号数来表示有符号数；</p>
+<p>那么偏移量解决的时什么问题呢，以float为例，指数E的指数位为8位bit，那么表示的范围是$[0, 2^8-1]$，即$[0, 255]$，指数可以为正数，也可以为负数，因此范围就是$[-127,127]$，但是二进制是无符号的，为了解决负数表示的问题，又不引入其他概念，就引入了偏移量（移码、偏置码）的概念，用无符号数来表示有符号数；</p>
 <p>也就是说，阶码的值是$E=e-Bias$，其中$e$是无符号数。</p>
-<p>例如指数$E=-126$ , 那么在指数域的表示就应该是$-126+127=1_{D}={00000001}<em>2$；同样，指数$E=127$，那么指数域的表示就应该是$127+127=254</em>{D}=11111110_{2}$</p>
+<p>例如指数$E=-126$ , 那么在指数域的表示就应该是$-126+127=1_{D}={00000001}<em>B$；同样，指数$E=127$，那么指数域的表示就应该是$127+127=254</em>{D}=11111110_{B}$</p>
 <p>因为偏移量的存在由此产生指数的取值范围是：单精度为 $-126 \leq E \leq +127$，双精度为 $-1022 \leq E \leq +1023$。</p>
 <h5 id="隐藏位">隐藏位</h5>
 <p>小数字段$frac$被解释为描述小数值$f$， 其中$0 \leq f &lt;1$，其二进制表示为$0.f_{n−1}⋯f_{1}f_{0}$，也就是二进制小数点在最高有效位的左边。<br>
@@ -465,8 +472,8 @@ $</p>
 <p>也可以用java代码验证下</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    System.out.println(Math.getExponent(<span class="number">8.25</span>)); <span class="comment">//指数E 3</span></span><br><span class="line">    System.out.println(Integer.toBinaryString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//二进制码正数省略了最前面的0 -&gt; 1000001000001000000000000000000</span></span><br><span class="line">    System.out.println(Integer.toHexString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//十六进制码 41040000</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>32位浮点数中, 规格数的取值范围: $(-2\times2^{127},-1\times2^{-126}] \cup [1\times2^{-126},2\times2^{127}) $</p>
-<p>我们知道规格数的尾数大于等于1，一个始终大于1的数 乘以 一个始终大于0的数, 永远无法等于0，事实上，$1(尾数最小值) \times 2^-167(指数最小值) = 2^{-167}$</p>
-<p>$2^{-167}$就是当前我们能表示的最小值，使用规格数时, 我们除了无法表示0, 也无法表示(0, 2^-167)之间的, 靠近0的极小数…，非规格化数解决了这个问题。</p>
+<p>我们知道规格数的尾数大于等于1，一个始终大于1的数 乘以 一个始终大于0的数, 永远无法等于0，事实上，$1(尾数最小值) \times 2^{-127}(指数最小值) = 2^{-127}$</p>
+<p>$2^{-127}$就是当前我们能表示的最小值，使用规格数时, 我们除了无法表示0, 也无法表示(0, 2^-127)之间的, 靠近0的极小数…，非规格化数解决了这个问题。</p>
 <h4 id="非规格化的值（subnormal-number）">非规格化的值（subnormal number）</h4>
 <p>当阶码位全为0时，表示的数就是非规格化的形式。这种情况下，阶码的值是$E=1−Bias$，和规格化数的阶码计算方式不一致，后面会讲到原因。<br>
 float是-126，double是-1022，而有效数字的值是$M=f$，也就是小数字段的值不包括隐含的1，范围是[0,1)。</p>
@@ -559,7 +566,7 @@ float是-126，double是-1022，而有效数字的值是$M=f$，也就是小数�
 <td style="text-align:center">-126</td>
 <td style="text-align:center">11111111111111111111111</td>
 <td style="text-align:center">0.11111111111111111111111</td>
-<td style="text-align:center">$(1-\epsilon) \times 2^{-126}$ ^[2]</td>
+<td style="text-align:center">$(1-\epsilon) \times 2^{-126}$</td>
 <td style="text-align:center">$1.17549421069e-38$</td>
 </tr>
 <tr>
@@ -641,10 +648,10 @@ float是-126，double是-1022，而有效数字的值是$M=f$，也就是小数�
 <p>例如：0.4，我们来用float表示一下，先转换成二进制：</p>
 <p>$<br>
 \begin{aligned}<br>
-0_{D} = 0_{B}  \quad &amp;先转换整数位 \\<br>
-0.4_{D} = 0.11001100110011001100110…<em>{B} \quad &amp;再转换小数位 \\<br>
-0.4</em>{D} = 0.011001100110011001100110…<em>{B} （0011 无限循环） \quad &amp;组合起来 \\<br>
-0.011001100110011001100110</em>{B} = 1.1001100110011001100110… \times 2^{-2} &amp;书写成科学计数法方式 \\<br>
+0_{D}=0_{B}  \quad &amp;先转换整数位 \\<br>
+0.4_{D}=0.11001100110011001100110…{B} \quad &amp;再转换小数位 \\<br>
+0.4_{D}=0.011001100110011001100110…{B} （0011 无限循环） \quad &amp;组合起来 \\<br>
+0.011001100110011001100110_{B}=1.1001100110011001100110… \times 2^{-2} &amp;书写成科学计数法方式 \\<br>
 \end{aligned}<br>
 $</p>
 <p>因为8.25是正数，所以$S=0$，指数$E=-2$，所以指数段为$-2+127=125_{D}=01111101_{B}$，有效数字省略掉小数点左侧的$1$之后为10011001100110011001100…，由于单精度浮点数尾数只有23位，所以需要舍入（舍入方法见后），由于第24位为1，且之后不全为0，所以需要向第23位进1完成上舍入：1.10011001100110011001101。因此所得的最终结果为：$00111110110011001100110011001101$ (此时就出现了精度损失)。</p>
@@ -652,6 +659,33 @@ $</p>
 <p>我们再来看一下，用浮点数表示一个数字，其范围和精度能有多大？</p>
 <p>以float为例，它能表示的最大数肯定是指数域$E=127$，尾数域$M=1.111…1（小数点后23个1）$</p>
 <h3 id="浮点数的计算">浮点数的计算</h3>
+<h4 id="加减运算">加减运算</h4>
+<ul>
+<li>零操作数的判断
+<ul>
+<li>$a+b(b=0)=a$</li>
+<li>$a-b(b=0)=a, a-b(a=0)=-b$</li>
+</ul>
+</li>
+<li>对阶
+<ul>
+<li>已阶码大（绝对值）的为标准，阶码较小的，向较大的对齐，为了避免阶码较大的浮点数尾数左移导致最高位的丢失</li>
+<li>求阶差$\triangle M=E_x-E_y$</li>
+<li>调整阶码较小的数据
+<ul>
+<li>若$\triangle M &gt; 0$，则$M_Y$右移$\triangle M$位，结果的阶码为$E_X$</li>
+<li>若$\triangle M &lt; 0$，则$M_X$右移$\triangle M$位，结果的阶码为$E_Y$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>尾数求和</li>
+<li>规格化</li>
+<li>舍入</li>
+<li>溢出判断</li>
+</ul>
+<p>浮点数的表示有一定的范围，超出范围时会产生溢出（Flow），一般称大于绝对值最大的数据为上溢（Overflow），小于绝对值最小的数据为下溢（Underflow）。</p>
+<h4 id="乘除运算">乘除运算</h4>
 <h4 id="浮点数舍入方式">浮点数舍入方式</h4>
 <p>舍入误差是指运算得到的近似值和精确值之间的差异。大家知道，由于计算机的字长有限，因此在进行数值计算的过程中，对计算得到的中间结果数据要使用相关的舍入规则来取近似值，而这导致计算结果产生误差。</p>
 <p>在浮点数的舍入问题上，IEEE浮点格式定义了 4 种不同的舍入方式，如下表所示。其中，默认的舍入方法是向偶数舍入，而其他三种可用于计算上界和下界。</p>
@@ -767,11 +801,14 @@ $</p>
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2022/08/05/binary/" rel="prev" title="计算机中的二进制（一）">
-                  <i class="fa fa-chevron-left"></i> 计算机中的二进制（一）
+                <a href="/2022/08/05/binary/" rel="prev" title="计算机中的二进制-整数">
+                  <i class="fa fa-chevron-left"></i> 计算机中的二进制-整数
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2023/04/07/singleton/" rel="next" title="单例模式">
+                  单例模式 <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -793,7 +830,7 @@ $</p>
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -804,13 +841,13 @@ $</p>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">20k</span>
+    <span title="站点总字数">26k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">18 分钟</span>
+    <span title="站点阅读时长">24 分钟</span>
   </span>
 </div>
 

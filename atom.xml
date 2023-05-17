@@ -6,7 +6,7 @@
   <link href="https://fdrama.github.io/atom.xml" rel="self"/>
   
   <link href="https://fdrama.github.io/"/>
-  <updated>2022-09-02T10:10:01.452Z</updated>
+  <updated>2023-05-17T02:07:17.170Z</updated>
   <id>https://fdrama.github.io/</id>
   
   <author>
@@ -17,11 +17,63 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>计算机中的二进制（二）</title>
+    <title>租房用品清单</title>
+    <link href="https://fdrama.github.io/2023/05/17/life-guide/"/>
+    <id>https://fdrama.github.io/2023/05/17/life-guide/</id>
+    <published>2023-05-17T00:00:00.000Z</published>
+    <updated>2023-05-17T02:07:17.170Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="生活" scheme="https://fdrama.github.io/categories/%E7%94%9F%E6%B4%BB/"/>
+    
+    
+    <category term="life" scheme="https://fdrama.github.io/tags/life/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>单例模式</title>
+    <link href="https://fdrama.github.io/2023/04/07/singleton/"/>
+    <id>https://fdrama.github.io/2023/04/07/singleton/</id>
+    <published>2023-04-07T07:58:19.060Z</published>
+    <updated>2023-04-07T09:23:20.359Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="设计模式" scheme="https://fdrama.github.io/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+    
+    <category term="design" scheme="https://fdrama.github.io/tags/design/"/>
+    
+    <category term="singleton" scheme="https://fdrama.github.io/tags/singleton/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>计算机中的二进制-浮点数</title>
     <link href="https://fdrama.github.io/2022/08/11/binary2/"/>
     <id>https://fdrama.github.io/2022/08/11/binary2/</id>
     <published>2022-08-11T09:52:20.000Z</published>
-    <updated>2022-09-02T10:10:01.452Z</updated>
+    <updated>2022-10-18T10:00:17.041Z</updated>
     
     
       
@@ -44,19 +96,18 @@
   </entry>
   
   <entry>
-    <title>计算机中的二进制（一）</title>
+    <title>计算机中的二进制-整数</title>
     <link href="https://fdrama.github.io/2022/08/05/binary/"/>
     <id>https://fdrama.github.io/2022/08/05/binary/</id>
     <published>2022-08-05T09:35:12.000Z</published>
-    <updated>2022-09-02T10:10:01.449Z</updated>
+    <updated>2023-01-09T01:33:04.127Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;h2 id=&quot;什么是二进制&quot;&gt;什么是二进制&lt;/h2&gt;
-&lt;p&gt;所谓的</summary>
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;h2</summary>
         
       
     
@@ -74,7 +125,7 @@
     <link href="https://fdrama.github.io/2022/07/11/hexo-guide/"/>
     <id>https://fdrama.github.io/2022/07/11/hexo-guide/</id>
     <published>2022-07-11T09:33:53.000Z</published>
-    <updated>2022-08-05T09:56:15.006Z</updated>
+    <updated>2023-04-07T09:13:40.518Z</updated>
     
     
       
@@ -94,8 +145,6 @@
     <category term="hexo" scheme="https://fdrama.github.io/tags/hexo/"/>
     
     <category term="next" scheme="https://fdrama.github.io/tags/next/"/>
-    
-    <category term="gitPage" scheme="https://fdrama.github.io/tags/gitPage/"/>
     
   </entry>
   
