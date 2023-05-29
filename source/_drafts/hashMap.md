@@ -139,7 +139,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                 if ((e = p.next) == null) {
                     p.next = newNode(hash, key, value, null);
                     if (binCount >= TREEIFY_THRESHOLD - 1) // 默认8
-                        treeifyBin(tab, hash);
+                        treeifyBin(tab, hash); // 还需要满足 table.length >= 64 才转换为红黑树
                     break;
                 }
                 // 5.2 如果链表中已经存在一个键值对的哈希值和要插入的键值对的哈希值相同，并且键值对的key也相同，直接覆盖value 
