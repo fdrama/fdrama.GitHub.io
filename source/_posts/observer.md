@@ -171,13 +171,6 @@ public class WeatherStation {
 
 ## 观察者模式的实现
 
-### Java内置的观察者模式
-
-```java
-import java.util.Observable;
-import java.util.Observer;
-```
-
 我们来看看Spring中的事件监听机制，Spring中的事件监听机制是基于观察者模式实现的。
 
 ### Spring的事件监听机制
@@ -200,7 +193,7 @@ public class UserRegisterEvent extends ApplicationEvent {
     }
 }
 
-// 定义短信通知监听器
+// 定义监听器 1. 实现 ApplicationListener 接口 2. 使用 @EventListener 注解
 @Component
 public class SmsNotificationListener implements ApplicationListener<UserRegisterEvent> {
     @Override
@@ -209,22 +202,20 @@ public class SmsNotificationListener implements ApplicationListener<UserRegister
     }
 }
 
-// 定义邮件通知监听器
-@Component
-public class EmailNotificationListener implements ApplicationListener<UserRegisterEvent> {
-    @Override
-    public void onApplicationEvent(UserRegisterEvent event) {
-        // 邮件通知
-    }
-}
 
-// 定义微信通知监听器
 @Component
-public class WechatNotificationListener implements ApplicationListener<UserRegisterEvent> {
-    @Override
-    public void onApplicationEvent(UserRegisterEvent event) {
-        // 微信通知
+public class UserRegisteredListener {
+
+    @EventListener(classes = UserRegisteredEvent.class)
+    public void wechatRegister(UserRegisteredEvent event) {
+       // 微信注册
     }
+
+    @EventListener(classes = UserRegisteredEvent.class)
+    public void larkRegister(UserRegisteredEvent event) {
+       // 飞书注册
+    }
+
 }
 
 
@@ -247,7 +238,7 @@ public class UserService {
 
 #### 指定监听器顺序
 
-1. 实现`Order`接口 或者 实现`Ordered`接口
+> 使用`Order`注解
 
 ```java
 @Component
@@ -259,18 +250,6 @@ public class SmsNotificationListener implements ApplicationListener<UserRegister
     }
 }
 
-@Component
-public class EmailNotificationListener implements ApplicationListener<UserRegisterEvent>, Ordered {
-    @Override
-    public void onApplicationEvent(UserRegisterEvent event) {
-        // 邮件通知
-    }
-
-    @Override
-    public int getOrder() {
-        return 2;
-    }
-}
 ```
 
 #### 事件异步执行
@@ -293,7 +272,6 @@ public class Application {
 
 
 // 2. 配置线程池
-
 
 @Configuration
 public class AsyncConfig {
@@ -327,14 +305,11 @@ public class SmsNotificationListener implements ApplicationListener<UserRegister
 
 `ApplicationEvent`  事件对象，继承JDK `EventObject` 
 
-![Alt text](image.png)
 
 ```puml
 @startuml
 
-!theme plain
 top to bottom direction
-skinparam linetype ortho
 
 class ApplicationEvent {
   + getTimestamp(): long
@@ -351,14 +326,12 @@ Serializable       ^-[#008200,dashed]-  EventObject
 
 ```
 
-`ApplicationListener` 事件监听器，继承JDK `EventListener`  ![Alt text](image-3.png)
+`ApplicationListener` 事件监听器，继承JDK `EventListener`  
 
 ```puml
 @startuml
 
-!theme plain
-top to bottom direction
-skinparam linetype ortho
+
 
 interface ApplicationListener<E> << interface >> {
   + onApplicationEvent(E): void
@@ -370,14 +343,15 @@ EventListener  ^-[#008200,plain]-  ApplicationListener
 
 ```
 
-`ApplicationEventMulticaster` 事件管理者，管理监听器和发布事件，ApplicationContext通过委托ApplicationEventMulticaster来 发布事件 ![Alt text](image-2.png)
+`ApplicationEventMulticaster` 事件管理者，管理监听器和发布事件，ApplicationContext通过委托ApplicationEventMulticaster来 发布事件
+
+
 
 ```puml
 @startuml
 
-!theme plain
+
 top to bottom direction
-skinparam linetype ortho
 
 interface ApplicationEventMulticaster << interface >> {
   + multicastEvent(ApplicationEvent): void
@@ -393,9 +367,71 @@ interface ApplicationEventMulticaster << interface >> {
 
 ```
 
-`ApplicationEventPublisher` 事件发布者，ApplicationContext实现了该接口，用于发布事件 
+`ApplicationEventPublisher` 事件发布者，ApplicationContext实现了该接口，用于发布事件
 
-![Alt text](image-5.png)
+```puml
+@startuml
+
+interface ApplicationEventPublisher << interface >> {
+  + publishEvent(ApplicationEvent): void
+  + publishEvent(Object): void
+}
+@enduml
+```
+
+
+##### 监听器注册
+
+1. 填充 `ApplicationContext`的 `applicationListeners` 属性。
+  
+    a. 上下文准备时 显示调用 `org.springframework.context.support.AbstractApplicationContext#addApplicationListener` 方法注册监听器，例如 `ServerPortInfoApplicationContextInitializer#initialize`方法。
+
+    b. Bean初始化时，在`org.springframework.context.support.ApplicationListenerDetector#postProcessAfterInitialization` 方法中注册监听器。
+
+2. `initApplicationEventMulticaster();` 初始化事件传播器，如果没有显示配置`applicationEventMulticaster`，会默认使用 `SimpleApplicationEventMulticaster` 。
+
+3. 调用 `registerListeners()` 方法注册监听器。
+   1. 将上一步中填充的 `applicationListeners` 属性中的监听器注册到事件传播器中。`org.springframework.context.event.ApplicationEventMulticaster#addApplicationListener`， 内部使用了一个内部类`DefaultListenerRetriever` 来保存监听器信息。
+   2. 全局获取 `ApplicationListener`的Bean，`getBeanNamesForType(ResolvableType.forClass(ApplicationListener.class), true, false)。` 调用 `org.springframework.context.event.ApplicationEventMulticaster#addApplicationListenerBean` 方法注册监听器。这一步的Bean还没有初始化，所以后续初始化还是调用了 `org.springframework.context.support.ApplicationListenerDetector#postProcessAfterInitialization` 方法注册监听器。这里感觉有重复操作，
+
+4. 实例化所有非懒加载的Bean `org.springframework.context.support.AbstractApplicationContext#finishBeanFactoryInitialization` 判断 `bean instanceof ApplicationListener` , 此时调用`this.applicationContext.addApplicationListener((ApplicationListener<?>) bean);` 因为第二步的事件传播器初始化了，所以会将监听器注册到事件传播器中。
+
+5. 对于使用`@EventListener`注解的监听器，会在初始化Bean后调用，对实现 `SmartInitializingSingleton`的类，调用 `#afterSingletonsInstantiated()` 方法。其中`EventListenerMethodProcessor`就是用来处理`@EventListener`注解的。
+
+   1. 调用`org.springframework.context.event.EventListenerMethodProcessor#processBean` 方法，遍历所有Bean对象，获取Bean中的所有方法，判断方法是否使用了`@EventListener`注解，如果使用了，就将该方法注册到事件传播器中。
+   2. 遍历`@EventListener`注解的方法，使用`EventListenerFactory`根据方法创建`ApplicationListenerMethodAdapter`类型的监听器，然后调用`applicationContext#addApplicationListener` 方法注册监听器。
+   3. @EventListener注解的方法，方法参数最多只能有一个，如果有多个，会抛出异常。
+
+##### 事件发布
+
+事件发布就很简单，显示调用`ApplicationEventPublisher#publishEvent`方法即可。此方法会调用`ApplicationEventMulticaster#multicastEvent`方法，根据事件类型获取相应的监听器`getApplicationListeners(event, type)`，然后调用监听器的`onApplicationEvent`方法。
+
+1. 获取具体事件监听器时，会根据事件类型筛选监听器。
+2. 使用`AnnotationAwareOrderComparator.sort(allListeners);` 对监听器排序，根据`@Order`注解排序。
+
+##### 事件监听
+
+事件监听就是调用`ApplicationListener#onApplicationEvent`方法，此方法会调用具体的监听器方法。
+
+@EventListener 支持Condition条件，会根据Spel表达式判断是否执行监听器方法。
+
+`ApplicationListenerMethodAdapter` 会根据注册时候的对象和方法，使用反射调用方法。
+
+
+```java
+public void processEvent(ApplicationEvent event) {
+    Object[] args = resolveArguments(event);
+    if (shouldHandle(event, args)) {
+        Object result = doInvoke(args);
+        if (result != null) {
+            handleResult(result);
+        }
+        else {
+            logger.trace("No result object given - no result to handle");
+        }
+    }
+}
+```
 
 ## 观察者模式的优点
 
