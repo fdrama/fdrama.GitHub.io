@@ -45,9 +45,21 @@ Decorator <|-- ConcreteDecoratorB
 
 ## 装饰者模式的应用场景
 
-- 需要扩展一个类的功能，或给一个类添加附加职责。
+- 扩展类功能：装饰者模式允许你通过创建装饰器类来扩展现有类的功能，而不必修改原始类的代码。这对于已经存在的、不容易修改的类非常有用，或者在不希望修改类的源代码的情况下扩展其功能。
 
-- IO 类就是装饰者模式的一个典型应用，如 `BufferedInputStream`、`BufferedOutputStream`、`DataInputStream`、`DataOutputStream` 等。
+- 动态添加功能：你可以根据需要动态地添加不同的装饰器，以增加对象的功能。这种方式使得可以在运行时选择不同的装饰器组合，而不是在编译时确定。
+
+- 避免类爆炸：当有多种组合方式需要考虑时，使用继承可能会导致类的爆炸性增长。装饰者模式允许你将不同的功能分解为独立的装饰器，以避免创建大量子类。
+
+- 开放封闭原则：装饰者模式符合开放封闭原则，即对扩展开放，对修改封闭。这意味着你可以轻松地添加新的装饰器类，而不必修改现有的代码。
+
+- 不破坏对象结构：装饰者模式不会破坏原始对象的结构，因为它通过组合而不是继承来添加新功能。
+
+- 动态组合：你可以动态地组合多个装饰器，以实现各种不同的组合效果。这使得你可以根据需要构建复杂的对象。
+
+### IO
+
+IO 类就是装饰者模式的一个典型应用，如 `BufferedInputStream`、`BufferedOutputStream`、`DataInputStream`、`DataOutputStream` 等。
 
 ```puml
 @startuml
@@ -186,10 +198,212 @@ public class FileUtils {
 作用：InflaterInputStream 用于解压缩数据，通常用于解压缩经过 Deflate 压缩的数据流。
 典型用途：在需要处理 Deflate 压缩的数据流时，可以使用 InflaterInputStream 解压数据，例如在处理 ZIP 文件或 HTTP 响应中的数据时。
 
-## 装饰者模式的优缺点
+### 咖啡
 
-### 优点
+```puml
+@startuml
 
-- 无需创建新的子类就可以扩展对象的行为。
-- 可以在运行时添加或删除对象的功能。
-- 可以通过对不同的装饰者进行排列组合，实现不同的效果。
+interface Coffee {
+    +getDescription(): String
+    +cost(): double
+}
+
+class Espresso {
+    +getDescription(): String
+    +cost(): double
+}
+
+class HouseBlend {
+    +getDescription(): String
+    +cost(): double
+}
+
+abstract class CoffeeDecorator {
+    -decoratedCoffee: Coffee
+    +CoffeeDecorator(decoratedCoffee: Coffee)
+    +getDescription(): String
+    +cost(): double
+}
+
+class MilkDecorator {
+    +MilkDecorator(decoratedCoffee: Coffee)
+    +getDescription(): String
+    +cost(): double
+}
+
+class SugarDecorator {
+    +SugarDecorator(decoratedCoffee: Coffee)
+    +getDescription(): String
+    +cost(): double
+}
+
+Coffee <|-- Espresso
+Coffee <|-- HouseBlend
+Coffee <|-- CoffeeDecorator
+CoffeeDecorator <|-- MilkDecorator
+CoffeeDecorator <|-- SugarDecorator
+@enduml
+```
+
+```java
+public interface Coffee {
+    String getDescription();
+    double cost();
+}
+
+public class Espresso implements Coffee {
+    @Override
+    public String getDescription() {
+        return "Espresso";
+    }
+
+    @Override
+    public double cost() {
+        return 1.99;
+    }
+}
+
+public class HouseBlend implements Coffee {
+    @Override
+    public String getDescription() {
+        return "House Blend Coffee";
+    }
+
+    @Override
+    public double cost() {
+        return 0.89;
+    }
+}
+
+public abstract class CoffeeDecorator implements Coffee {
+    protected final Coffee decoratedCoffee;
+
+    public CoffeeDecorator(Coffee decoratedCoffee) {
+        this.decoratedCoffee = decoratedCoffee;
+    }
+
+    @Override
+    public String getDescription() {
+        return decoratedCoffee.getDescription();
+    }
+
+    @Override
+    public double cost() {
+        return decoratedCoffee.cost();
+    }
+}
+
+public class MilkDecorator extends CoffeeDecorator {
+    public MilkDecorator(Coffee decoratedCoffee) {
+        super(decoratedCoffee);
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription() + ", Milk";
+    }
+
+    @Override
+    public double cost() {
+        return super.cost() + 0.5;
+    }
+}
+
+public class SugarDecorator extends CoffeeDecorator {
+    public SugarDecorator(Coffee decoratedCoffee) {
+        super(decoratedCoffee);
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription() + ", Sugar";
+    }
+
+    @Override
+    public double cost() {
+        return super.cost() + 0.2;
+    }
+}
+```
+
+```java
+public class CoffeeShop {
+    public static void main(String[] args) {
+        // 创建一杯浓缩咖啡
+        Coffee espresso = new Espresso();
+        System.out.println(espresso.getDescription() + " $" + espresso.cost());
+
+        // 创建一杯浓缩咖啡并加牛奶和糖
+        Coffee espressoWithMilkAndSugar = new SugarDecorator(new MilkDecorator(new Espresso()));
+        System.out.println("Description: " + espressoWithMilkAndSugar.getDescription());
+        System.out.println("Cost: $" + espressoWithMilkAndSugar.cost());
+
+         // 创建一杯混合咖啡并加糖
+        Coffee houseBlendWithSugar = new SugarDecorator(new HouseBlend());
+        System.out.println("Description: " + houseBlendWithSugar.getDescription());
+        System.out.println("Cost: $" + houseBlendWithSugar.cost());
+    }
+}
+```
+
+### Executor
+
+org.apache.ibatis.executor.Executor 里也使用到了装饰者模式
+
+```puml
+@startuml
+
+interface Executor << interface >>
+
+class BaseExecutor {
+  + BaseExecutor(Configuration, Transaction): 
+}
+class BatchExecutor {
+  + BatchExecutor(Configuration, Transaction): 
+}
+class CachingExecutor {
+  + CachingExecutor(Executor): 
+}
+class ReuseExecutor {
+  + ReuseExecutor(Configuration, Transaction): 
+}
+class SimpleExecutor {
+  + SimpleExecutor(Configuration, Transaction): 
+}
+
+Executor     <--  BaseExecutor        
+BaseExecutor    <--  BatchExecutor    
+Executor  <--  CachingExecutor        
+BaseExecutor    <--  ReuseExecutor    
+BaseExecutor   <--  SimpleExecutor    
+@enduml
+
+```
+
+其中 `CachingExecutor` 就是一种装饰者，对于Exceutor执行方法前后进行了缓存操作。
+
+```java
+    public int update(MappedStatement ms, Object parameterObject) throws SQLException {
+    flushCacheIfRequired(ms); //缓存清除
+    return delegate.update(ms, parameterObject);
+    }
+
+    public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
+      throws SQLException {
+    Cache cache = ms.getCache();
+    if (cache != null) {
+      flushCacheIfRequired(ms);
+      if (ms.isUseCache() && resultHandler == null) {
+        ensureNoOutParams(ms, parameterObject, boundSql);
+        @SuppressWarnings("unchecked")
+        List<E> list = (List<E>) tcm.getObject(cache, key);
+        if (list == null) {
+          list = delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+          tcm.putObject(cache, key, list); // 缓存添加
+        }
+        return list;
+      }
+    }
+    return delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+  }
+```

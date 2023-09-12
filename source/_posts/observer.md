@@ -379,7 +379,6 @@ interface ApplicationEventPublisher << interface >> {
 @enduml
 ```
 
-
 ##### 监听器注册
 
 1. 填充 `ApplicationContext`的 `applicationListeners` 属性。
@@ -400,7 +399,8 @@ interface ApplicationEventPublisher << interface >> {
 
    1. 调用`org.springframework.context.event.EventListenerMethodProcessor#processBean` 方法，遍历所有Bean对象，获取Bean中的所有方法，判断方法是否使用了`@EventListener`注解，如果使用了，就将该方法注册到事件传播器中。
    2. 遍历`@EventListener`注解的方法，使用`EventListenerFactory`根据方法创建`ApplicationListenerMethodAdapter`类型的监听器，然后调用`applicationContext#addApplicationListener` 方法注册监听器。
-   3. @EventListener注解的方法，方法参数最多只能有一个，如果有多个，会抛出异常。
+   3. `@EventListener`注解的方法，方法参数最多只能有一个，如果有多个，会抛出异常。
+
 
 ##### 事件发布
 
@@ -413,7 +413,7 @@ interface ApplicationEventPublisher << interface >> {
 
 事件监听就是调用`ApplicationListener#onApplicationEvent`方法，此方法会调用具体的监听器方法。
 
-@EventListener 支持Condition条件，会根据Spel表达式判断是否执行监听器方法。
+`@EventListener` 支持Condition条件，会根据Spel表达式判断是否执行监听器方法。
 
 `ApplicationListenerMethodAdapter` 会根据注册时候的对象和方法，使用反射调用方法。
 
