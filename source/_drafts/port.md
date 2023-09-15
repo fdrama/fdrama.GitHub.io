@@ -25,6 +25,8 @@ localhost:8080
 2. 重启进程，进程ID会发生变化
 3. 服务器的进程ID不是固定的
 
+> <h3> "All problems in computer science can be solved by another level of indirection" ——David Wheeler</h3>
+
 这就引入了端口这个**间接层**，客户端不需要知道服务端的进程ID，直接访问固定的端口，服务端进程去监听对应端口的通讯并处理。
 
 我们现在来看一个简单的访问网站的处理过程：
