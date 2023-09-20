@@ -88,7 +88,7 @@ public class LazyInitializedSingleton {
 ```java
 public class ThreadSafeSingleton {
 
-    private static ThreadSafeSingleton instance;
+    private static volatile  ThreadSafeSingleton instance;
 
     private ThreadSafeSingleton(){}
 
