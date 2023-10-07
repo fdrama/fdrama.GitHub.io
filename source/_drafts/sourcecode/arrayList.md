@@ -1,6 +1,6 @@
 ---
 title: ArrayList
-tags: [source code, java, arrayList, ]
+tags: [source code, java, arrayList]
 categories: 源码解读
 ---
 
@@ -9,27 +9,25 @@ categories: 源码解读
 ```puml
 @startuml
 
-!theme vibrant
-top to bottom direction
-skinparam linetype ortho
+
 
 interface Iterable
 
-together{
-    interface Collection
-    interface List
-}
+interface Collection
+interface List
+
 
 together {
     abstract class AbstractCollection
     abstract class AbstractList
 }
 
-together {
-    interface Cloneable
-    interface RandomAccess
-    interface Serializable
-}
+
+interface Cloneable
+interface RandomAccess
+interface Serializable
+
+
 class ArrayList
 Iterable ^-[#008200,dashed]- Collection
 

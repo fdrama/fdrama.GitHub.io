@@ -1,8 +1,40 @@
 ---
 title: HashMap
-tags: [source code, java]
+tags: [source code, java, hashMap]
 categories: 源码解读
 ---
+
+## 类图
+
+```puml
+@startuml
+
+
+
+class AbstractMap<K, V> {
+    + remove(Object): V
+    + get(Object): V
+    + put(K, V): V?
+    + clear(): void
+    + size(): int
+    + containsValue(Object): boolean
+    + containsKey(Object): boolean
+    + entrySet(): Set<Entry<K, V>>
+    + keySet(): Set<K>    
+}
+interface Cloneable << interface >>
+class HashMap<K, V>
+interface Map<K, V> << interface >>
+interface Serializable << interface >>
+
+Map   <-[#008200,dashed]-  AbstractMap          
+AbstractMap       <-[#000082,plain]-  HashMap  
+Cloneable       <-[#008200,dashed]-  HashMap    
+Map       <-[#008200,dashed]-  HashMap          
+Serializable       <-[#008200,dashed]-  HashMap 
+@enduml
+
+```
 
 ## 数据结构
 
