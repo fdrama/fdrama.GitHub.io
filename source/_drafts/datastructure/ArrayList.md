@@ -21,7 +21,9 @@ categories: datastructure
 5. 支持泛型： Java 5 引入了泛型，允许在 ArrayList 中指定要存储的元素类型，从而提供类型安全性。
 6. 自动扩容： 当 ArrayList 中的元素数量达到其当前容量时，它会自动扩展其内部数组的大小，以容纳更多的元素。这个过程是透明的，用户无需手动管理容量。
 
-## 构造函数
+## arraylist 基本操作
+
+### 构造函数
 
 ```java
 
@@ -92,7 +94,7 @@ public ArrayList(int initialCapacity) {
 }
 ```
 
-## add
+### add
 
 ```java
 /**
@@ -123,7 +125,7 @@ public void add(int index, E element) {
 }
 ```
 
-## addAll
+### addAll
 
 ```java
 /**
@@ -166,7 +168,7 @@ public boolean addAll(int index, Collection<? extends E> c) {
 }
 ```
 
-## get
+### get
 
 ```java
 /**
@@ -180,7 +182,7 @@ public E get(int index) {
 }
 ```
 
-## set
+### set
 
 ```java
 /**
@@ -196,7 +198,7 @@ public E set(int index, E element) {
 }
 ```
 
-## remove
+### remove
 
 ```java
 /**
@@ -250,7 +252,7 @@ private void fastRemove(int index) {
 
 ```
 
-## other
+### other
 
 ```java
 /**
@@ -316,7 +318,7 @@ public int lastIndexOf(Object o) {
 }
 ```
 
-## grow
+### grow
 
 ```java
 
