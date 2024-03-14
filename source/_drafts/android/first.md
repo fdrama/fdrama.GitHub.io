@@ -152,4 +152,4 @@ org.gradle.java.home=F:/Programs/jdk-17.0.9
 然后选择`APK`，然后点击`Next`，填入一些信息，
 然后选择`release`，然后点击`Next`,
 然后点击`Finish`，然后就可以在`app\release`目录下看到生成的APK文件了。
-可以将APK文件安装到手机上，看看效果。
+可以将APK文件安装到手机上，看看效果
