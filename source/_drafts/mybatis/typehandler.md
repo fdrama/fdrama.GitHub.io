@@ -132,8 +132,45 @@ List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 
 for (int i = 0; i < parameterMappings.size(); i++) {
     ParameterMapping parameterMapping = parameterMappings.get(i);
+    Object value;
+    String propertyName = parameterMapping.getProperty();
+    // 从boundSql中获取附加参数 优先级最高
+    if (boundSql.hasAdditionalParameter(propertyName)) {
+        value = boundSql.getAdditionalParameter(propertyName);
+      // 对于null对象，直接赋值为null
+    } else if (parameterObject == null) {
+        value = null;
+      // 如果typeHandlerRegistry中存在对应parameterObject类的类型处理器，则进入这个分支。例如 String、Integer、Date等类型
+    } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+        value = parameterObject;
+    } else {
+        // 利用反射创建和获取parameterObject对象的属性值
+        MetaObject metaObject = configuration.newMetaObject(parameterObject);
+        // 通过MetaObject获取propertyName属性的值，并赋给value变量。
+        value = metaObject.getValue(propertyName);
+    }
+    // 获取参数指定的类型处理器，这里的类型处理器是在mybatis初始化时注册的，后面会讲到具体如何获取的
     TypeHandler typeHandler = parameterMapping.getTypeHandler();
-    JdbcType jdbcType = parameterMapping.getJdbcType();   
+    // 获取参数指定的jdbc类型 也就是写在sql语句中的#{id, jdbcType=INTEGER}中的jdbcType
+    JdbcType jdbcType = parameterMapping.getJdbcType();
+    if (value == null && jdbcType == null) {
+        jdbcType = configuration.getJdbcTypeForNull();
+    }
+    // 使用类型处理器的setParameter方法将参数值value设置到PreparedStatement（ps）中  
     typeHandler.setParameter(ps, i + 1, value, jdbcType);
+}
+```
+
+2. 我们来逐步分析一下mybatis是如何获取类型转换器的，并绑定到参数上的。再看看mybatis如何根据传参对象获取参数值的，都有哪几种情况。
+
+`boundSql.getParameterMappings();`  这里的`boundSql`是在`org.apache.ibatis.executor.parameter.DefaultParameterHandler`类中的`setParameters`方法中获取的。
+
+```java
+public DefaultParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+    this.mappedStatement = mappedStatement;
+    this.configuration = mappedStatement.getConfiguration();
+    this.typeHandlerRegistry = mappedStatement.getConfiguration().getTypeHandlerRegistry();
+    this.parameterObject = parameterObject;
+    this.boundSql = boundSql;
 }
 ```
