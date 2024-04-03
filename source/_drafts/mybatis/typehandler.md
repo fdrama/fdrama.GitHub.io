@@ -174,3 +174,92 @@ public DefaultParameterHandler(MappedStatement mappedStatement, Object parameter
     this.boundSql = boundSql;
 }
 ```
+
+1. 接口代理
+
+mybatis中的接口代理是通过`org.apache.ibatis.binding.MapperProxy`类实现的。
+
+2. 参数转换
+
+mybatis中的参数映射是通过`org.apache.ibatis.binding.MapperMethod.MethodSignature#convertArgsToSqlCommandParam`类实现的。
+
+3. 类型转换
+
+`org.apache.ibatis.executor.SimpleExecutor#prepareStatement` 方法中，通过`org.apache.ibatis.executor.parameter.DefaultParameterHandler#setParameters`方法来设置预处理语句中的参数。
+
+这个方法里有两个关键参数，一个是`parameterObject`，一个是`boundSql`。
+
+a. boundSql 是在 org.apache.ibatis.executor.statement.BaseStatementHandler#BaseStatementHandler 初始化的
+
+```java
+  protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject,
+      RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+    this.configuration = mappedStatement.getConfiguration();
+    this.executor = executor;
+    this.mappedStatement = mappedStatement;
+    this.rowBounds = rowBounds;
+
+    this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+    this.objectFactory = configuration.getObjectFactory();
+
+    if (boundSql == null) { // issue #435, get the key before calculating the statement
+      generateKeys(parameterObject);
+      boundSql = mappedStatement.getBoundSql(parameterObject);
+    }
+
+    this.boundSql = boundSql;
+
+    this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
+    this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, parameterHandler,
+        resultHandler, boundSql);
+  }
+
+
+    public BoundSql getBoundSql(Object parameterObject) {
+    BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
+    List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+    if (parameterMappings == null || parameterMappings.isEmpty()) {
+      boundSql = new BoundSql(configuration, boundSql.getSql(), parameterMap.getParameterMappings(), parameterObject);
+    }
+
+    // check for nested result maps in parameter mappings (issue #30)
+    for (ParameterMapping pm : boundSql.getParameterMappings()) {
+      String rmId = pm.getResultMapId();
+      if (rmId != null) {
+        ResultMap rm = configuration.getResultMap(rmId);
+        if (rm != null) {
+          hasNestedResultMaps |= rm.hasNestedResultMaps();
+        }
+      }
+    }
+
+    return boundSql;
+  }
+
+```
+
+但是实际上还是从`MappedStatement`中获取的。里面有一个sqlSource属性，那么mappedStatement是怎么来的呢？
+
+在`defaultSqlSession`中，通过`configuration`获取`MappedStatement`。
+
+```java
+MappedStatement ms = configuration.getMappedStatement(statement);
+
+public MappedStatement getMappedStatement(String id) {
+  return this.getMappedStatement(id, true);
+}
+
+public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
+  if (validateIncompleteStatements) {
+    buildAllStatements();
+  }
+  return mappedStatements.get(id);
+}
+
+```
+
+也就是说，`MappedStatement`是在`configuration`中的 `mappedStatements` 中获取的。那么`MappedStatement`是怎么来的呢？
+
+```java
+
+```
