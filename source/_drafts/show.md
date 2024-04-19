@@ -288,3 +288,34 @@ type 说明
 |id | select_type | table | partitions | type | possible_keys | key | key_len | ref | rows | filtered | Extra |
 |-- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 |-- 1 | SIMPLE | user | NULL | ALL | NULL | NULL | NULL | NULL | 1000 | 10.00 | Using where |
+
+切分查询
+
+- 分页查询：LIMIT offset, count
+- 分解关联查询：将关联查询拆分为多个查询
+
+
+
+延迟调度平台  
+    多线程 队列 时间轮 kafka
+    zookeeper 自动选主
+
+
+配置中心
+
+configcenter-api：提供业务方配置拉取接口，内部定时任务将配置dump到本地，拉取配置时，从本地缓存中读取。
+configcenter-web:提供web管理接口
+
+调度平台 Quartz CRON表达式  
+
+
+在线诊断 Arthas
+
+数据同步系统 Canal
+ 
+提供MySQL的增量数据（或历史数据）同步到其他目标仓库的数据同步服务。我们计划支持的目标仓库类型包括：
+ES / Solr / MongoDB / Kafka
+
+
+
+异步httpClient  netty
