@@ -1,0 +1,66 @@
+延迟调度平台  多线程 队列 时间轮 kafka
+         zookeeper 自动选主
+
+
+配置中心
+
+configcenter-api：提供业务方配置拉取接口，内部定时任务将配置dump到本地，拉取配置时，从本地缓存中读取。
+configcenter-web:提供web管理接口
+
+
+日志插件
+
+
+
+
+调度平台 Quartz CRON表达式  
+
+
+在线诊断 Arthas
+
+数据同步系统 Canal
+ 
+提供MySQL的增量数据（或历史数据）同步到其他目标仓库的数据同步服务。我们计划支持的目标仓库类型包括：
+ES / Solr / MongoDB / Kafka
+
+
+异步httpClient  netty
+
+
+动态代理
+
+@Async
+@Transational
+@Cache
+@Validated
+
+AOP
+
+Proxy-based;
+Weaving-based;
+
+Advisor-PointcutAdvisor-AbstractPointcutAdvisor-TransactionAttributeSourceAdvisor  
+Advice-Interceptor-MethodInterceptor
+Pointcut-
+Aspect
+
+
+BeanFactoryPostProcessor
+
+BeanPostProcessor
+InstantiationAwareBeanPostProcessor
+
+InitializingBean
+
+BeanNameAware 
+
+
+getBean
+doGetBean
+getSingleton
+createBean
+doCreateBean
+populateBean
+initializeBean
+applyPropertyValues
+

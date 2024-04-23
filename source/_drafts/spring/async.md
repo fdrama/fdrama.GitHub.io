@@ -227,6 +227,8 @@ public Object postProcessAfterInitialization(Object bean, String beanName) {
         return bean;
     }
 
+    // Any AOP proxy obtained from Spring can be cast to this interface to allow manipulation of its AOP advice.
+    // 任何从Spring获取的AOP代理都可以转换为此接口，以允许操作其AOP
     if (bean instanceof Advised) {
         Advised advised = (Advised) bean;
         if (!advised.isFrozen() && isEligible(AopUtils.getTargetClass(bean))) {
