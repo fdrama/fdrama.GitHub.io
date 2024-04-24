@@ -48,7 +48,11 @@ Aspect
 BeanFactoryPostProcessor
 
 BeanPostProcessor
+
 InstantiationAwareBeanPostProcessor
+SmartInstantiationAwareBeanPostProcessor
+DestructionAwareBeanPostProcessor
+MergedBeanDefinitionPostProcessor
 
 InitializingBean
 
@@ -64,3 +68,16 @@ populateBean
 initializeBean
 applyPropertyValues
 
+
+
+ApplicationListener
+
+
+compareAndSet
+
+ClassLoader
+
+
+SpringFactoriesLoader
+
+"META-INF/spring.factories"
