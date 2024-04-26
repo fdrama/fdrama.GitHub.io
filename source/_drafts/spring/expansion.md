@@ -143,3 +143,43 @@ BeanFactoryPostProcessor 是在 Spring 容器实例化 bean 之前执行的。
 ### PropertySourcesPlaceholderConfigurer
 
 ![alt text](image-1.png)
+
+### EventListenerMethodProcessor
+
+![alt text](image-2.png)
+
+这个类是用来处理 @EventListener 注解的，在AnnotationConfigUtils#registerAnnotationConfigProcessor 方法中注册了内置 BeanFactoryPostProcessor。
+
+ConfigurationClassPostProcessor 配置类解析器 @Configuration
+AutowiredAnnotationBeanPostProcessor 主要是处理依赖注入的@AutoWired
+CommonAnnotationBeanPostProcessor 主要是处理@Resource , @PostConstruct, @PreDestroy
+PersistenceAnnotationBeanPostProcessor // if jpapresent
+EventListenerMethodProcessor 主要是处理@EventListener 方法
+DefaultEventListenerFactory 用于创建ApplicationListenerMethodAdapter实例的工厂类
+
+注册{@EventListener}方法作为单独的ApplicationListener对象。实际上是使用EventListenerFactory的实现类DefaultEventListenerFactory来创建ApplicationListenerMethodAdapter实例，并将其注册到容器中。
+
+```java
+ApplicationListener<?> createApplicationListener(String beanName, Class<?> type, Method method);
+```
+
+## SmartInitializingSingleton
+
+SmartInitializingSingleton 是在 Spring 容器中所有的单例 bean都初始化之后执行的。和 InitializingBean 不同，它是在所有单例 bean 都初始化之后执行的，而不是在单个 bean 初始化之后执行。只有单例 bean 才会触发 SmartInitializingSingleton 的回调。
+
+调用的时机也不一样，InitializingBean 是在 bean 初始化之后执行，而 SmartInitializingSingleton 是在所有单例 bean 初始化之后执行。
+
+### EventListenerMethodProcessor
+
+例如上文提到的 EventListenerMethodProcessor，它实现了 SmartInitializingSingleton 接口，会在bean实例化之后，所有单例bean实例化之后，执行afterSingletonsInstantiated方法，将所有的@EventListener方法注册到事件监听器中。
+
+```java
+public void afterSingletonsInstantiated() {
+    ConfigurableListableBeanFactory beanFactory = this.beanFactory;
+    Assert.state(this.beanFactory != null, "No ConfigurableListableBeanFactory set");
+    String[] beanNames = beanFactory.getBeanNamesForType(Object.class);
+    for (String beanName : beanNames) {
+            processBean(beanName, type);      
+    }
+}
+```
