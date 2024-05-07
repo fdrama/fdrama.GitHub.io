@@ -40,6 +40,8 @@ monitorenter、monitorexit。
 
 ### Sleep, Wait, Notify
 
+![alt text](image-7.png)
+
 ### Volatile
 
 使用场景：
@@ -364,6 +366,467 @@ private void unparkSuccessor(Node node) {
 ### Smeaphore = Volatile + AQS
 
 ### ThreadLocal = ThreadLocalMap
+
+### ThreadPoolExecutor = CAS + AQS +  BlockingQueue
+
+线程池（Thread Pool）是一种基于池化思想管理线程的工具，经常出现在多线程服务器中
+
+线程池其实就做了三件事
+
+1. 维护自身状态
+2. 管理任务
+3. 管理线程
+
+让我们先来看看如何维护自身状态
+
+线程池内部使用了一个原子变量ctl来维护线程池的状态，ctl是一个32位的整数，高3位表示线程池的状态，低29位表示线程池中线程的数量
+
+```java
+private final AtomicInteger ctl = new AtomicInteger(ctlOf(RUNNING, 0));
+
+private static final int COUNT_BITS = Integer.SIZE - 3;
+private static final int CAPACITY   = (1 << COUNT_BITS) - 1;
+
+// runState is stored in the high-order bits
+private static final int RUNNING    = -1 << COUNT_BITS;
+private static final int SHUTDOWN   =  0 << COUNT_BITS;
+private static final int STOP       =  1 << COUNT_BITS;
+private static final int TIDYING    =  2 << COUNT_BITS;
+private static final int TERMINATED =  3 << COUNT_BITS;
+
+// Packing and unpacking ctl
+private static int runStateOf(int c)     { return c & ~CAPACITY; }
+private static int workerCountOf(int c)  { return c & CAPACITY; }
+private static int ctlOf(int rs, int wc) { return rs | wc; }
+```
+
+天才般的设计，通过一个整数就可以表示线程池的状态和线程数量，这样就可以通过一个原子操作来更新线程池的状态和线程数量
+
+可以看出，线程池的状态有5种，分别是RUNNING、SHUTDOWN、STOP、TIDYING、TERMINATED
+
+![alt text](image-9.png)
+
+状态之间的转换如下
+
+![alt text](image-8.png)
+
+2.1 任务的调度，execute方法是线程池的核心方法，用来提交任务
+
+```java
+public void execute(Runnable command) {
+    if (command == null)
+        throw new NullPointerException();
+    int c = ctl.get();
+    // 1. workerCountOf(c)表示线程池中线程的数量 < corePoolSize 表示线程池中的线程数量小于核心线程数，此时需要创建一个新的线程来执行任务
+    if (workerCountOf(c) < corePoolSize) {
+        if (addWorker(command, true))
+            return;
+        c = ctl.get();
+    }
+    // 线程池处于RUNNING状态，任务会被添加到工作队列中
+    if (isRunning(c) && workQueue.offer(command)) {
+        int recheck = ctl.get();
+        if (! isRunning(recheck) && remove(command))
+            reject(command);
+        else if (workerCountOf(recheck) == 0)
+            addWorker(null, false);
+    }
+    // 3. 如果队列满了，创建新的非核心线程来执行任务
+    else if (!addWorker(command, false))
+        // 4. 如果队列满了，创建新的非核心线程失败 workerCountOf(c) >= maximumPoolSize，拒绝任务
+        reject(command);
+}
+```
+
+2.2 任务缓冲
+
+线程池的任务缓冲是通过一个阻塞队列来实现的，线程池中的线程会从阻塞队列中取出任务来执行
+
+2.3 任务执行
+
+任务的执行有两种可能：一种是任务直接由新创建的线程执行。另一种是线程从任务队列中获取任务然后执行，执行完任务的空闲线程会再次去从队列中申请任务再去执行。第一种情况仅出现在线程初始创建的时候，第二种是线程获取任务绝大多数的情况。getTask方法是线程池的核心方法，用来获取任务
+
+```java
+
+```
+
+2.4 任务拒绝
+
+线程池有一个最大的容量，当线程池的任务缓存队列已满，并且线程池中的线程数目达到maximumPoolSize时，就需要拒绝掉该任务，采取任务拒绝策略，保护线程池。
+
+拒绝策略是一个接口，其设计如下：
+
+```java
+public interface RejectedExecutionHandler {
+    void rejectedExecution(Runnable r, ThreadPoolExecutor executor);
+}
+
+```
+
+提供了四种拒绝策略：
+
+![alt text](image-10.png)
+
+3.1 线程管理
+
+线程池中的线程是通过Worker类来实现的，Worker类继承了AQS，是一个独占锁，用来保护线程池中的线程
+
+Worker这个工作线程，实现了Runnable接口，并持有一个线程thread，一个初始化的任务firstTask。thread是在调用构造方法时通过ThreadFactory来创建的线程，可以用来执行任务；firstTask用它来保存传入的第一个任务，这个任务可以有也可以为null。如果这个值是非空的，那么线程就会在启动初期立即执行这个任务，也就对应核心线程创建时的情况；如果这个值是null，那么就需要创建一个线程去执行任务列表（workQueue）中的任务，也就是非核心线程的创建。
+
+```java
+private final class Worker extends AbstractQueuedSynchronizer implements Runnable
+{
+
+    /** Thread this worker is running in.  Null if factory fails. */
+    final Thread thread;
+    /** Initial task to run.  Possibly null. */
+    Runnable firstTask;
+    /** Per-thread task counter */
+    volatile long completedTasks;
+
+    /**
+     * Creates with given first task and thread from ThreadFactory.
+     * @param firstTask the first task (null if none)
+     */
+    Worker(Runnable firstTask) {
+        setState(-1); // inhibit interrupts until runWorker
+        this.firstTask = firstTask;
+        this.thread = getThreadFactory().newThread(this);
+    }
+
+    /** Delegates main run loop to outer runWorker  */
+    public void run() {
+        runWorker(this);
+    }
+}
+```
+
+我们看看runWorker方法的实现
+
+```java
+final void runWorker(Worker w) {
+    Thread wt = Thread.currentThread();
+    Runnable task = w.firstTask;
+    w.firstTask = null;
+    w.unlock(); // allow interrupts
+    boolean completedAbruptly = true;
+    try {
+        while (task != null || (task = getTask()) != null) {
+            w.lock();
+            if ((runStateAtLeast(ctl.get(), STOP) ||
+                    (Thread.interrupted() &&
+                    runStateAtLeast(ctl.get(), STOP))) &&
+                !wt.isInterrupted())
+                wt.interrupt();
+            try {
+                beforeExecute(wt, task);
+                Throwable thrown = null;
+                try {
+                    task.run();
+                } catch (RuntimeException x) {
+                    thrown = x; throw x;
+                } catch (Error x) {
+                    thrown = x; throw x;
+                } catch (Throwable x) {
+                    thrown = x; throw new Error(x);
+                } finally {
+                    afterExecute(task, thrown);
+                }
+            } finally {
+                task = null;
+                w.completedTasks++;
+                w.unlock();
+            }
+        }
+        completedAbruptly = false; 
+    } finally {
+        processWorkerExit(w, completedAbruptly); //获取不到任务时，主动回收自己，并且判断线程池状态，维护核心线程数
+    }
+}
+```
+
+大概执行过程如下：
+
+1.while循环不断地通过getTask()方法获取任务。
+2.getTask()方法从阻塞队列中取任务。
+3.如果线程池正在停止，那么要保证当前线程是中断状态，否则要保证当前线程不是中断状态。
+4.执行任务。
+5.如果getTask结果为null则跳出循环，执行processWorkerExit()方法，销毁线程。
+
+### callable, future，futureTask, scheduledFuture
+
+我们知道，线程池的submit方法可以接受Runnable和Callable两种类型的任务，那么这两种任务有什么区别呢？
+
+Runnable接口是一个函数式接口，只有一个run方法，没有返回值，也不能抛出异常。
+Callable接口也是一个函数式接口，只有一个call方法，有返回值，可以抛出异常。
+
+```java
+public interface Callable<V> {
+    V call() throws Exception;
+}
+
+public <T> Future<T> submit(Runnable task, T result) {
+    if (task == null) throw new NullPointerException();
+    RunnableFuture<T> ftask = newTaskFor(task, result);
+    execute(ftask);
+    return ftask;
+}
+
+/**
+ * @throws RejectedExecutionException {@inheritDoc}
+ * @throws NullPointerException       {@inheritDoc}
+ */
+public <T> Future<T> submit(Callable<T> task) {
+    if (task == null) throw new NullPointerException();
+    RunnableFuture<T> ftask = newTaskFor(task);
+    execute(ftask);
+    return ftask;
+}
+
+protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
+    return new FutureTask<T>(runnable, value);
+}
+
+```
+
+不管是Runnable还是Callable，最终都会被包装成FutureTask，
+FutureTask是Future接口的一个实现类，它实现了Runnable接口，所以可以被线程池执行。并且重新了run方法
+另外实现了Future接口，可以获取任务的执行结果，还可以取消任务的执行, 判断任务是否执行完成
+
+![alt text](image-11.png)
+
+```java
+
+public static <T> Callable<T> callable(Runnable task, T result) {
+    if (task == null)
+        throw new NullPointerException();
+    return new RunnableAdapter<T>(task, result);
+}
+
+/**
+ * Returns a {@link Callable} object that, when
+ * called, runs the given task and returns {@code null}.
+ * @param task the task to run
+ * @return a callable object
+ * @throws NullPointerException if task null
+ */
+public static Callable<Object> callable(Runnable task) {
+    if (task == null)
+        throw new NullPointerException();
+    return new RunnableAdapter<Object>(task, null);
+}
+
+
+public void run() {
+     // 如果状态不是 NEW，说明任务已经执行过或者已经被取消，直接返回
+    if (state != NEW ||
+        // // 如果状态是 NEW，则尝试把执行线程保存在 runnerOffset（runner字段），如果赋值失败，则直接返回
+        !UNSAFE.compareAndSwapObject(this, runnerOffset,
+                                        null, Thread.currentThread()))
+        return;
+    try {
+        // 获取构造函数传入的 Callable 值
+        Callable<V> c = callable;
+        if (c != null && state == NEW) {
+            V result;
+            boolean ran;
+            try {
+                // 正常调用 Callable 的 call 方法就可以获取到返回值
+                result = c.call();
+                ran = true;
+            } catch (Throwable ex) {
+                result = null;
+                ran = false;
+                // 保存 call 方法抛出的异常, CAS操作
+                setException(ex);
+            }
+            if (ran)
+                 // 保存 call 方法的执行结果, CAS操作
+                set(result);
+        }
+    } finally {
+        // runner must be non-null until state is settled to
+        // prevent concurrent calls to run()
+        runner = null;
+        // state must be re-read after nulling runner to prevent
+        // leaked interrupts
+        int s = state;
+        if (s >= INTERRUPTING)
+            handlePossibleCancellationInterrupt(s);
+    }
+}
+```
+
+再看看FutureTask的get方法
+
+```java
+public V get() throws InterruptedException, ExecutionException {
+    int s = state;
+    if (s <= COMPLETING)
+        // 判断任务是否执行完成，如果没有执行完成，阻塞等待
+        s = awaitDone(false, 0L);
+    // 返回任务执行结果或者抛出异常
+    return report(s);
+}
+
+
+我们再看看ScheduledThreadPoolExecutor, 它是ThreadPoolExecutor的子类，提供了定时任务的功能，可以延迟执行任务，也可以周期性执行任务
+
+```java
+public ScheduledFuture<?> schedule(Runnable command,
+                                    long delay,
+                                    TimeUnit unit) {
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    RunnableScheduledFuture<?> t = decorateTask(command,
+        new ScheduledFutureTask<Void>(command, null,
+                                        triggerTime(delay, unit)));
+    delayedExecute(t);
+    return t;
+}
+
+public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
+                                                    long initialDelay,
+                                                    long delay,
+                                                    TimeUnit unit) {
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    if (delay <= 0)
+        throw new IllegalArgumentException();
+    ScheduledFutureTask<Void> sft =
+        new ScheduledFutureTask<Void>(command,
+                                        null,
+                                        triggerTime(initialDelay, unit),
+                                        unit.toNanos(-delay));
+    RunnableScheduledFuture<Void> t = decorateTask(command, sft);
+    sft.outerTask = t;
+    delayedExecute(t);
+    return t;
+}
+```
+
+初始化分为三步：
+
+1. 创建一个ScheduledFutureTask对象，ScheduledFutureTask继承了FutureTask，扩展了一些定时任务需要的属性，比如下次执行时间、每次任务执行间隔。
+
+2. decorateTask方法对任务进行装饰，返回一个RunnableScheduledFuture对象，RunnableScheduledFuture是ScheduledFuture和RunnableFuture的子接口，表示一个可以周期性执行的任务。
+
+3. delayedExecute方法，从上图可以看到这个方法主要流程也简单，首先是把任务放到线程池的队列中，然后调用ensurePrestart方法，ensurePrestart方法是线程池的方法，作用是根据线程池线程数调用addWorker方法创建线程
+
+![alt text](image-14.png)
+
+那么如何执行任务的呢，我们看看ScheduledFutureTask对run方法也有特殊的实现。
+
+```java
+public void run() {
+    // 判断是否是周期性任务
+    boolean periodic = isPeriodic();
+    if (!canRunInCurrentRunState(periodic))
+        cancel(false);
+    else if (!periodic)
+        // 非周期性任务，直接调用父类的run方法
+        ScheduledFutureTask.super.run();
+    else if (ScheduledFutureTask.super.runAndReset()) {
+        // 计算下次执行时间
+        setNextRunTime();
+        // 重新放入线程池队列
+        reExecutePeriodic(outerTask);
+    }
+}
+```
+
+上面的run方式实现了什么时候执行和周期性执行的逻辑，那么怎么实现的定时执行呢？
+
+```java
+void ensurePrestart() {
+    int wc = workerCountOf(ctl.get());
+    if (wc < corePoolSize)
+        addWorker(null, true);
+    else if (wc == 0)
+        addWorker(null, false);
+}
+```
+
+我们可以看到，ScheduledThreadPoolExecutor的ensurePrestart方法，添加的worker都是没有传递task的，也就是说都是从队列中获取任务执行的。
+
+我们就可以看看队列的take方法，是如何实现的 `DelayedWorkQueue`, take方法每次都从队列总取出第一个任务，判断是否到了执行时间，如果到了执行时间就返回这个任务，否则就阻塞等待。但是是如何保证任务是按照时间顺序执行的呢？
+
+```java
+
+public RunnableScheduledFuture<?> take() throws InterruptedException {
+    final ReentrantLock lock = this.lock;
+    lock.lockInterruptibly();
+    try {
+        for (;;) {
+            RunnableScheduledFuture<?> first = queue[0];
+            if (first == null)
+                available.await();
+            else {
+                long delay = first.getDelay(NANOSECONDS);
+                if (delay <= 0)
+                    return finishPoll(first);
+                first = null; // don't retain ref while waiting
+                if (leader != null)
+                    available.await();
+                else {
+                    Thread thisThread = Thread.currentThread();
+                    leader = thisThread;
+                    try {
+                        available.awaitNanos(delay);
+                    } finally {
+                        if (leader == thisThread)
+                            leader = null;
+                    }
+                }
+            }
+        }
+    } finally {
+        if (leader == null && queue[0] != null)
+            available.signal();
+        lock.unlock();
+    }
+}
+```
+
+需要看看队列的add方法，是如何保证任务是按照时间顺序插入的
+
+```java
+public boolean add(Runnable e) {
+    return offer(e);
+}
+
+public boolean offer(Runnable x) {
+    if (x == null)
+        throw new NullPointerException();
+    RunnableScheduledFuture<?> e = (RunnableScheduledFuture<?>)x;
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try {
+        int i = size;
+        if (i >= queue.length)
+            // 自动扩容
+            grow();
+        size = i + 1;
+        if (i == 0) {
+            queue[0] = e;
+            // 队列为空，再队列开头插入一个任务，唤醒等待线程
+            setIndex(e, 0);
+        } else {
+            // 将任务根据执行时间插入到队列中 堆上浮操作
+            siftUp(i, e);
+        }
+        if (queue[0] == e) {
+            leader = null;
+            available.signal();
+        }
+    } finally {
+        lock.unlock();
+    }
+    return true;
+}
+```
+
+由此可见不管是callable，还是ScheduledThreadPoolExecutor，都是对Executor的封装，提供了更多的功能，比如获取任务执行结果，取消任务执行，定时执行任务等。但是核心的执行逻辑还是在ThreadPoolExecutor中。
 
 ## 集合
 

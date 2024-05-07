@@ -169,8 +169,6 @@ SmartInitializingSingleton 是在 Spring 容器中所有的单例 bean都初始�
 
 调用的时机也不一样，InitializingBean 是在 bean 初始化之后执行，而 SmartInitializingSingleton 是在所有单例 bean 初始化之后执行。
 
-### EventListenerMethodProcessor
-
 例如上文提到的 EventListenerMethodProcessor，它实现了 SmartInitializingSingleton 接口，会在bean实例化之后，所有单例bean实例化之后，执行afterSingletonsInstantiated方法，将所有的@EventListener方法注册到事件监听器中。
 
 ```java
