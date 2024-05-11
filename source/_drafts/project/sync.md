@@ -832,6 +832,27 @@ public boolean offer(Runnable x) {
 
 ### ConcurrentHashMap = Volatile + CAS + Sychronized
 
+ConcurrentHashMap是一个线程安全的哈希表，里面的并发编程智慧值得我们学习。
+
+重点分析ConcurrentHashMap的四个方法源码：putVal、initTable、addCount、transfer
+
+ConcurrentHashMap添加数据时，采取了CAS+synchronize结合策略。
+
+1. 首先会判断数组是否已经初始化，如若未初始化，会先去初始化数组；
+2. 如果当前要插入的节点为null，尝试使用CAS插入数据；
+3. 如果不为null，则判断节点hash值是否为-1；-1表示数组正在扩容，会先去协助扩容，再回来继续插入数据。（协助扩容后面会讲）
+4. 最后会执行上锁，并插入数据，最后判断是否需要返回旧值；如果不是覆盖旧值，需要更新map中的节点数，也就是图中的addCount方法。
+
+```java
+public V put(K key, V value) {
+    return putVal(key, value, false);
+}
+
+
+```
+
+![alt text](image-15.png)
+
 ### ConcurrentLinkedQueue = Volatile + CAS
 
 ### CopyOnWriteArrayList = Volatile + ReentrantLock
