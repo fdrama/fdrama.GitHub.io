@@ -274,7 +274,41 @@ G1使用卡表处理跨代指针实现更为复杂，堆中每个Region，无论
 
 #### AOP
 
+AOP(Aspect Oriented Programming) 面向切面编程，是一种编程范式，它将横切关注点(如日志记录、性能监视、事务管理等)与核心业务逻辑分离，提高代码的模块化和可维护性。
 
+##### 核心概念
+
+- Aspect(切面)：一个横跨多个类的关注点的模块化。
+- Joinpoint(连接点)：序执行过程中的一个点，例如方法执行或异常处理。
+- Advice(通知)：切面在特定连接点采取的行动。
+- Pointcut(切入点)：匹配连接点的断言
+- Introduction(引入)：向现有类添加新方法或属性
+- Target object(目标对象)：被一个或多个切面通知的对象，也被称为被通知对象。由于Spring AOP是通过使用运行时代理实现的，所以这个对象总是一个被代理的对象。
+- AopProxy(代理)：AOP框架使用的对象，它包装了目标对象，并拦截方法调用以便执行通知。在Spring Framework中，AOP代理是一个JDK动态代理或CGLIB代理。
+- Weaving(织入)：将切面与目标对象或类型关联起来创建通知对象的过程。
+
+##### Spring AOP
+
+Spring AOP基于代理模式，通过在目标对象周围创建代理对象来实现横切关注点的功能。当客户端调用目标对象的方法时，实际上是调用了代理对象的方法。代理对象在调用目标对象的方法之前或之后，执行与横切关注点相关的逻辑，比如日志记录、事务管理等。
+
+Spring AOP主要有两种代理方式：基于JDK动态代理和基于CGLIB的动态代理。
+
+基于JDK动态代理： 当目标对象实现了接口时，Spring AOP会使用JDK的动态代理来创建代理对象。JDK动态代理是通过java.lang.reflect.Proxy类来实现的，它要求目标对象必须实现接口。Spring AOP会动态地生成实现了相同接口的代理类，并在代理类的方法中添加横切逻辑。
+
+基于CGLIB的动态代理： 当目标对象没有实现接口时，Spring AOP会使用CGLIB来创建代理对象。CGLIB是一个强大的字节码生成库，它可以在运行时动态地生成目标类的子类，并重写其中的方法来实现横切逻辑。
+
+##### 过程讲解
+
+看到上面的一堆概念，可能有点懵，下面通过一个例子来讲解Spring AOP的过程。
+
+1. doCreateBean
+2. initializeBean
+3. applyBeanPostProcessorsAfterInitialization
+4. postProcessAfterInitialization -> AbstractAutoProxyCreator.postProcessAfterInitialization
+5. wrapIfNecessary -> AbstractAutoProxyCreator.createProxy
+6. getAdvicesAndAdvisorsForBean -> AbstractAdvisorAutoProxyCreator.findEligibleAdvisors
+7. createProxy
+8. proxyFactory.addAdvisors(advisors)
 
 ### Mybatis
 
