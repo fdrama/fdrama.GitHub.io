@@ -299,16 +299,30 @@ Spring AOP主要有两种代理方式：基于JDK动态代理和基于CGLIB的�
 
 ##### 过程讲解
 
-看到上面的一堆概念，可能有点懵，下面通过一个例子来讲解Spring AOP的过程。
+看到上面的一堆概念，可能有点懵，下面通过一个例子来讲解Spring AOP的过程。分为两步，一 解析切面，二，创建动态代理，三，执行代理方法。
+
+###### 解析切面
+
+1. doCreateBean
+2. postProcessBeforeInstantiation -> AbstractAutoProxyCreator#postProcessBeforeInstantiation
+3. isInfrastructureClass -> AbstractAutoProxyCreator#isInfrastructureClass
+4. shouldSkip -> AbstractAutoProxyCreator#shouldSkip
+5. findCandidateAdvisors -> AbstractAdvisorAutoProxyCreator#findCandidateAdvisors
+6. buildAspectJAdvisors -> BeanFactoryAspectJAdvisorsBuilderAdapter#buildAspectJAdvisors
+
+###### 创建动态代理
 
 1. doCreateBean
 2. initializeBean
 3. applyBeanPostProcessorsAfterInitialization
-4. postProcessAfterInitialization -> AbstractAutoProxyCreator.postProcessAfterInitialization
-5. wrapIfNecessary -> AbstractAutoProxyCreator.createProxy
-6. getAdvicesAndAdvisorsForBean -> AbstractAdvisorAutoProxyCreator.findEligibleAdvisors
-7. createProxy
-8. proxyFactory.addAdvisors(advisors)
+4. postProcessAfterInitialization -> AbstractAutoProxyCreator#postProcessAfterInitialization
+5. wrapIfNecessary -> AbstractAutoProxyCreator#createProxy
+6. getCustomTargetSource -> AbstractAutoProxyCreator#getCustomTargetSource
+7. getAdvicesAndAdvisorsForBean -> AbstractAdvisorAutoProxyCreator#findEligibleAdvisors
+8. createProxy
+9. proxyFactory.addAdvisors(advisors)
+
+###### 执行代理方法
 
 ### Mybatis
 
