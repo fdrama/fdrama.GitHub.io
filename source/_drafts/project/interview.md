@@ -14,11 +14,17 @@
 
 ### 流程控制语句
 
+### 注解
+
+### 枚举
+
 ### 泛型
 
 ### 序列化
 
 ### 异常处理
+
+![alt text](image-30.png)
 
 ### 面向对象概念
 
@@ -42,14 +48,27 @@
 
 #### 动态代理
 
-
 ### 设计模式
 
 ## JVM
 
 ### 类加载机制
 
+Bootstrap ClassLoader：启动类加载器，负责加载JDK中的核心类库，如rt.jar、resources.jar、charsets.jar等。
+
+Extension ClassLoader：扩展类加载器，负责加载JDK的扩展目录中(%JAVA_HOME%/jre/lib/ext)的jar包。
+
+AppClassLoader：应用程序类加载器，负责加载应用程序classpath目录下的类。
+
+自定义类加载器：继承ClassLoader类，重写findClass方法，实现自定义的类加载器。
+
 #### 双亲委派
+
+双亲委派模型是指当一个类加载器收到类加载请求时，首先将请求委派给父类加载器，父类加载器再将请求委派给父类的父类加载器，依次递归，直到Bootstrap ClassLoader，如果父类加载器可以完成类加载任务，就成功返回，如果不能完成类加载任务，子类加载器才会尝试加载。
+
+#### 缓存机制
+
+类加载器在加载类的时候，会先检查缓存中是否已经加载过该类，如果已经加载过，直接返回缓存中的类，如果没有加载过，才会尝试加载类。
 
 ### 运行时内存结构
 
@@ -339,7 +358,219 @@ Spring AOP主要有两种代理方式：基于JDK动态代理和基于CGLIB的�
 
 ###### 执行代理方法
 
+###### 事务
+
+Spring事务管理主要有两种方式：编程式事务管理和声明式事务管理。
+
+编程式事务管理：通过编程的方式来管理事务，需要手动控制事务的开始、提交、回滚和关闭。
+
+声明式事务管理：通过配置的方式来管理事务，不需要手动控制事务的开始、提交、回滚和关闭。
+
+声明式事务原理:
+
+第一步，在Bean初始化阶段创建代理对象；
+
+Spring 容器在初始化单例`Bean`的时候，会遍历所有的 BeanPostProcessor 实现类，并执行其 postProcessAfterInitialization 方法。
+
+在执行 postProcessAfterInitialization 方法时会遍历容器中所有的切面，查找与当前`Bean`匹配的切面，这里会获取事务的属性切面，也就是`@Transactional`注解及其属性值。
+
+然后根据得到的切面创建一个代理对象，默认使用JDK动态代理创建代理，如果目标类是接口，则使用 JDK 动态代理，否则使用 Cglib。
+
+如果已经是代理对象，则添加到代理对象的拦截器链中。
+
+第二步，执行代理对象的方法时进行事务增强操作；
+
+![alt text](image-29.png)
+
+事务增强对该接口的实现为TransactionInterceptor
+
+@Transactional注解是Spring提供的声明式事务管理的方式，通过在方法上添加@Transactional注解，可以实现对方法的事务管理。
+
+@Transactional失效场景
+
+1. 数据库引擎不支持事务, 如MyISAM
+2. 没有被Spring管理的Bean, 事务是基于AOP实现的, 只对Spring管理的Bean有效
+3. 数据源没有配置事务管理器,需要配置事务管理器
+4. 方法不是public的, 事务是基于AOP实现的, 只对public方法有效
+5. 同一个类中的方法调用, 事务是基于AOP实现的, 因为只有事务方法被当前类以外的代码调用时，才会由`Spring`生成的代理对象来管理。
+6. 异常被捕获, 事务是基于AOP实现的, 需要异常抛出才有效,默认只对RuntimeException进行回滚
+7. propagation设置错误，需要根据业务场景设置正确的传播行为
+
+### spring boot
+
+@SpringBootApplication：Spring Boot的启动类，用于标记一个主程序类，说明这是一个Spring Boot应用。包含以下三个注解：
+
+@SpringBootConfiguration：Spring Boot的配置类，用于替代传统的xml配置文件。
+@ComponentScan：Spring的组件扫描，用于扫描指定包下的所有组件。
+@EnableAutoConfiguration：Spring Boot的自动配置，用于自动配置Spring应用。
+
+#### 自动装配
+
+`@EnableAutoConfiguration`，简化配置，提供了很多开箱即用的功能。约定大于配置。
+
+```java
+public String[] selectImports(AnnotationMetadata annotationMetadata) {
+    if (!isEnabled(annotationMetadata)) {
+        return NO_IMPORTS;
+    }
+    try {
+        AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader
+.loadMetadata(this.beanClassLoader);
+        // 获取启动类上的注解属性，可能包含exclude属性，用于排除自动配置类
+        AnnotationAttributes attributes = getAttributes(annotationMetadata);
+        // 从META-INF/spring.factories中获取所有的自动配置类
+        List<String> configurations = getCandidateConfigurations(annotationMetadata,
+                attributes);
+        // 移除配置列表中的重复项，确保每个自动配置类只被考虑一次。
+        configurations = removeDuplicates(configurations);
+        // 排序配置列表，确保具有相同优先级的配置类的顺序保持不变。
+        configurations = sort(configurations, autoConfigurationMetadata);
+        // 从配置列表中排除指定的自动配置类
+        Set<String> exclusions = getExclusions(annotationMetadata, attributes);
+        // 检查排除的自动配置类是否存在于配置列表中，是否有无效的排除类，如果有则抛出异常
+        checkExcludedClasses(configurations, exclusions);
+        // 从候选配置中移除排除的类
+        configurations.removeAll(exclusions);
+        configurations = filter(configurations, autoConfigurationMetadata);
+        // 触发自动配置导入事件，用于监听自动配置导入的事件
+        fireAutoConfigurationImportEvents(configurations, exclusions);
+        // 
+        return configurations.toArray(new String[configurations.size()]);
+    }
+    catch (IOException ex) {
+        throw new IllegalStateException(ex);
+    }
+}
+```
+
+#### 按需装配
+
+@ConditionalOnClass：当类路径下有指定的类时，才会创建当前的Bean。
+@ConditionalOnMissingClass：当类路径下没有指定的类时，才会创建当前的Bean。
+@ConditionalOnBean：当容器中有指定的Bean时，才会创建当前的Bean。
+@ConditionalOnMissingBean：当容器中没有指定的Bean时，才会创建当前的Bean。
+@ConditionalOnProperty：当指定的属性有指定的值时，才会创建当前的Bean。
+@ConditionalOnExpression：基于SpEL表达式的条件判断，只有满足条件时才会创建当前的Bean。
+@ConditionalOnWebApplication：当项目是Web项目时，才会创建当前的Bean。
+@ConditionalOnNotWebApplication：当项目不是Web项目时，才会创建当前的Bean。
+@ConditionalOnResource：当类路径下有指定的资源时，才会创建当前的Bean。
+@ConditionalOnJndi：当JNDI存在指定的项时，才会创建当前的Bean。
+@ConditionalOnJava：当JVM版本满足指定的要求时，才会创建当前的Bean。
+
+@EnableConfigurationProperties 用于开启对@ConfigurationProperties注解配置Bean的支持。
+@ConfigurationProperties 用于将配置文件中的配置映射到实体类中。
+
+以Redis为例，Spring Boot提供了`spring-boot-starter-data-redis`依赖，只需要在`application.properties`中配置Redis的连接信息，然后在需要使用Redis的地方注入`RedisTemplate`即可。
+
+1. 在spring-boot-autoconfigure，定义了Redis的自动配置类`RedisAutoConfiguration`，并在META-INF/spring.factories中配置了自动配置类org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+2. RedisAutoConfiguration进行自动配置，创建了`RedisTemplate`、`StringRedisTemplate`
+
+```java
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(RedisOperations.class)
+@EnableConfigurationProperties(RedisProperties.class)
+@Import({ LettuceConnectionConfiguration.class, JedisConnectionConfiguration.class })
+public class RedisAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(name = "redisTemplate")
+    @ConditionalOnSingleCandidate(RedisConnectionFactory.class)
+    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        return template;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnSingleCandidate(RedisConnectionFactory.class)
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        return new StringRedisTemplate(redisConnectionFactory);
+    }
+
+}
+```
+
+#### 总结
+
+SpringBoot 中的自动装配原理主要基于以下几个关键点:
+
+```@EnableAutoConfiguration``` 注解
+@EnableAutoConfiguration 是 SpringBoot 自动装配的核心注解。它通过 @Import(AutoConfigurationImportSelector.class) 导入了一个自动配置导入选择器。
+```AutoConfigurationImportSelector```
+AutoConfigurationImportSelector 实现了接口 DeferredImportSelector，它负责加载自动配置类。
+它会扫描 META-INF/spring.factories 文件中配置的所有自动配置类(org.springframework.boot.autoconfigure.EnableAutoConfiguration 下的配置)，并将它们引入到应用程序中。
+```SpringFactoriesLoader```
+SpringFactoriesLoader 是一个 Spring 框架用于加载外部资源的工具类。它会扫描所有 jar 包中的 META-INF/spring.factories 文件,获取相应的配置类。
+```xxxAutoConfiguration```
+以 AutoConfiguration 结尾的配置类就是自动配置类。它们通过注解 @Configuration、@ConditionalOnXXX等条件装配注解,实现自动配置的判断和装配。
+例如:
+
+@ConditionalOnClass：当classpath中存在指定的类时,该配置才会被引入。
+@ConditionalOnMissingBean：只有当容器中没有指定的Bean时,该配置才会被引入。
+@ConditionalOnProperty：根据配置的属性值进行判断,符合条件时引入配置。
+
+自动装配的整体执行流程:
+
+当 SpringBoot 应用启动时,会加载`@EnableAutoConfiguration`注解导入的 AutoConfigurationImportSelector。
+AutoConfigurationImportSelector 通过`SpringFactoriesLoader`加载 META-INF/spring.factories 中指定的自动配置类。
+通过判断每个自动配置类上的`@Conditional`注解条件,决定是否将它们加入 IOC 容器中。
+对于符合条件的配置类,SpringBoot 会解析它们的依赖关系,创建所需的 Bean。
+
+这样SpringBoot就实现了开箱即用的目标,省去了繁琐的配置过程,极大地简化了应用程序的开发。
+
 ### Mybatis
+
+#### 一级、二级缓存
+
+一级缓存：存储作用域为 SqlSession，当SqlSession关闭或提交时，缓存失效。当 Session flush 或 close 之后，该 SqlSession 中的所有 Cache 就将清空，MyBatis 默认打开一级缓存。
+
+二级缓存：存储作用域为 Mapper，多个 SqlSession 共享，当 SqlSession 关闭或提交时，缓存不会失效。MyBatis 默认不开启二级缓存，需要在配置文件中配置。
+
+#### 原理
+
+- XmlConfigBuilder#parseConfiguration 解析配置文件，创建`Configuration`对象，其中包含了所有的配置信息。
+- SqlSessionFactoryBuilder#build 创建`SqlSessionFactory`对象，其中包含了所有的`Mapper` 接口和对应的`MapperProxyFactory`对象。
+- SqlSessionManager#openSession 创建`SqlSession`对象，其中包含了`Executor`对象，用于执行SQL语句。
+
+#### 组件
+
+- Configuration：MyBatis的配置类，包含了所有的配置信息。
+- SqlSessionFactory：MyBatis的工厂类，用于创建SqlSession对象。
+- SqlSession：MyBatis的会话类，用于执行SQL语句。
+- Executor：MyBatis的执行器，用于执行SQL语句。
+- StatementHandler：MyBatis的语句处理器，用于处理SQL语句。
+- ParameterHandler：MyBatis的参数处理器，用于处理SQL语句的参数。
+- TypeHandler：MyBatis的类型处理器，用于处理Java类型和数据库类型之间的转换。
+- ResultSetHandler：MyBatis的结果集处理器，用于处理SQL语句的结果集。
+
+![alt text](image-31.png)
+
+#### 整体流程
+
+![alt text](image-32.png)
+
+#### mapper接口
+
+为什么mapper接口不需要实现类？
+
+动态代理
+
+![alt text](image-33.png)
+
+- MapperProxyFactory：Mapper接口的代理工厂，用于创建Mapper接口的代理对象。
+- MapperProxy：Mapper接口的代理对象，用于执行Mapper接口的方法。
+- MapperMethod：Mapper接口的方法，用于执行Mapper接口的SQL语句。
+
+#### 执行器
+
+- SimpleExecutor：简单执行器，用于执行SQL语句。
+- BatchExecutor：批量执行器，用于执行批量SQL语句。
+- ReuseExecutor：重用执行器，用于重用SQL语句。
+
+#### 插件原理
+
+- Interceptor：MyBatis的插件接口，用于创建MyBatis的插件。
 
 ### Netty
 
@@ -351,43 +582,85 @@ Spring AOP主要有两种代理方式：基于JDK动态代理和基于CGLIB的�
 
 ## 数据库
 
+![alt text](image-34.png)
+
 ### SQL语句
 
 ### 索引
 
-### 事务
+#### 索引类型
 
-- 原子性
+- 普通索引：最基本的索引，没有任何限制。
+- 唯一索引：索引列的值必顽唯一，但允许有空值。
+- 主键索引：唯一索引的一种特殊类型，不允许有空值。
+- 全文索引：对文本的内容进行索引，适用于大文本字段。
+- 组合索引：多个列组合在一起创建的索引，适用于多个列的查询。
+
+#### 索引原理
+
+- B+树：是一种多路搜索树，每个节点最多有M个子节点，每个非叶子节点最多有M-1个关键字，每个非叶子节点的子节点数比关键字数多一个。
+- Hash索引：是一种哈希表，适用于等值查询，不适用于范围查询。
+- 全文索引：是一种倒排索引，适用于文本的内容查询。
+
+### 数据库事务
+
+- 原子性，undo log
 - 一致性
-- 隔离性
-- 持久性
+- 隔离性, mvcc
+- 持久性, redo log
 
 #### 隔离的四大级别
 
 - 读未提交（Read Uncommitted）：允许脏读，一个事务可以读取另一个未提交事务的数据。
 - 读提交（Read Committed）：允许不可重复读，一个事务只能读取到另一个事务已经提交的数据。
-- 可重复读（Repeatable Read）：允许幻读，一个事务在读取数据的时候，另一个事务不能对数据进行修改。 select for update , select * from table lock in share mode 
-- 串行化（Serializable）：最高的隔离级别，所有事务都是串行执行的，可以避免脏读、不可重复读、幻读。 
+- 可重复读（Repeatable Read）：允许幻读，一个事务在读取数据的时候，另一个事务不能对数据进行修改。 select for update , select * from table lock in share mode
+- 串行化（Serializable）：最高的隔离级别，所有事务都是串行执行的，可以避免脏读、不可重复读、幻读。
 
 #### MVCC
 
 MVCC(Multi-Version Concurrency Control) 是一种并发控制机制，用于实现数据库的事务隔离级别。
 
-- 版本号：MVCC通过为每个数据行赋予一个唯一的版本号来实现。每当对数据进行修改时，都会生成一个新的版本，而不是直接在原始数据上进行修改。
+- 锁
 
-- Read View：当一个事务开始时，MySQL会为它创建一个“读取视图”（Read View）。这个读取视图确定了在事务开始时已经存在的数据版本。读取视图包含一个系统版本号，以及在该版本号之前提交的所有活跃事务的ID列表。
+- 隐藏字段
 
-- 数据读取：当一个事务要读取数据时，它会根据自己的读取视图确定应该读取的数据版本。如果数据行的版本早于事务开始时的系统版本，那么该数据行就是可见的，否则就是不可见的。
+DB_TRX_ID：最新插入或更新的事务ID
+DB_ROLL_PTR：回滚指针，指向undo log中的回滚段
+DB_ROW_ID：行ID，用于唯一标识一行数据
 
-- 并发写入：当一个事务要对数据进行修改时，它会在一个新的版本上进行修改，而不是在原始数据上直接进行修改。这样做的好处是，其他事务可以继续读取旧版本的数据，而不受到修改事务的影响。
+- Read View：
 
-- 版本清理：当事务提交后，其对应的版本就可以被清理掉了，这样可以释放空间并防止版本的无限增长。
+在InnoDB存储引擎中，每个事务都有一个Read View，用于判断事务是否可以读取数据。Read View包含以下信息：
+
+- create_trx_id：事务开始时的事务ID
+- low_limit_id：当前活跃的最小事务ID
+- up_limit_id：下一个将要分配的事务ID
+- m_ids：当前活跃的事务ID集合(未提交)
+
+读取规则：
+
+1. 如果被访问的版本事务ID等于当前创建视图的事务ID，则意味着读取自己当前事务的数据，可以被访问。
+2. 如果被访问的版本事务ID小于当前活跃的最小事务ID，则意味着读取的是在视图生成前已提交的数据，可以被访问。
+3. 如果被访问的版本事务ID大于下一个将要分配的事务ID，则意味着读取的是在视图生成后提交的数据，不能被访问。
+4. 如果被访问的版本事务ID介于当前活跃的最小事务ID和下一个将要分配的事务ID之间：
+    4.1 如果被访问的版本事务ID在当前活跃的事务ID集合中，则意味着读取的是未提交的数据，不能被访问。
+    4.2 如果被访问的版本事务ID不在当前活跃的事务ID集合中，则意味着读取的是已提交的数据，可以被访问。
+5. 如果不可被当前事务访问，则遍历版本链，直到找到可被访问的版本。
+
+Read Committed，每次读取数据时，都会生成一个新的Read View。
+Repeatable Read，只在事务开始时生成一个Read View。
 
 #### 日志
 
-- binlog   二进制日志
-- redo log 事务提交
-- undo log 事务回滚'
+- binlog   二进制日志  记录所有的DDL和DML操作，记录的是逻辑`SQL`语句，用于主从复制
+- redo log 事务提交  崩溃恢复 innoDB存储引擎独有
+- undo log 事务回滚  事务回滚 innoDB存储引擎独有
+- slow query log 慢查询日志
+- error log 错误日志
+
+两阶段提交
+
+![alt text](image-28.png)
 
 #### 锁
 
@@ -401,7 +674,79 @@ MVCC(Multi-Version Concurrency Control) 是一种并发控制机制，用于实�
 - 乐观锁：通过版本号或时间戳来实现，不会对数据行进行加锁，而是在更新数据时检查数据的版本号或时间戳，如果与预期不符，则认为数据已经被其他事务修改，需要回滚。
 - 悲观锁：通过对数据行进行加锁来实现，可以防止其他事务对数据行进行读取或写入操作。
 
-### 数据库设计范式
+#### 分页优化
+
+数据量大时，使用limit offset分页会导致性能问题，可以使用Seek方法或者延迟关联进行分页优化。
+
+- Seek方法：通过记录上一次查询的最后一行的某个值，然后下一次查询从这个值开始，避免了扫描大量不需要的行。
+
+```sql
+SELECT * FROM table WHERE id > ? ORDER BY id LIMIT 10
+```
+
+- 延迟关联：先查询主表的ID，然后再查询关联表的数据，避免了一次性查询所有数据。
+
+```sql
+SELECT id FROM table LIMIT 10
+SELECT * FROM table2 WHERE id IN (...)
+```
+
+#### 索引优化
+
+- 索引覆盖：通过索引来覆盖查询的字段，避免了回表查询。
+
+- 避免使用`SELECT *`，只查询需要的字段。
+
+- 避免使用!=或<>，会导致索引失效。
+
+- 适当使用前缀索引，可以减少索引的存储空间。
+
+- 适当使用联合索引，可以减少索引的数量。
+
+- 避免使用函数或表达式，会导致索引失效。
+
+- 小表驱动大表，先查询小表，再查询大表。
+
+- 适当增加冗余字段，可以减少关联查询。
+
+##### 执行计划
+
+explain
+
+![alt text](image-35.png)
+
+- id：查询的标识符
+- select_type：查询的类型，有SIMPLE、PRIMARY、SUBQUERY、DERIVED、UNION、UNION RESULT等。
+- table：查询的表
+- type：查询的类型，性能从好到差依次是：system > const > eq_ref > ref > range > index > all
+
+system：表只有一行记录（等于系统表）
+const：通过索引一次就找到了
+eq_ref：唯一性索引扫描，对于每个索引键，表中只有一条记录与之匹配
+ref：非唯一性索引扫描，返回匹配某个单独值的所有行
+range：只检索给定范围的行，使用一个索引来选择行
+index：遍历索引树
+all：全表扫描，效率最低
+
+- possible_keys：可能使用的索引
+- key：实际使用的索引
+- key_len：索引字段的长度
+- ref：匹配的索引字段
+- rows：扫描的行数, 估算值,越少越好
+- Extra：额外的信息
+
+Using index：表示使用了覆盖索引
+Using where：表示使用了where条件
+Using temporary：表示使用了临时表
+
+为什么索引会加快查询速度？
+
+数据库文件时存储在磁盘上的，当查询数据时，需要从磁盘中读取数据到内存中，然后再进行查询。如果没有索引，需要扫描整个表，将数据全部读取到内存中，然后再进行查询。如果有索引，可以直接通过索引来定位到数据的位置，然后再读取数据到内存中，这样就可以减少磁盘的IO操作，提高查询的速度。
+
+为什么数据库索引采用 B+ 树，而不是平衡二叉搜索树？
+
+1. B+ 树的查询效率更高：B+ 树的高度更低，每个节点可以存储更多的索引，可以减少磁盘的IO操作。
+2. B+ 树的范围查询更方便：B+ 树的叶子节点是有序的，可以方便的进行范围查询。
 
 ## 计算机基础
 
