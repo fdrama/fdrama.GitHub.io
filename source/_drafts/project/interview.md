@@ -578,6 +578,34 @@ AutoConfigurationImportSelector 通过`SpringFactoriesLoader`加载 META-INF/spr
 
 ### Kafka/RabbitMQ等
 
+基础架构
+
+- 生产者Producer：负责生产消息，发送消息到Broker。
+- 消费者Consumer：负责消费消息，从Broker拉取消息。
+- Broker：消息中间件，负责存储消息，转发消息。
+  - broker就是kafka Server, 一个broker就是一个kafka实例
+  - broker中包含多个partition
+  - partition中包含多个segment file
+- Topic：消息主题，用于区分不同的消息。逻辑概念，一个topic可以有多个partition。
+- zookeeper：用于服务注册和发现, 用于协调分布式服务, 负责Broker的状态，Partition的分配。
+  
+持久化
+
+partition中的数据是持久化的，每条消息根据分区规则路由到对应的partition中，然后写入到segment file中。追加写入。
+partition的副本可以分布在不同的broker上，保证数据的高可用性。
+partition的消息是顺序写入磁盘且有序的，但是不同partition之间的消息是无序的。
+partition的个数最好是broker的个数的整数倍，这样可以保证partition的均匀分布。
+
+segment file
+
+每个partition中包含多个segment file，每个segment file包含一个index file和一个log file。
+index file用于存储消息的offset和物理地址，log file用于存储消息的内容。
+
+offset
+
+current offset： 保存在Consumer端，表示下一次要读取的消息的offset。
+Committed offset：保存在Broker端，表示已经被消费的消息的offset。
+
 ### 缓存应用(Redis、Memcached)
 
 ## 数据库
@@ -762,4 +790,97 @@ Using temporary：表示使用了临时表
 
 ### 遇到的难题及解决方案
 
-### 职业规划
+#### 延迟调度
+
+##### 任务注册
+
+- 任务ID 任务唯一标识 雪花算法
+
+```java
+/**
+ * 雪花算法
+    * 1位符号位，固定为0 正数
+    * 41位时间戳，毫秒级 时间戳差值 = 当前时间戳 - 开始时间戳
+    * 10位机器ID 随机数  
+    * 12位序列号 每毫秒内的自增序列 0-4095
+    * 
+ */
+ return ((timestamp - twepoch) << timestampLeftShift) //
+                | (datacenterId << datacenterIdShift) //
+                | (workerId << workerIdShift) //
+                | sequence;
+```
+
+- 任务延迟时间最小1000ms
+
+![alt text](延迟调度-整体架构-1.jpg)
+
+##### 任务调度
+
+RateLimiter 限流 每秒2000
+
+1. 注册请求入队，唤醒任务分发线程，同步任务到其他机房
+2. 任务分发线程从队列中取出任务
+   1. 任务触发时间为120分钟内的放入时间轮和入库，超过120分钟的直接进入库队列
+   2. 内存保护，每5秒定时查看时间轮的内存占用，超过比例和允许的任务，50%时60分钟，60%时30分钟，70%时20分钟，80%时10分钟
+   3. 时间轮最大内存，系统启动时计算，最大JVM内存的1/2
+
+3. 任务入库
+
+@PreDestroy 保证队列数据全部入库后销毁
+redis防止重复入库
+主数据任务ID+执行时间入库Mysql
+任务详细数据写入mongoDb
+
+4. 时间轮 netty
+
+时间轮是以时间作为刻度组成的一个环形队列，所以叫做时间轮。这个环形队列采用数组来实现HashedWheelBucket[]，数组的每个元素称为槽，每个槽可以存放一个定时任务列表，叫HashedWheelBucket，它是一个双向链表，链表的每个节点表示一个定时任务项（HashedWheelTimeout），其中封装了真正的定时任务TimerTask。
+
+时间轮由多个时间格组成，每个时间格代表当前时间轮的基本时间跨度（ticketDuration），其中时间轮的时间格的个数是固定的。
+
+时间轮任务，当前节点为master节点，则进入触发队列。
+
+5. 任务分发
+
+拉取触发队列的任务，批量投递kafka, 投递失败加入补偿队列，重复投递
+
+6. 任务扫描
+
+开启定时延迟线程，每5分钟扫描近期30/20/10分钟任务，加入时间轮。
+
+##### 任务执行
+
+消费kafka消息，进行任务投递，dubbo调用,http调用,kafka调用,记录调用结果，失败重新加入任务调度，重试次数+1，超过重试次数或者超时时间，放弃。
+
+##### 自写选主
+
+zookeeper选主，选主成功后，开启定时任务，每隔5秒检查主节点是否存活，如果主节点挂掉，重新选主。
+
+1. 监听对应path, 本地维护所有触发节点
+2. 提供放弃选主接口
+3. 初始化选主成功后，调用其他节点的放弃选主接口，并标记本机为master, 维护时间轮起始位置，记录zk
+4. 心跳保持将本机时间轮起始位置写入zk
+
+zookeeper断连处理
+
+1. 提供http接口，返回本机是否为master
+2. zk断连时，本机为master，开启定时任务，每500ms异步询问其他节点是否为master，如果有master节点，放弃Master身份，持续10s，如果没有master节点，保持Master身份.
+
+触发器关机处理
+
+保证各队列数据全部入库后。
+
+执行器关机处理
+
+先停止kafka消费，尽量保证在途任务执行完毕，再停止执行器。
+
+#### 配置中心
+
+提供Spring boot starter能力，开箱即用
+
+继承 PropertyPlaceholderConfigurer
+
+1. 拉取配置
+2. 写入本地文件
+3. 重写processProperties方法 保存需要动态刷新的bean信息
+4. 定时线程拉取配置，比较配置是否有变化，有变化则刷新bean
