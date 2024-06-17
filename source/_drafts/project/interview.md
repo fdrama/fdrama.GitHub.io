@@ -34,6 +34,41 @@
 
 ### 集合框架(Collection、List、Set、Map等)
 
+hashmap
+
+1. 为什么HashMap的容量是2的幂次方？
+
+(n - 1) & hash = hash % n 保证了hash值在n范围内，减少了hash冲突的概率。
+
+2. 底层数据结构是什么？
+
+HashMap的底层数据结构是数组+链表+红黑树。
+
+3. 为什么HashMap的链表长度大于8且数组长度大于64时会转换为红黑树？
+
+链表长度大于8时，链表的查询效率会变低，转换为红黑树可以提高查询效率。
+
+4. 为什么链表转换红黑树的阈值是8？
+
+泊松分布的一个特性，为8的概率已经非常小了。
+
+5. 什么时候会扩容
+
+当HashMap的size大于threshold时，会进行扩容，threshold = capacity * loadFactor。
+
+例如：HashMap的默认容量是16，负载因子是0.75，那么threshold = 16 * 0.75 = 12，当HashMap的size大于12时，会进行扩容。
+
+
+concurrent包下的集合类是线程安全的，适用于多线程环墋下的数据操作。
+
+concurrentHashMap实现线程安全主要依靠以下三个方法：
+
+一、使用volatile保证当Node中的值变化时对于其他线程是可见的
+二、使用table数组的头结点作为synchronized的锁来保证写操作的安全
+三、当头结点为null时，使用CAS操作来保证数据能正确的写入
+
+![alt text](image-36.png)
+
 ### IO流
 
 ### 并发编程(线程、线程池、并发工具类)
@@ -574,6 +609,23 @@ AutoConfigurationImportSelector 通过`SpringFactoriesLoader`加载 META-INF/spr
 
 ### Netty
 
+- 建立连接
+当一个客户端发起连接请求时,Netty的NioEventLoopGroup会分配一个NioEventLoop去监听新连接事件。当连接被接受后,对应的NioSocketChannel会被初始化并注册到NioEventLoop上。
+- 事件循环(EventLoop)
+Netty是基于事件驱动模型的,所有的IO操作都是由EventLoop负责监听和处理。一旦NioSocketChannel注册到EventLoop上,EventLoop就会不断循环执行NioSocketChannel上的事件。
+- Pipeline和ChannelHandler
+对于每一个新接受的NioSocketChannel,Netty会为其初始化一个ChannelPipeline,它持有一组ChannelHandler实例。当有新事件到达时,事件会从ChannelPipeline的头部开始传递,并依次被ChannelHandler所处理。
+- 解码
+针对不同的协议,Netty提供了多种编解码器ChannelHandler。对于HTTP请求,常见的编解码器有HttpRequestDecoder和HttpResponseEncoder。编解码器负责将原始的ByteBuf解码为对应的HTTP请求/响应对象。
+- 处理请求
+解码后的HTTP请求对象会传递到自定义的ChannelInboundHandler中进行具体的业务逻辑处理。可以在这一步完成路由分发、参数解析、访问数据库等操作。
+- 编码
+业务逻辑处理完毕后,需要将响应数据编码为ByteBuf。编码的过程与解码相反,需要经过HttpResponseEncoder等编码器。
+- 发送响应
+编码后的ByteBuf会通过NioSocketChannel发送回客户端。如果设置为长连接,NioSocketChannel会继续监听下一个请求事件。
+- 关闭连接
+当请求处理完毕,如果是短连接,连接会自动关闭。否则连接会保持开放状态直到超时或被主动关闭。
+
 ### Dubbo/Zookeeper  
 
 ### Kafka/RabbitMQ等
@@ -605,6 +657,21 @@ offset
 
 current offset： 保存在Consumer端，表示下一次要读取的消息的offset。
 Committed offset：保存在Broker端，表示已经被消费的消息的offset。
+
+1. 怎么保证消息的可靠性？
+
+- 生产者发送消息时，会等待Broker的ACK，Broker接收到消息后会返回ACK，表示消息已经成功写入到磁盘。
+- 消费者消费消息后，会向Broker发送ACK，Broker接收到ACK后会更新Committed offset，表示消息已经被消费。
+
+all：所有的副本都写入成功，才返回ACK。
+0：不等待ACK，直接返回ACK。
+1：只需要一个副本写入成功，就返回ACK。
+
+1. 怎么保证消息的顺序性？
+
+- 每个partition中的消息是有序的，但是不同partition之间的消息是无序的。
+- 生产者发送消息时，可以指定key，相同key的消息会被发送到同一个partition中，保证消息的顺序性。
+- 消费者消费消息时，可以指定Consumer Group，同一个Consumer Group中的Consumer会消费同一个partition中的消息，保证消息的顺序性。
 
 ### 缓存应用(Redis、Memcached)
 

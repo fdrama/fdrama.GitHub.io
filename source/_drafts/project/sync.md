@@ -153,6 +153,8 @@ private boolean casPair(Pair<V> cmp, Pair<V> val) {
 
 ### AQS (AbstractQueuedSynchronizer)
 
+AQS使用一个Volatile的int类型的成员变量来表示同步状态，通过内置的FIFO队列来完成资源获取的排队工作，通过CAS完成对State值的修改。
+
 - state
 - owner
 - AQS(等待队列 queue)
@@ -358,6 +360,14 @@ private void unparkSuccessor(Node node) {
 ## 组件
 
 ### ReentrantLock = Volatile + AQS + CAS
+
+![alt text](image-37.png)
+
+1. 为什么使用LockSupport.park()和LockSupport.unpark()来实现线程的阻塞和唤醒？
+2. 为什么使用双向链表来实现等待队列？
+   一，线程阻塞之前需要判断前置节点的状态，如果没有指针指向前置节点，就需要从head节点开始遍历，性能非常低。
+   二，允许阻塞线程中断，中断后会将节点状态设置为CANCELLED，需要从队列中移除，双向链表可以快速移除节点。
+   三，避免线程阻塞和唤醒的开销，按照公平锁设计，只有前置节点为头节点的线程才需要再次竞争锁，其他线程直接阻塞。
 
 ### Atomic = Volatile + CAS
 
