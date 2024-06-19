@@ -1,522 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>计算机中的二进制-浮点数</title>
-    <url>/2022/08/11/binary2/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>数据是对事实、概念或指令的一种特殊表达形式，这种特殊表达形式可由人工或自动化装置进行处理。在计算机内部，数字、文字、图形、图像、声音、视频等都不能直接由计算机进行处理和存储，它们必须采取”特殊的表达形式“才能由计算机进行通信、转换或加工处理。这种特殊的表达形式就是二进制编码形式，<strong>在计算机系统中的数据均是以二进制编码形式出现的</strong>。</p>
-<p>这一节我们思考以下问题：</p>
-<ul>
-<li>计算机如何表示小数点</li>
-<li>什么是浮点数</li>
-<li>浮点数的为什么存在精度问题</li>
-<li>为什么32位的float表示范围比64位的long类型还大</li>
-<li>计算机中浮点数是如何运算的</li>
-</ul>
-<h2 id="二进制中的小数">二进制中的小数</h2>
-<p>前面讲过，计算机中只能识别和表示$0$和$1$，无法识别小数点，因此在计算机中处理日常中的小数数据，必须解决小数点的表示，计算机中通过采用相应的定点与浮点表示规则来解决这个问题。</p>
-<h3 id="定点表示">定点表示</h3>
-<p>定点表示法就是约定小数点的位置，且这个位置固定不变，小数点前、后的数字，分别用二进制表示，然后组合起来就可以把这个数字在计算机中存储起来，这种表示方式叫做「定点」表示法，用这种方法表示的数字叫做「定点数」。</p>
-<ol>
-<li>
-<p>对于整数，其小数点总是固定在数的最右边，忽略不写。</p>
-<p>$100_{D} = 01100100_{B}$</p>
-</li>
-<li>
-<p>对于纯小数，其小数点总是固定在数的最左边，因此可以采用一种”定点小数“来表示它。</p>
-<p>$0.125_{D} = 0.00100000_{B}$</p>
-</li>
-<li>
-<p>对于整数+小数形式，约定小数点位置</p>
-<p>假设8(bit)为例子，约定前5位表示整数部分，后3位表示小数部分<br>
-$1.5(D) = 00001 \ 100(B)$<br>
-$25.125(D) = 1100 \ 1001(B)$</p>
-<p>用一个定点数来表示整数+小数，分为以下步骤：</p>
-<ul>
-<li>在有限的bit宽度下，先约定小数点的位置</li>
-<li>整数部分和小数部分，分别转换为二进制表示</li>
-<li>两部分二进制组合起来即是结果</li>
-</ul>
-<p>但是整数位的5位二进制的最大值是$11111_{B}$，十进制则是$2^4-1=31_{D}$,小数位的3位二进制，最大的是$0.111_{B}$，即十进制的$0.875_{D}$。</p>
-<p>要表示更大范围的数，就需要扩大bit的宽度或者改变小数点的位置，小数点向后移动，整个数字范围就会扩大，但是小数部分的精度就会越来越低，没有办法表示类似$0.00001$这种高精度的值。</p>
-</li>
-</ol>
-<h3 id="浮点表示">浮点表示</h3>
-<p>在计算机内部，因为进行数据存储、运算和传输的部件的位数都是有限的，所以不管采用什么表数方法，都只能表示一定范围内的的有限个数。<br>
-定点数表示小数时，固定的小数点位置决定了固定位数的整数部分和小数部分，不利于同时表达特别大的数或者特别小的数。<br>
-因此，最终绝大多数现代的计算机系统都采纳了所谓的浮点数表达法。所以在计算机中，我们一般使用<strong>浮点数</strong>来表示小数。</p>
-<p>之前我们学习了定点数，其中「定点」指的是约定小数点位置固定不变。那浮点数的「浮点」就是指，其小数点的位置是可以是漂浮不定的。</p>
-<p>浮点数是采用<strong>科学计数法</strong>的方式来表示的，我们先以十进制小数举例，例如8.345，用科学计数法表示，可以有多种方式：</p>
-<p>$<br>
-\begin{aligned}<br>
-8.345&amp;=8.345\times10^0\\<br>
-&amp;=83.45\times10^-1\\<br>
-&amp;=834.5\times10^-2<br>
-\end{aligned}<br>
-$</p>
-<p>因为这种表达的多样性，因此有必要对其加以规范化以达到统一表达的目标。规范的浮点数表达方式具有如下形式：</p>
-<p>$$<br>
-\pm d.dd…d \times \beta^{e} (0 \leq d_{i} &lt; \beta)<br>
-$$</p>
-<p>其中，d.dd…d 为有效数字，$β$为基数，$e$为指数。<br>
-有效数字中数字的个数称为精度，我们可以用$p$来表示，即可称为$p$位有效数字精度。每个数字$d$介于$0$和基数$β$之间，可以写成以下形式：<br>
-$$<br>
-\pm (d_0 + d_{1}\beta^{-1}+…+d_{p-1}\beta^{-(p-1)}) \times \beta^{e} (0 \leq d_{i} &lt; \beta)<br>
-$$</p>
-<p>其中，对十进制的浮点数，即基数$β$等于$10$的浮点数而言，上面的表达式非常容易理解。<br>
-如 12.34，我们可以根据上面的表达式表达为：$1×10^1+2×10^0+3×10^{-1}+4×10^{-2}$，其规范浮点数表达为$1.234×10^1$。</p>
-<p>使用同样的规则，对于二进制数，我们也可以用科学计数法表示，也就是说把基数$10$换成$2$即可。而每个数字$d$只能在$0$和$1$之间取值。如二进制数$1001.101$，我们可以根据上面的表达式表达为：$1×2^3+0×2^2+0×2^1+1×2^0+1×2^{-1}+0×2^{-2}+1×2^{-3}$，其规范浮点数表达为 $1.001101×2^3$。</p>
-<h3 id="IEEE-浮点数标准">IEEE 浮点数标准</h3>
-<p>直到 20 世纪 80 年代（即在没有制定 IEEE 754 标准之前），业界还没有一个统一的浮点数标准。相反，很多计算机制造商根据自己的需要来设计自己的浮点数表示规则，以及浮点数的执行运算细节。另外，他们常常并不太关注运算的精确性，而把实现的速度和简易性看得比数字的精确性更重要，而这就给代码的可移植性造成了重大的障碍。</p>
-<p>一个统一的标准应用而生：IEEE 于 1985 年制订了二进制浮点运算标准 IEEE 754，该标准限定指数的底为 2，并于同年被美国引用为 ANSI 标准。目前，几乎所有的计算机都支持 IEEE 754 标准，它大大地改善了科学应用程序的可移植性。</p>
-<p>IEEE 浮点数标准是从逻辑上用三元组{S，E，M}来表示一个数 V 的。</p>
-<p>$<br>
-V = (-1)^S\times M \times 2^E  (1 \leq M &lt; 2)<br>
-$</p>
-<p>其中各个变量的含义如下：</p>
-<ul>
-<li>S(Sign)：符号位，取值 0 或 1，决定一个数字的符号，0 表示正，1 表示负；</li>
-<li>M(Mantissa)：尾数位，也称为有效数字位，是二进制小数；</li>
-<li>E(Exponent)：指数，用整数表示，是 2 的幂（可能是负数），它的作用是对浮点数加权，E的值确定小数的位置；</li>
-</ul>
-<p>在计算机中，把浮点数的位表示划分为3段：</p>
-<ul>
-<li>一个单独的符号位 s；</li>
-<li>k 位的阶码字段 $exp=e_{k−1}…e_1e_0$ 编码阶码 $E$；</li>
-<li>n 位小数字段 $frac=f_{n−1}…f_1f_0$ 编码尾数$M$，编码出来的值依赖于阶码字段的值是否等于0；</li>
-</ul>
-<table width="%50">
-    <tr>
-        <td width="10%">S（符号位）</td>
-        <td width="15%">E（指数位）</td>
-        <td width="25%">M（尾数位）</td>
-    </tr>
-</table>
-<p>举例来说：</p>
-<p>10进制中的$9.0$在二进制中写成$1001.0$，也就是 $1.001×2^3$，按照上面的格式，可以算出 $S=0, M=1.001, E=3$。</p>
-<p>IEEE754规定，对于32位的浮点数，最高的1位是符号位$S$，接着的8位是指数$E$，剩下的23位为有效数字$M$。</p>
-<img src="/2022/08/11/binary2/v2-32e425cdb908c47586267e59228fcd22_720w.png" class="" title="bin-32">
-<p>对于64位的浮点数，最高的1位是符号位$S$，接着的11位是指数$E$，剩下的52位为有效数字$M$。</p>
-<img src="/2022/08/11/binary2/bin-64.png" class="" title="bin-64">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><strong>名称</strong></th>
-<th style="text-align:center"><strong>类型</strong></th>
-<th style="text-align:center"><strong>位数</strong></th>
-<th style="text-align:center"><strong>符号位</strong></th>
-<th style="text-align:center"><strong>指数位</strong></th>
-<th style="text-align:center"><strong>尾数位</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">双精度浮点数</td>
-<td style="text-align:center">float</td>
-<td style="text-align:center">32</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">8</td>
-<td style="text-align:center">23</td>
-</tr>
-<tr>
-<td style="text-align:center">双精度浮点数</td>
-<td style="text-align:center">double</td>
-<td style="text-align:center">64</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">11</td>
-<td style="text-align:center">52</td>
-</tr>
-</tbody>
-</table>
-<p>对于上述位的表示，根据阶段$exp$的表示，IEEE754浮点数包含三种状态：</p>
-<p>以32位浮点数为例, 其内存状态分为3部分: 1位符号位 8位指数位 23位尾数位</p>
-<ol>
-<li>
-<p>如果8位指数位全为0, 就代表当前数是个非规格数。 用于表示0, 以及非常靠近0的数, 比如1E-38.</p>
-</li>
-<li>
-<p>如果8位指数位全为1, 就代表当前数是个特殊数。 用于表示&quot;无穷&quot;和&quot;NaN&quot;:</p>
-</li>
-<li>
-<p>如果8位指数不全为0, 也不全为1(也就是除去以上两种状态外, 剩下的所有状态), 这个数就是规格数。 用于表示最常见的数值, 比如1.2, 34567, 7.996, 0.2. 但规格数不能表示0和非常靠近0的数.</p>
-</li>
-</ol>
-<img src="/2022/08/11/binary2/v2-e122b76cc864dec6b9317a1bb0e76f9b_r.png" class="" title="浮点数">
-<p>↑ 绿色区域就是32位浮点数中规格数的取值范围, 可见它取不到0和靠近0的极小数</p>
-<p>↑ 红色区域包含0和靠近0的极小数, 红色区域其实是非规格数的取值范围。</p>
-<p>下面分别对三种状态进行详细展开：</p>
-<h4 id="规格化的值（normal-number）">规格化的值（normal number）</h4>
-<p>这是一般的情况，当$exp$的二进制表示中<strong>既不全为0，也不全为1</strong>都是规格化数组。这种情况下，阶码字段被解释为以偏置（biased）形式表示的有符号整数。</p>
-<h5 id="指数偏移量（exponent-bias）">指数偏移量（exponent bias）</h5>
-<p><em>指数偏移量</em> 指浮点数表示法中的指数域的编码值为指数的实际值加上某个固定的值，IEEE标准规定该固定值为$2^{k-1}-1$ ，其中的$k$为存储指数的比特的长度。</p>
-<p>那么偏移量解决的时什么问题呢，以float为例，指数E的指数位为8位bit，那么表示的范围是$[0, 2^8-1]$，即$[0, 255]$，指数可以为正数，也可以为负数，因此范围就是$[-127,127]$，但是二进制是无符号的，为了解决负数表示的问题，又不引入其他概念，就引入了偏移量（移码、偏置码）的概念，用无符号数来表示有符号数；</p>
-<p>也就是说，阶码的值是$E=e-Bias$，其中$e$是无符号数。</p>
-<p>例如指数$E=-126$ , 那么在指数域的表示就应该是$-126+127=1_{D}={00000001}<em>B$；同样，指数$E=127$，那么指数域的表示就应该是$127+127=254</em>{D}=11111110_{B}$</p>
-<p>因为偏移量的存在由此产生指数的取值范围是：单精度为 $-126 \leq E \leq +127$，双精度为 $-1022 \leq E \leq +1023$。</p>
-<h5 id="隐藏位">隐藏位</h5>
-<p>小数字段$frac$被解释为描述小数值$f$， 其中$0 \leq f &lt;1$，其二进制表示为$0.f_{n−1}⋯f_{1}f_{0}$，也就是二进制小数点在最高有效位的左边。<br>
-尾数定义为$M=1+f$。我们可以把$M$看成是一个$1.f_{n−1}f_{n−2}…f_{0}$的数字。尾数$M$的第一位总是$1$（$1 \leq M &lt;2$），因此这个$1$可以省略不写，它是个<em>隐藏位</em>，这样单精度23位尾数可以表示了24位有效数字，双精度52位尾数可以表示53位有效数字。</p>
-<p>我们来举例说明一下，$8.25$用 float 表示的二进制应该是什么样子的：</p>
-<p>$<br>
-\begin{aligned}<br>
-8_{D} = 1000_{2}  \quad &amp;先转换整数位 \\<br>
-0.25_{D} = 0.1_{2} \quad &amp;再转换小数位 \\<br>
-8.25_{D} = 1000.01_{2}  \quad &amp;组合起来 \\<br>
-1000.01 = 1.00001 \times 2^3 &amp;书写成科学计数法方式 \\<br>
-\end{aligned}<br>
-$</p>
-<p>因为8.25是正数，所以$S=0$，指数$E=3$，所以指数段为$3+127=130_{D}=10000010_{B}$，有效数字省略掉小数点左侧的$1$之后为00001，然后在右侧用零补齐。因此所得的最终结果为：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">0</th>
-<th style="text-align:center">10000010</th>
-<th style="text-align:center">00001000000000000000000</th>
-</tr>
-</thead>
-</table>
-<p>也可以转换成16进制数，每4位一组划分：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">0100</th>
-<th style="text-align:center">0001</th>
-<th style="text-align:center">0000</th>
-<th style="text-align:center">0100</th>
-<th style="text-align:center">0000</th>
-<th style="text-align:center">0000</th>
-<th style="text-align:center">0000</th>
-<th style="text-align:center">0000</th>
-</tr>
-</thead>
-</table>
-<p>即$41040000_{H}$</p>
-<img src="/2022/08/11/binary2/float.jpg" class="" title="float">
-<p>推荐一个工具地址<a href="https://www.h-schmidt.net/FloatConverter/IEEE754.html">FloatConverter</a>，可以清楚查看浮点数的二进制形式。</p>
-<p>也可以用java代码验证下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    System.out.println(Math.getExponent(<span class="number">8.25</span>)); <span class="comment">//指数E 3</span></span><br><span class="line">    System.out.println(Integer.toBinaryString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//二进制码正数省略了最前面的0 -&gt; 1000001000001000000000000000000</span></span><br><span class="line">    System.out.println(Integer.toHexString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//十六进制码 41040000</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>32位浮点数中, 规格数的取值范围: $(-2\times2^{127},-1\times2^{-126}] \cup [1\times2^{-126},2\times2^{127}) $</p>
-<p>我们知道规格数的尾数大于等于1，一个始终大于1的数 乘以 一个始终大于0的数, 永远无法等于0，事实上，$1(尾数最小值) \times 2^{-127}(指数最小值) = 2^{-127}$</p>
-<p>$2^{-127}$就是当前我们能表示的最小值，使用规格数时, 我们除了无法表示0, 也无法表示(0, 2^-127)之间的, 靠近0的极小数…，非规格化数解决了这个问题。</p>
-<h4 id="非规格化的值（subnormal-number）">非规格化的值（subnormal number）</h4>
-<p>当阶码位全为0时，表示的数就是非规格化的形式。这种情况下，阶码的值是$E=1−Bias$，和规格化数的阶码计算方式不一致，后面会讲到原因。<br>
-float是-126，double是-1022，而有效数字的值是$M=f$，也就是小数字段的值不包括隐含的1，范围是[0,1)。</p>
-<img src="/2022/08/11/binary2/2-1PZ511393c48.jpg" class="" title="unnormal">
-<p>非规格化的取值范围：所以尾数位的取值范围是[0.00000000000000000000000, 0.11111111111111111111111] (二进制)</p>
-<p>非规格数尾数的取值范围是[0, 1), 指数固定为-126. 这就很简单了, 让尾数取0不就能表示数值0了:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">符号位S</th>
-<th style="text-align:right">指数</th>
-<th style="text-align:center">实际指数</th>
-<th style="text-align:center">指数域E</th>
-<th style="text-align:center">尾数域M</th>
-<th style="text-align:center">数值</th>
-<th style="text-align:center">含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0</td>
-<td style="text-align:right">$e=e_{min}-1$</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0000 0000</td>
-<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
-<td style="text-align:center">+0</td>
-<td style="text-align:center">正数0</td>
-</tr>
-<tr>
-<td style="text-align:center">1</td>
-<td style="text-align:right">$e=e_{min}-1$</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0000 0000</td>
-<td style="text-align:center">100 0000 0000 0000 0000 0000</td>
-<td style="text-align:center">-0</td>
-<td style="text-align:center">负数0</td>
-</tr>
-</tbody>
-</table>
-<p>非规格数的取值范围: ($-1\times2^{-126}$,$1\times2^{-126}$)</p>
-<p>结合上面提到的规格数的取值范围：$(-2\times2^{127},-1\times2^{-126}] \cup [1\times2^{-126},2\times2^{127})$</p>
-<p>刚好组成一个完整的范围：$(-2\times2^{127},2\times2^{127})$</p>
-<p>非规格化数有两个用途。</p>
-<ol>
-<li>它们提供了一种表示数值0的方法，因为使用规格化数时，必须总是使$M \geq 1$，这样就不能表示0。实际上，+0.0的浮点表示的位模式为全0：符号位是0，阶码字段全为0（表示是一个非规格化的值），而小数域也全为0，这就得到$M=f=0$。但当符号位为1，其他域全为0时，会得到−0.0。根据IEEE的浮点格式，值 +0.0 和 −0.0在某些方面被认为是不同的，而在其他方面是相同的。</li>
-<li>另外一个功能是表示哪些非常接近于$0.0$的数。它们提供了一种属性，称为<strong>逐渐溢出</strong>（gradual underflow），其中，可能的数值分布均匀地接近于 0.0。</li>
-</ol>
-<h4 id="逐渐溢出（gradual-underflow）">逐渐溢出（gradual underflow）</h4>
-<p>前文说过, 非规格数尾数的取值范围是[0, 1), 指数固定-126，所以是尾数的变化在导致非规格数的值变大。</p>
-<p>$0 \ 00000000 \ 00000000000000000000001$ &gt; $0 \ 00000000 \ 00000000000000000000000$</p>
-<p>$0 \ 00000000 \ 11111111111111111111111$ 这是非规格数的最大值，此时尾数(带上隐藏的整数部分0.)其实是0.11111111111111111111111, 是个比1小一点点的数, 记做$(1 - \epsilon)$，此时非规格数的值就是: $(1-\epsilon) \times 2^{-126}$</p>
-<p>我们再往前前进一格, 就会进入<em>规格化数</em>的范围： $0 \ 00000001 \ 00000000000000000000000$ ，这是一个最小规格化数，其尾数位的值: 其实隐藏了1，或者说, 此时真正的尾数应该是1.00000000000000000000000 , 也就是1。其指数位的值是1, 则实际指数应该是$1-bias=1-127=-126$。</p>
-<p>我们来看一下：非规格化数的最大值是： $(1-\epsilon) \times 2^{-126}$，规格化数的最小值是： $1\times 2^{-126}$，两者实现了非常平滑的过度，非规格化数一点点逐渐变大，最后其最大值平稳的衔接上了规格化数的最小值。这种特性就叫做<em>逐渐溢出</em>。</p>
-<p>这就解释了两个问题：</p>
-<ol>
-<li>
-<p>为什么规定非规格数的尾数前隐藏的整数部分是 0. 而规格数尾数前隐藏的整数部分是1.</p>
-<p>因为非规格化数的尾数取值范围是[0,1)，而规格化数的尾数取值范围是[1,2)，两者平滑过度，紧密衔接。</p>
-</li>
-<li>
-<p>为什么非规格数的真实指数的计算公式是$1-bias$, 而规格数的真实指数的计算公式是$2^{k-1}-1 (k是存储指数的有效位数)$</p>
-<p>以32位浮点数为例：非规格化数的指数固定位-126，而规格化数的指数是[-126,127]，两者也平滑衔接。</p>
-</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><strong>描述</strong></th>
-<th style="text-align:center"><strong>指数段</strong></th>
-<th style="text-align:center"><strong>E</strong></th>
-<th style="text-align:center"><strong>小数段</strong></th>
-<th style="text-align:center"><strong>M</strong></th>
-<th style="text-align:center"><strong>二进制值</strong></th>
-<th style="text-align:center"><strong>十进制值</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">最小非规格化值</td>
-<td style="text-align:center">00000000</td>
-<td style="text-align:center">-126</td>
-<td style="text-align:center">00000000000000000000001</td>
-<td style="text-align:center">0.000000000000000000001</td>
-<td style="text-align:center">$-1 \times (2-2^{-23}) \times 2^{-126} $</td>
-<td style="text-align:center">$1.40129846432e-45$</td>
-</tr>
-<tr>
-<td style="text-align:center">最大非规格化值</td>
-<td style="text-align:center">00000000</td>
-<td style="text-align:center">-126</td>
-<td style="text-align:center">11111111111111111111111</td>
-<td style="text-align:center">0.11111111111111111111111</td>
-<td style="text-align:center">$(1-\epsilon) \times 2^{-126}$</td>
-<td style="text-align:center">$1.17549421069e-38$</td>
-</tr>
-<tr>
-<td style="text-align:center">最小规格化值</td>
-<td style="text-align:center">00000001</td>
-<td style="text-align:center">-126</td>
-<td style="text-align:center">00000000000000000000000</td>
-<td style="text-align:center">1.00000000000000000000000</td>
-<td style="text-align:center">$1\times 2^{-126}$</td>
-<td style="text-align:center">$2.35098856151e-38$</td>
-</tr>
-<tr>
-<td style="text-align:center">最大规格化值</td>
-<td style="text-align:center">11111110</td>
-<td style="text-align:center">127</td>
-<td style="text-align:center">11111111111111111111111</td>
-<td style="text-align:center">1.1111111111111111111111</td>
-<td style="text-align:center">$(2-\epsilon) \times 2^{127}$</td>
-<td style="text-align:center">$3.40282346639e+38$</td>
-</tr>
-</tbody>
-</table>
-<h4 id="特殊数值（non-number）">特殊数值（non-number）</h4>
-<p>IEEE 标准指定了以下特殊值:$\pm 0,+\infty,-\infty,NaN$，（如下表所示，以float为例）。<br>
-当阶码全为1时出现的。当小数域全为0时，得到的值表示无穷。当把两个非常大的数相乘，或者除以0时，无穷可以表示溢出的结果。当小数域为非零时，结果值被称为”NAN“。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">符号位S</th>
-<th style="text-align:right">指数</th>
-<th style="text-align:center">实际指数</th>
-<th style="text-align:center">指数域E</th>
-<th style="text-align:center">尾数域M</th>
-<th style="text-align:center">数值</th>
-<th style="text-align:center">含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0</td>
-<td style="text-align:right">$e=e^{max}+1$</td>
-<td style="text-align:center">255</td>
-<td style="text-align:center">1111 1111</td>
-<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
-<td style="text-align:center">$+\infty$</td>
-<td style="text-align:center">正无穷大</td>
-</tr>
-<tr>
-<td style="text-align:center">1</td>
-<td style="text-align:right">$e=e^{max}+1$</td>
-<td style="text-align:center">255</td>
-<td style="text-align:center">1111 1111</td>
-<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
-<td style="text-align:center">$-\infty$</td>
-<td style="text-align:center">负无穷大</td>
-</tr>
-<tr>
-<td style="text-align:center">*</td>
-<td style="text-align:right">$e=e^{max}+1$</td>
-<td style="text-align:center">255</td>
-<td style="text-align:center">1111 1111</td>
-<td style="text-align:center">非0</td>
-<td style="text-align:center">NaN</td>
-<td style="text-align:center">非数字，用来表示一些特殊情况</td>
-</tr>
-</tbody>
-</table>
-<p>当要存储的数大于规格数取值范围的最大值时, 就会被记做+infinity, 比如2^128, 刚刚超过规格数的取值范围的最大值, 就会被记做+infinity</p>
-<p>当要存储的数小于规格数取值范围的最小值时, 就会被记做-infinity, 比如-2^128, 刚刚小于规格数的取值范围的最小值, 就会被记做-infinity</p>
-<p>规格化数的最大值是：$0 \ 11111110 \ 11111111111111111111111$，尾数位其实是1.11111111111111111111111, 非常接近2, 记做$2-\epsilon$，指数是127，</p>
-<p>所以最大值记作$(2-\epsilon) \times 2^{127}$。+infinity的内存状态则是:$0 \ 11111111 \ 00000000000000000000000$, 尾数其实是: 1.00000000000000000000000, 等于1，指数是128，可见规格数的最大值也能和$+infinity$平滑衔接. $-infinity$同理。</p>
-<p>三种状态结合起来就表示了整个数轴：</p>
-<img src="/2022/08/11/binary2/v2-1b6f26cad2e694e143016cbe6094c80e_r.png" class="" title="数轴">
-<p>NaN 简单说一下，其实就是一种标记状态，表示计算出来的不是一个数字，例如$\sqrt{-1}$</p>
-<p>下表是一些IEEE754示例：</p>
-<img src="/2022/08/11/binary2/v2-6a0cba57252a92ddbd8afc9fd4b2922a_r.jpg" class="" title="example">
-<h3 id="浮点数精度问题">浮点数精度问题</h3>
-<p>了解了浮点数在计算机中如何存储的后，就可以发现浮点数必定存在精度问题，因为有效位数的限制，超过的部分会被舍弃，就会出现精度丢失。</p>
-<p>例如：0.4，我们来用float表示一下，先转换成二进制：</p>
-<p>$<br>
-\begin{aligned}<br>
-0_{D}=0_{B}  \quad &amp;先转换整数位 \\<br>
-0.4_{D}=0.11001100110011001100110…{B} \quad &amp;再转换小数位 \\<br>
-0.4_{D}=0.011001100110011001100110…{B} （0011 无限循环） \quad &amp;组合起来 \\<br>
-0.011001100110011001100110_{B}=1.1001100110011001100110… \times 2^{-2} &amp;书写成科学计数法方式 \\<br>
-\end{aligned}<br>
-$</p>
-<p>因为8.25是正数，所以$S=0$，指数$E=-2$，所以指数段为$-2+127=125_{D}=01111101_{B}$，有效数字省略掉小数点左侧的$1$之后为10011001100110011001100…，由于单精度浮点数尾数只有23位，所以需要舍入（舍入方法见后），由于第24位为1，且之后不全为0，所以需要向第23位进1完成上舍入：1.10011001100110011001101。因此所得的最终结果为：$00111110110011001100110011001101$ (此时就出现了精度损失)。</p>
-<h3 id="浮点数的范围">浮点数的范围</h3>
-<p>我们再来看一下，用浮点数表示一个数字，其范围和精度能有多大？</p>
-<p>以float为例，它能表示的最大数肯定是指数域$E=127$，尾数域$M=1.111…1（小数点后23个1）$</p>
-<h3 id="浮点数的计算">浮点数的计算</h3>
-<h4 id="加减运算">加减运算</h4>
-<ul>
-<li>零操作数的判断
-<ul>
-<li>$a+b(b=0)=a$</li>
-<li>$a-b(b=0)=a, a-b(a=0)=-b$</li>
-</ul>
-</li>
-<li>对阶
-<ul>
-<li>已阶码大（绝对值）的为标准，阶码较小的，向较大的对齐，为了避免阶码较大的浮点数尾数左移导致最高位的丢失</li>
-<li>求阶差$\triangle M=E_x-E_y$</li>
-<li>调整阶码较小的数据
-<ul>
-<li>若$\triangle M &gt; 0$，则$M_Y$右移$\triangle M$位，结果的阶码为$E_X$</li>
-<li>若$\triangle M &lt; 0$，则$M_X$右移$\triangle M$位，结果的阶码为$E_Y$</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>尾数求和</li>
-<li>规格化</li>
-<li>舍入</li>
-<li>溢出判断</li>
-</ul>
-<p>浮点数的表示有一定的范围，超出范围时会产生溢出（Flow），一般称大于绝对值最大的数据为上溢（Overflow），小于绝对值最小的数据为下溢（Underflow）。</p>
-<h4 id="乘除运算">乘除运算</h4>
-<h4 id="浮点数舍入方式">浮点数舍入方式</h4>
-<p>舍入误差是指运算得到的近似值和精确值之间的差异。大家知道，由于计算机的字长有限，因此在进行数值计算的过程中，对计算得到的中间结果数据要使用相关的舍入规则来取近似值，而这导致计算结果产生误差。</p>
-<p>在浮点数的舍入问题上，IEEE浮点格式定义了 4 种不同的舍入方式，如下表所示。其中，默认的舍入方法是向偶数舍入，而其他三种可用于计算上界和下界。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><strong>名称</strong></th>
-<th style="text-align:center"><strong>描述</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">向偶数舍入</td>
-<td style="text-align:center">也称为向最接近的值舍入，会将结果舍入为最接近且可以表示的值</td>
-</tr>
-<tr>
-<td style="text-align:center">向0舍入</td>
-<td style="text-align:center">会将结果朝0方向舍入</td>
-</tr>
-<tr>
-<td style="text-align:center">向上舍入</td>
-<td style="text-align:center">向$+\infty$方向舍入，会将结果朝正无穷大的方向舍入</td>
-</tr>
-<tr>
-<td style="text-align:center">向下舍入</td>
-<td style="text-align:center">向$-\infty$方向舍入，会将结果朝负无穷大的方向舍入</td>
-</tr>
-</tbody>
-</table>
-<p>举例说明:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><strong>方式</strong></th>
-<th style="text-align:center"><strong>1.40</strong></th>
-<th style="text-align:center"><strong>1.60</strong></th>
-<th style="text-align:center"><strong>1.50</strong></th>
-<th style="text-align:center"><strong>2.50</strong></th>
-<th style="text-align:center"><strong>-1.50</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">向偶舍入</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">-2</td>
-</tr>
-<tr>
-<td style="text-align:center">向零舍入</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">-1</td>
-</tr>
-<tr>
-<td style="text-align:center">向下舍入</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">-2</td>
-</tr>
-<tr>
-<td style="text-align:center">向上舍入</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">-1</td>
-</tr>
-</tbody>
-</table>
-<p>为什么要使中间值向偶舍入呢？因为使用向上舍入或者向下舍入，会在计算这些值的平均数中引入统计偏差。如果两个数的中间值始终用向上舍入，那么得到的一组数的平均值将比这些数本身的平均值略高一些；相反，向下舍入得到的一组数的平均值将比这些数本身的平均值略低一些。</p>
-<p>向偶舍入在大多数情况中避免了这种统计偏差，在50%的时间里，它将向上舍入，而在50%的时间里，它将向下舍入。</p>
-<p>以23位尾数位的单精度浮点数为例，舍入时需要重点参考第24位</p>
-<ul>
-<li>
-<p>若第24位为1，且第24位之后全部为0。此时就要使第23位为0：若第23位本来就是0则不管，若第23位为1，则第24位就要向第23位进一位，这样第23位就可以为0</p>
-</li>
-<li>
-<p>若第24位为1，且第24位之后不全为0，则第24位就要向第23位进一完成上舍入。</p>
-</li>
-<li>
-<p>若第24位为0，此时直接舍去不进位，称为下舍入。</p>
-</li>
-</ul>
-<h3 id="小结">小结</h3>
-<h2 id="参考文章">参考文章</h2>
-<p><a href="https://zhuanlan.zhihu.com/p/339949186">什么是浮点数</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/338588296">什么是定点数</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/349572768">一文读懂浮点数</a></p>
-<p><a href="http://www.ideabuffer.cn/2017/05/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA/">计算机中浮点数的二进制表示</a></p>
-<p><a href="http://c.biancheng.net/view/314.html">IEEE 754浮点数标准详解</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/343049681">IEEE规范</a></p>
-<div id="footnotes"><hr><div id="footnotelist"><ol style="list-style:none; padding-left: 0;"><li id="fn:1"><span style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span style="display: inline-block; vertical-align: top;">Float和Double的最小值和最大值都是以科学记数法的形式输出的，结尾的&quot;E+数字&quot;表示E之前的数字要乘以10的多少次方。例如：$19971400000000=1.99714×10^{13}$。计算器表达10的幂是一般是用$E$或e，也就是$1.99714E13=19971400000000$。</span><a href="#fnref:1" rev="footnote"> ↩</a></li><li id="fn:2"><span style="display: inline-block; vertical-align: top; padding-right: 10px;">2.</span><span style="display: inline-block; vertical-align: top;">机器码ε表示1与大于1的最小浮点数之差，。不同精度定义的机器ε不同，float $\epsilon=2^{-23}$， double $\epsilon=2^{-52}$</span><a href="#fnref:2" rev="footnote"> ↩</a></li></ol></div></div>]]></content>
-      <categories>
-        <category>计算机原理</category>
-      </categories>
-      <tags>
-        <tag>binary</tag>
-        <tag>math</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>计算机中的二进制-整数</title>
     <url>/2022/08/05/binary/</url>
     <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="什么是二进制">什么是二进制</h2>
@@ -657,7 +141,7 @@ $</li>
 <li>
 <p><em>整数部分的转换</em></p>
 <p>整数部分的转换方法就是 <strong>除基取余，上右下左</strong>。也就是说，用要转换的十进制整数除以基数R，将得到的余数作为结果数据中各位的数字，直到商0为止。上面的余数（即先得到的余数）作为右边的低位数位，下面的余数作为左边的高位数位。</p>
-  <img src="/2022/08/05/binary/fc173747e8ee9e6e7f57cfc69458e042.jpg" class="" title="如图">
+<p><img src="../images/binary/fc173747e8ee9e6e7f57cfc69458e042.jpg" alt="如图"></p>
 </li>
 </ul>
 <hr>
@@ -822,6 +306,247 @@ $</p>
       </categories>
       <tags>
         <tag>binary</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>博客指南</title>
+    <url>/2022/07/11/hexo-guide/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>欢迎来到我的博客!</p>
+<p>感谢 <a href="https://pages.github.com/">GithubPage</a> + <a href="https://hexo.io/zh-cn/">Hexo</a> + <a href="https://theme-next.js.org/">next</a>。<br>
+感谢开源世界，让搭建一个属于自己的博客变的十分便捷。我以后也会在这里分享关于编程和生活的一些东西。</p>
+<p>以下是我个人搭建博客的步骤:</p>
+<h2 id="Hexo">Hexo</h2>
+<p><a href="https://hexo.io/zh-cn/docs/">Hexo</a> 是一个快速、简洁且高效的博客框架</p>
+<h3 id="安装">安装</h3>
+<h4 id="前置准备">前置准备</h4>
+<ul>
+<li>
+<p>安装nodeJs并配置 (<a href="http://nodejs.cn/learn/introduction-to-nodejs">http://nodejs.cn/learn/introduction-to-nodejs</a>)</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看是否安装成功</span></span><br><span class="line">$ node -v </span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>安装Git并配置 <code>https://git-scm.com/</code></p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看是否安装成功</span></span><br><span class="line">$ git --version</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>安装Hexo</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 全局安装</span></span><br><span class="line">$ npm install -g hexo-cli</span><br><span class="line"></span><br><span class="line"><span class="comment"># 局部安装</span></span><br><span class="line">$ npm install hexo</span><br><span class="line"></span><br><span class="line"><span class="comment"># 命令执行 两种方式</span></span><br><span class="line">1. $ npx hexo &lt;<span class="built_in">command</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># Hexo 所在的目录下的 node_modules 添加到环境变量 直接使用 hexo &lt;command&gt; linux为例</span></span><br><span class="line">2. <span class="built_in">echo</span> <span class="string">&#x27;PATH=&quot;$PATH:./node_modules/.bin&quot;&#x27;</span> &gt;&gt; ~/.profile</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="启动">启动</h4>
+<ol>
+<li>
+<p>安装完hexo执行以下命令</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 初始化 此folder 就是下面文档里的 $&#123;hexo-site&#125;</span></span><br><span class="line">$ hexo init &lt;folder&gt;</span><br><span class="line">$ <span class="built_in">cd</span> &lt;folder&gt;</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>执行完成后目标文件夹的目录结构</p>
+ <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds</span><br><span class="line">├── source</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts</span><br><span class="line">└── themes</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>运行<em>hexo server</em>访问 (<a href="http://localhost:4000/">http://localhost:4000/</a>)</p>
+</li>
+</ol>
+<h3 id="配置">配置</h3>
+<h4 id="主题">主题</h4>
+<p>hexo 有很多主题 这里已Next为例 Next(<a href="https://theme-next.js.org/">https://theme-next.js.org/</a>)</p>
+<ol>
+<li>
+<p>安装</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 移动到hexo 安装目录</span></span><br><span class="line">$ <span class="built_in">cd</span> hexo-site</span><br><span class="line">$ <span class="built_in">ls</span></span><br><span class="line">_config.yml  node_modules  package-lock.json  package.json  scaffolds  <span class="built_in">source</span>  themes</span><br></pre></td></tr></table></figure>
+<ul>
+<li>npm安装</li>
+</ul>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-theme-next</span><br></pre></td></tr></table></figure>
+<ul>
+<li>git安装</li>
+</ul>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>配置</p>
+<p>现在有两个配置文件 <em>_config.yml</em>， 一个是hexo的配置文件，一个是next主题的配置文件，不同的安装方式，所在的目录不同<br>
+(e.g. thems/next/_config.yml or node_modules/hexo-theme-next/_config.yml.</p>
+<p>不推荐直接修改主题里面的文件, 因为npm升级或者git更新会覆盖文件，hexo建议将主题文件复制到根目录并且修改名称为 <em><strong>_config.[theme].yml</strong></em></p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Installed through npm</span></span><br><span class="line">$ <span class="built_in">cp</span> node_modules/hexo-theme-next/_config.yml _config.next.yml</span><br><span class="line"><span class="comment"># Installed through Git</span></span><br><span class="line">$ <span class="built_in">cp</span> themes/next/_config.yml _config.next.yml</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>修改配置文件 _config.yml</p>
+ <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">Hexo</span> <span class="string">config</span> <span class="string">file</span></span><br><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>启动 <em>hexo s</em> 查看页面样式已经发生变化</p>
+</li>
+</ol>
+<h4 id="页面">页面</h4>
+<h5 id="标签页">标签页</h5>
+<ol>
+<li>
+<p>生成标签页</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> hexo-site</span><br><span class="line">$ hexo new page tags</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>配置标签页</p>
+<p>修改生成的source/tags/index.md 指定type</p>
+ <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">Tags</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2014-12-22 12:39:04</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">tags</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>编辑菜单 <em>_config.next.yml</em></p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">   <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-home</span></span><br><span class="line">   <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-archive</span></span><br><span class="line">   <span class="attr">tags:</span> <span class="string">/tags/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-tags</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="attr">tagcloud:</span></span><br><span class="line">   <span class="comment"># 标签的样式</span></span><br><span class="line">   <span class="attr">min:</span> <span class="number">12</span> <span class="comment"># Minimum font size in px</span></span><br><span class="line">   <span class="attr">max:</span> <span class="number">30</span> <span class="comment"># Maximum font size in px</span></span><br><span class="line">   <span class="attr">amount:</span> <span class="number">200</span> <span class="comment"># Total amount of tags</span></span><br><span class="line">   <span class="attr">orderby:</span> <span class="string">name</span> <span class="comment"># Order of tags</span></span><br><span class="line">   <span class="attr">order:</span> <span class="number">1</span> <span class="comment"># Sort order</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>在文章里使用标签</p>
+ <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">Hexo</span> <span class="string">Guide</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2022-07-11 17:33:53</span></span><br><span class="line"><span class="attr">tags:</span> [<span class="string">hexo</span>, <span class="string">next</span>]</span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h5 id="分类页">分类页</h5>
+<p>操作和上面的标签页一样, 只是把 <em><strong>tags</strong></em> 修改为 <em><strong>categories</strong></em> ,分类每个文章只支持一个</p>
+<h3 id="插件">插件</h3>
+<h4 id="搜索">搜索</h4>
+<p><a href="https://github.com/theme-next/hexo-generator-searchdb">hexo-generator-searchdb</a> 用于生成搜索索引文件，其中包含您的文章的所有必要数据。</p>
+<ol>
+<li>
+<p>安装</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>编辑 <em><strong>_config.yml</strong></em> 新增配置</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">search:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">search.xml</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">post</span></span><br><span class="line">  <span class="attr">content:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">format:</span> <span class="string">html</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>编辑 <em><strong>_config_next.yml</strong></em> 文件</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">local_search:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="评论">评论</h4>
+<p>hexo-next-utteranc (<a href="https://github.com/theme-next/hexo-next-utteranc">https://github.com/theme-next/hexo-next-utteranc</a>)</p>
+<p>next 支持很多评论系统 disqus | disqusjs | changyan | livere | gitalk | utterances  这里以utterances为例</p>
+<p>utterance(<a href="https://utteranc.es/">https://utteranc.es/</a>) 原理: 在博客页面上输入评论，utterance拿到这个评论后，自动的提交到上面刚创建仓库的Issues里。</p>
+<ol>
+<li>
+<p>授权</p>
+<p>点击(<a href="https://github.com/apps/utterances">https://github.com/apps/utterances</a>) 安装githubApp 并授权指定仓库</p>
+</li>
+<li>
+<p>配置 <em>_config.next.yml</em></p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">comments:</span></span><br><span class="line">  <span class="comment"># Available values: tabs | buttons</span></span><br><span class="line">  <span class="attr">style:</span> <span class="string">tabs</span></span><br><span class="line">  <span class="comment"># 指定评论系统</span></span><br><span class="line">  <span class="attr">active:</span> <span class="string">utterances</span></span><br><span class="line"></span><br><span class="line"> <span class="attr">utterance:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#仓库名字，格式：用户ID/仓库名称</span></span><br><span class="line">    <span class="attr">repo:</span> <span class="string">Molers/BlogComment</span></span><br><span class="line">    <span class="comment">#主题</span></span><br><span class="line">    <span class="attr">theme:</span> <span class="string">github-light</span></span><br><span class="line">    <span class="comment">#映射配置 这里是跳转github后重定向的地址 取的是 url + 当前path名称，所以需要在_config.yml里配置 url为你网站的域名，才能正常跳转</span></span><br><span class="line">    <span class="attr">issue_term:</span> <span class="string">pathname</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>让某些页面不支持comments 页头设置false就行</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="number">404</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2022-07-11 17:38:27</span></span><br><span class="line"><span class="attr">comments:</span> <span class="literal">false</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="Rss">Rss</h4>
+<p>hexo-generator-feed (<a href="https://github.com/hexojs/hexo-generator-feed">https://github.com/hexojs/hexo-generator-feed</a>)</p>
+<ol>
+<li>
+<p>安装</p>
+ <figure class="highlight bash"><figcaption><span>下载</span></figcaption><table><tr><td class="code"><pre><span class="line">$ npm install hexo-generator-feed --save</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>配置</p>
+<figure class="highlight yml"><figcaption><span>_config.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">feed:</span></span><br><span class="line">   <span class="attr">enable:</span> <span class="literal">true</span> </span><br><span class="line">   <span class="attr">type:</span> <span class="string">atom</span> <span class="comment">#制定类型</span></span><br><span class="line">   <span class="attr">path:</span> <span class="string">atom.xml</span>  <span class="comment">#生成路径</span></span><br><span class="line">   <span class="attr">limit:</span> <span class="number">20</span> <span class="comment"># 文章数量限制 0/false 表示所有文章</span></span><br><span class="line">   <span class="attr">hub:</span></span><br><span class="line">   <span class="attr">content:</span></span><br><span class="line">   <span class="attr">content_limit:</span> <span class="number">140</span> <span class="comment">#文章内容限制</span></span><br><span class="line">   <span class="attr">content_limit_delim:</span> <span class="string">&#x27; &#x27;</span></span><br><span class="line">   <span class="attr">order_by:</span> <span class="string">-date</span> <span class="comment">#排序</span></span><br><span class="line">   <span class="attr">icon:</span> <span class="string">icon.png</span></span><br><span class="line">   <span class="attr">autodiscovery:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">template:</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>展示</p>
+<p>两种展示位置, 一个在文章底部, 一个在菜单栏</p>
+ <figure class="highlight yml"><figcaption><span>_config.next.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">follow_me:</span></span><br><span class="line">    <span class="comment"># 文章底部</span></span><br><span class="line">   <span class="attr">RSS:</span> <span class="string">/atom.xml</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-rss</span></span><br><span class="line"></span><br><span class="line"><span class="attr">menu:</span></span><br><span class="line">    <span class="comment"># 菜单栏</span></span><br><span class="line">   <span class="attr">RSS:</span> <span class="string">/atom.xml</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-rs</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="字体统计">字体统计</h4>
+<p>hexo-word-counter (<a href="https://github.com/next-theme/hexo-word-counter">https://github.com/next-theme/hexo-word-counter</a>)</p>
+<ol>
+<li>
+<p>安装</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-word-counter</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>配置 <em>_config.yml</em></p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">symbols_count_time:</span></span><br><span class="line">   <span class="attr">symbols:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">time:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">total_symbols:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">total_time:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">exclude_codeblock:</span> <span class="literal">false</span></span><br><span class="line">   <span class="attr">awl:</span> <span class="number">4</span></span><br><span class="line">   <span class="attr">wpm:</span> <span class="number">275</span></span><br><span class="line">   <span class="attr">suffix:</span> <span class="string">&quot;mins.&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>配置 *_config.next.yml</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">symbols_count_time:</span></span><br><span class="line">   <span class="attr">separated_meta:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">item_text_total:</span> <span class="literal">false</span></span><br><span class="line">   <span class="attr">symbols:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="脚注">脚注</h4>
+<p>hexo-footnotes (<a href="https://github.com/LouisBarranqueiro/hexo-footnotes">https://github.com/LouisBarranqueiro/hexo-footnotes</a>)</p>
+<ol>
+<li>
+<p>安装</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-footnotes --save</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="支持Latex公式">支持Latex公式</h4>
+<p>hexo-footnotes (<a href="https://github.com/LouisBarranqueiro/hexo-footnotes">https://github.com/LouisBarranqueiro/hexo-footnotes</a>)</p>
+<ol>
+<li>
+<p>配置 *_config.next.yml</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">math:</span></span><br><span class="line">  <span class="attr">every_page:</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">mathjax:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># Available values: none | ams | all</span></span><br><span class="line">    <span class="attr">tags:</span> <span class="string">none</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>配置文档</p>
+ <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">mathjax:</span> <span class="literal">true</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>处理步骤</p>
+<p>Hexo 中的 Markdown 引擎把 Markdown 变为 html 文件<br>
+MathJax 负责解释 html 的数学公式</p>
+<p>第一步中，由于 backslash 在 Markdown 属于特殊字符，用于字符转义，所以两个 backslash 经过 Markdown 引擎处理，只剩下一个，等到 MathJax 引擎处理时，实际上 MathJax 只看到一个 backslash，MathJax 把它当作 LaTeX 中的空格，因此我们见到了上图所示的渲染结果。</p>
+<p>知道了渲染错误的原因，解决办法也很简单，就是用四个 backslash 代替两个 backslash，确保 MathJax 的引擎看到的是两个 backslash，对于公式换行，把公式里的2个{\} 变成4个{\}</p>
+</li>
+</ol>
+<h3 id="部署">部署</h3>
+<h4 id="Git">Git</h4>
+<h5 id="git管理源码">git管理源码</h5>
+<p>推荐使用 <em><strong>${username}.github.io</strong></em> 仓库管理源代码，两个分支 一个hexo保存源码信息， 一个main保存生成的静态文件用于部署。</p>
+<ol>
+<li>在你的hexo 目录下执行 <em>git init</em></li>
+<li>git checout ${branchname}</li>
+<li>git remote add ${name} <code>https://github.com/username/username.github.io</code></li>
+<li>git add .</li>
+<li>git commit -m “init hexo”;</li>
+<li>git push</li>
+</ol>
+<h5 id="部署静态文件">部署静态文件</h5>
+<p>Hexo 提供了快速方便的一键部署功能，让您只需一条命令就能将网站部署到服务器上。 这里推荐git部署</p>
+<ol>
+<li>
+<p>安装 hexo-deployer-git</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装</span></span><br><span class="line">$ npm install hexo-deployer-git</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>修改**_config.yml**文件里的deploy值</p>
+ <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">   <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">   <span class="attr">repo:</span> <span class="string">git@github.com:&#123;$username&#125;/&#123;$username&#125;.github.io.git</span> <span class="comment"># Repository</span></span><br><span class="line">   <span class="attr">branch:</span> <span class="string">main</span> <span class="comment">#[branch]</span></span><br><span class="line">   <span class="attr">message:</span> <span class="string">update</span> <span class="string">Hexo</span> <span class="string">Static</span> <span class="string">Content</span> <span class="comment">#commit message</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>生成站点文件并推送至远程库执行</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 清理并发布</span></span><br><span class="line">$ hexo clean &amp;&amp; hexo deploy</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>登入Github，请在库设置（Repository Settings）中将默认分支设置为<em>步骤2</em> _config.yml配置中的分支名称。</p>
+</li>
+<li>
+<p>稍等片刻，您的站点就会显示在您的Github Pages中 <code>https://$&#123;username&#125;.github.io</code></p>
+</li>
+</ol>
+<h5 id="这一切是如何发生的">这一切是如何发生的</h5>
+<p>当执行 hexo deploy 时，Hexo 会将 public 目录中的文件和目录推送至 _config.yml 中指定的远端仓库和分支中，并且完全覆盖该分支下的已有内容。</p>
+<h4 id="疑难解答">疑难解答</h4>
+<ol>
+<li>
+<p>Spawn failed</p>
+ <figure class="highlight plaintext"><figcaption><span>问题</span></figcaption><table><tr><td class="code"><pre><span class="line">fatal: unable to access &#x27;https://github.com/$&#123;username&#125;/$&#123;username&#125;.github.io/&#x27;: OpenSSL SSL_read: Connection was reset, errno 10054</span><br><span class="line">FATAL &#123;</span><br><span class="line">err: Error: Spawn failed</span><br><span class="line">    at ChildProcess.&lt;anonymous&gt; (E:\develop\hello\node_modules\hexo-util\lib\spawn.js:51:21)</span><br><span class="line">    at ChildProcess.emit (node:events:527:28)</span><br><span class="line">    at ChildProcess.cp.emit (E:\develop\hello\node_modules\cross-spawn\lib\enoent.js:34:29)</span><br><span class="line">    at Process.ChildProcess._handle.onexit (node:internal/child_process:291:12) &#123;</span><br><span class="line">    code: 128</span><br><span class="line">&#125;</span><br><span class="line">&#125; Something&#x27;s wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+ <figure class="highlight bash"><figcaption><span>解决</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment"># 切换到博客根目录</span></span><br><span class="line"><span class="built_in">cd</span> hexo-site</span><br><span class="line"><span class="comment"># 删除此文件</span></span><br><span class="line"><span class="built_in">rm</span> -rf .deploy_git/</span><br><span class="line"><span class="comment"># git 配置换行符转换</span></span><br><span class="line">git config --global core.autocrlf <span class="literal">false</span></span><br><span class="line"><span class="comment"># 部署</span></span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br><span class="line"><span class="comment"># 修改部署的仓库地址http地址为git@github.com开通的地址</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>博客指南</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>next</tag>
       </tags>
   </entry>
   <entry>
@@ -1074,292 +799,519 @@ $</p>
       </tags>
   </entry>
   <entry>
-    <title>博客指南</title>
-    <url>/2022/07/11/hexo-guide/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>欢迎来到我的博客!</p>
-<p>感谢 <a href="https://pages.github.com/">GithubPage</a> + <a href="https://hexo.io/zh-cn/">Hexo</a> + <a href="https://theme-next.js.org/">next</a>。<br>
-感谢开源世界，让搭建一个属于自己的博客变的十分便捷。我以后也会在这里分享关于编程和生活的一些东西。</p>
-<p>以下是我个人搭建博客的步骤:</p>
-<h2 id="Hexo">Hexo</h2>
-<p><a href="https://hexo.io/zh-cn/docs/">Hexo</a> 是一个快速、简洁且高效的博客框架</p>
-<h3 id="安装">安装</h3>
-<h4 id="前置准备">前置准备</h4>
+    <title>计算机中的二进制-浮点数</title>
+    <url>/2022/08/11/binary2/</url>
+    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>数据是对事实、概念或指令的一种特殊表达形式，这种特殊表达形式可由人工或自动化装置进行处理。在计算机内部，数字、文字、图形、图像、声音、视频等都不能直接由计算机进行处理和存储，它们必须采取”特殊的表达形式“才能由计算机进行通信、转换或加工处理。这种特殊的表达形式就是二进制编码形式，<strong>在计算机系统中的数据均是以二进制编码形式出现的</strong>。</p>
+<p>这一节我们思考以下问题：</p>
 <ul>
+<li>计算机如何表示小数点</li>
+<li>什么是浮点数</li>
+<li>浮点数的为什么存在精度问题</li>
+<li>为什么32位的float表示范围比64位的long类型还大</li>
+<li>计算机中浮点数是如何运算的</li>
+</ul>
+<h2 id="二进制中的小数">二进制中的小数</h2>
+<p>前面讲过，计算机中只能识别和表示$0$和$1$，无法识别小数点，因此在计算机中处理日常中的小数数据，必须解决小数点的表示，计算机中通过采用相应的定点与浮点表示规则来解决这个问题。</p>
+<h3 id="定点表示">定点表示</h3>
+<p>定点表示法就是约定小数点的位置，且这个位置固定不变，小数点前、后的数字，分别用二进制表示，然后组合起来就可以把这个数字在计算机中存储起来，这种表示方式叫做「定点」表示法，用这种方法表示的数字叫做「定点数」。</p>
+<ol>
 <li>
-<p>安装nodeJs并配置 (<a href="http://nodejs.cn/learn/introduction-to-nodejs">http://nodejs.cn/learn/introduction-to-nodejs</a>)</p>
-  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看是否安装成功</span></span><br><span class="line">$ node -v </span><br></pre></td></tr></table></figure>
+<p>对于整数，其小数点总是固定在数的最右边，忽略不写。</p>
+<p>$100_{D} = 01100100_{B}$</p>
 </li>
 <li>
-<p>安装Git并配置 <code>https://git-scm.com/</code></p>
-  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看是否安装成功</span></span><br><span class="line">$ git --version</span><br></pre></td></tr></table></figure>
+<p>对于纯小数，其小数点总是固定在数的最左边，因此可以采用一种”定点小数“来表示它。</p>
+<p>$0.125_{D} = 0.00100000_{B}$</p>
 </li>
 <li>
-<p>安装Hexo</p>
-  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 全局安装</span></span><br><span class="line">$ npm install -g hexo-cli</span><br><span class="line"></span><br><span class="line"><span class="comment"># 局部安装</span></span><br><span class="line">$ npm install hexo</span><br><span class="line"></span><br><span class="line"><span class="comment"># 命令执行 两种方式</span></span><br><span class="line">1. $ npx hexo &lt;<span class="built_in">command</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># Hexo 所在的目录下的 node_modules 添加到环境变量 直接使用 hexo &lt;command&gt; linux为例</span></span><br><span class="line">2. <span class="built_in">echo</span> <span class="string">&#x27;PATH=&quot;$PATH:./node_modules/.bin&quot;&#x27;</span> &gt;&gt; ~/.profile</span><br></pre></td></tr></table></figure>
+<p>对于整数+小数形式，约定小数点位置</p>
+<p>假设8(bit)为例子，约定前5位表示整数部分，后3位表示小数部分<br>
+$1.5(D) = 00001 \ 100(B)$<br>
+$25.125(D) = 1100 \ 1001(B)$</p>
+<p>用一个定点数来表示整数+小数，分为以下步骤：</p>
+<ul>
+<li>在有限的bit宽度下，先约定小数点的位置</li>
+<li>整数部分和小数部分，分别转换为二进制表示</li>
+<li>两部分二进制组合起来即是结果</li>
+</ul>
+<p>但是整数位的5位二进制的最大值是$11111_{B}$，十进制则是$2^4-1=31_{D}$,小数位的3位二进制，最大的是$0.111_{B}$，即十进制的$0.875_{D}$。</p>
+<p>要表示更大范围的数，就需要扩大bit的宽度或者改变小数点的位置，小数点向后移动，整个数字范围就会扩大，但是小数部分的精度就会越来越低，没有办法表示类似$0.00001$这种高精度的值。</p>
+</li>
+</ol>
+<h3 id="浮点表示">浮点表示</h3>
+<p>在计算机内部，因为进行数据存储、运算和传输的部件的位数都是有限的，所以不管采用什么表数方法，都只能表示一定范围内的的有限个数。<br>
+定点数表示小数时，固定的小数点位置决定了固定位数的整数部分和小数部分，不利于同时表达特别大的数或者特别小的数。<br>
+因此，最终绝大多数现代的计算机系统都采纳了所谓的浮点数表达法。所以在计算机中，我们一般使用<strong>浮点数</strong>来表示小数。</p>
+<p>之前我们学习了定点数，其中「定点」指的是约定小数点位置固定不变。那浮点数的「浮点」就是指，其小数点的位置是可以是漂浮不定的。</p>
+<p>浮点数是采用<strong>科学计数法</strong>的方式来表示的，我们先以十进制小数举例，例如8.345，用科学计数法表示，可以有多种方式：</p>
+<p>$<br>
+\begin{aligned}<br>
+8.345&amp;=8.345\times10^0\\<br>
+&amp;=83.45\times10^-1\\<br>
+&amp;=834.5\times10^-2<br>
+\end{aligned}<br>
+$</p>
+<p>因为这种表达的多样性，因此有必要对其加以规范化以达到统一表达的目标。规范的浮点数表达方式具有如下形式：</p>
+<p>$$<br>
+\pm d.dd…d \times \beta^{e} (0 \leq d_{i} &lt; \beta)<br>
+$$</p>
+<p>其中，d.dd…d 为有效数字，$β$为基数，$e$为指数。<br>
+有效数字中数字的个数称为精度，我们可以用$p$来表示，即可称为$p$位有效数字精度。每个数字$d$介于$0$和基数$β$之间，可以写成以下形式：<br>
+$$<br>
+\pm (d_0 + d_{1}\beta^{-1}+…+d_{p-1}\beta^{-(p-1)}) \times \beta^{e} (0 \leq d_{i} &lt; \beta)<br>
+$$</p>
+<p>其中，对十进制的浮点数，即基数$β$等于$10$的浮点数而言，上面的表达式非常容易理解。<br>
+如 12.34，我们可以根据上面的表达式表达为：$1×10^1+2×10^0+3×10^{-1}+4×10^{-2}$，其规范浮点数表达为$1.234×10^1$。</p>
+<p>使用同样的规则，对于二进制数，我们也可以用科学计数法表示，也就是说把基数$10$换成$2$即可。而每个数字$d$只能在$0$和$1$之间取值。如二进制数$1001.101$，我们可以根据上面的表达式表达为：$1×2^3+0×2^2+0×2^1+1×2^0+1×2^{-1}+0×2^{-2}+1×2^{-3}$，其规范浮点数表达为 $1.001101×2^3$。</p>
+<h3 id="IEEE-浮点数标准">IEEE 浮点数标准</h3>
+<p>直到 20 世纪 80 年代（即在没有制定 IEEE 754 标准之前），业界还没有一个统一的浮点数标准。相反，很多计算机制造商根据自己的需要来设计自己的浮点数表示规则，以及浮点数的执行运算细节。另外，他们常常并不太关注运算的精确性，而把实现的速度和简易性看得比数字的精确性更重要，而这就给代码的可移植性造成了重大的障碍。</p>
+<p>一个统一的标准应用而生：IEEE 于 1985 年制订了二进制浮点运算标准 IEEE 754，该标准限定指数的底为 2，并于同年被美国引用为 ANSI 标准。目前，几乎所有的计算机都支持 IEEE 754 标准，它大大地改善了科学应用程序的可移植性。</p>
+<p>IEEE 浮点数标准是从逻辑上用三元组{S，E，M}来表示一个数 V 的。</p>
+<p>$<br>
+V = (-1)^S\times M \times 2^E  (1 \leq M &lt; 2)<br>
+$</p>
+<p>其中各个变量的含义如下：</p>
+<ul>
+<li>S(Sign)：符号位，取值 0 或 1，决定一个数字的符号，0 表示正，1 表示负；</li>
+<li>M(Mantissa)：尾数位，也称为有效数字位，是二进制小数；</li>
+<li>E(Exponent)：指数，用整数表示，是 2 的幂（可能是负数），它的作用是对浮点数加权，E的值确定小数的位置；</li>
+</ul>
+<p>在计算机中，把浮点数的位表示划分为3段：</p>
+<ul>
+<li>一个单独的符号位 s；</li>
+<li>k 位的阶码字段 $exp=e_{k−1}…e_1e_0$ 编码阶码 $E$；</li>
+<li>n 位小数字段 $frac=f_{n−1}…f_1f_0$ 编码尾数$M$，编码出来的值依赖于阶码字段的值是否等于0；</li>
+</ul>
+<table width="%50">
+    <tr>
+        <td width="10%">S（符号位）</td>
+        <td width="15%">E（指数位）</td>
+        <td width="25%">M（尾数位）</td>
+    </tr>
+</table>
+<p>举例来说：</p>
+<p>10进制中的$9.0$在二进制中写成$1001.0$，也就是 $1.001×2^3$，按照上面的格式，可以算出 $S=0, M=1.001, E=3$。</p>
+<p>IEEE754规定，对于32位的浮点数，最高的1位是符号位$S$，接着的8位是指数$E$，剩下的23位为有效数字$M$。</p>
+<p><img src="../images/binary2/v2-32e425cdb908c47586267e59228fcd22_720w.png" alt="bin-32"></p>
+<p>对于64位的浮点数，最高的1位是符号位$S$，接着的11位是指数$E$，剩下的52位为有效数字$M$。</p>
+<p><img src="../images/binary2/bin-64.png" alt="bin-64"></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>名称</strong></th>
+<th style="text-align:center"><strong>类型</strong></th>
+<th style="text-align:center"><strong>位数</strong></th>
+<th style="text-align:center"><strong>符号位</strong></th>
+<th style="text-align:center"><strong>指数位</strong></th>
+<th style="text-align:center"><strong>尾数位</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">双精度浮点数</td>
+<td style="text-align:center">float</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">23</td>
+</tr>
+<tr>
+<td style="text-align:center">双精度浮点数</td>
+<td style="text-align:center">double</td>
+<td style="text-align:center">64</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">52</td>
+</tr>
+</tbody>
+</table>
+<p>对于上述位的表示，根据阶段$exp$的表示，IEEE754浮点数包含三种状态：</p>
+<p>以32位浮点数为例, 其内存状态分为3部分: 1位符号位 8位指数位 23位尾数位</p>
+<ol>
+<li>
+<p>如果8位指数位全为0, 就代表当前数是个非规格数。 用于表示0, 以及非常靠近0的数, 比如1E-38.</p>
+</li>
+<li>
+<p>如果8位指数位全为1, 就代表当前数是个特殊数。 用于表示&quot;无穷&quot;和&quot;NaN&quot;:</p>
+</li>
+<li>
+<p>如果8位指数不全为0, 也不全为1(也就是除去以上两种状态外, 剩下的所有状态), 这个数就是规格数。 用于表示最常见的数值, 比如1.2, 34567, 7.996, 0.2. 但规格数不能表示0和非常靠近0的数.</p>
+</li>
+</ol>
+<p><img src="../images/binary2/v2-e122b76cc864dec6b9317a1bb0e76f9b_r.png" alt="浮点数"></p>
+<p>↑ 绿色区域就是32位浮点数中规格数的取值范围, 可见它取不到0和靠近0的极小数</p>
+<p>↑ 红色区域包含0和靠近0的极小数, 红色区域其实是非规格数的取值范围。</p>
+<p>下面分别对三种状态进行详细展开：</p>
+<h4 id="规格化的值（normal-number）">规格化的值（normal number）</h4>
+<p>这是一般的情况，当$exp$的二进制表示中<strong>既不全为0，也不全为1</strong>都是规格化数组。这种情况下，阶码字段被解释为以偏置（biased）形式表示的有符号整数。</p>
+<h5 id="指数偏移量（exponent-bias）">指数偏移量（exponent bias）</h5>
+<p><em>指数偏移量</em> 指浮点数表示法中的指数域的编码值为指数的实际值加上某个固定的值，IEEE标准规定该固定值为$2^{k-1}-1$ ，其中的$k$为存储指数的比特的长度。</p>
+<p>那么偏移量解决的时什么问题呢，以float为例，指数E的指数位为8位bit，那么表示的范围是$[0, 2^8-1]$，即$[0, 255]$，指数可以为正数，也可以为负数，因此范围就是$[-127,127]$，但是二进制是无符号的，为了解决负数表示的问题，又不引入其他概念，就引入了偏移量（移码、偏置码）的概念，用无符号数来表示有符号数；</p>
+<p>也就是说，阶码的值是$E=e-Bias$，其中$e$是无符号数。</p>
+<p>例如指数$E=-126$ , 那么在指数域的表示就应该是$-126+127=1_{D}={00000001}<em>B$；同样，指数$E=127$，那么指数域的表示就应该是$127+127=254</em>{D}=11111110_{B}$</p>
+<p>因为偏移量的存在由此产生指数的取值范围是：单精度为 $-126 \leq E \leq +127$，双精度为 $-1022 \leq E \leq +1023$。</p>
+<h5 id="隐藏位">隐藏位</h5>
+<p>小数字段$frac$被解释为描述小数值$f$， 其中$0 \leq f &lt;1$，其二进制表示为$0.f_{n−1}⋯f_{1}f_{0}$，也就是二进制小数点在最高有效位的左边。<br>
+尾数定义为$M=1+f$。我们可以把$M$看成是一个$1.f_{n−1}f_{n−2}…f_{0}$的数字。尾数$M$的第一位总是$1$（$1 \leq M &lt;2$），因此这个$1$可以省略不写，它是个<em>隐藏位</em>，这样单精度23位尾数可以表示了24位有效数字，双精度52位尾数可以表示53位有效数字。</p>
+<p>我们来举例说明一下，$8.25$用 float 表示的二进制应该是什么样子的：</p>
+<p>$<br>
+\begin{aligned}<br>
+8_{D} = 1000_{2}  \quad &amp;先转换整数位 \\<br>
+0.25_{D} = 0.1_{2} \quad &amp;再转换小数位 \\<br>
+8.25_{D} = 1000.01_{2}  \quad &amp;组合起来 \\<br>
+1000.01 = 1.00001 \times 2^3 &amp;书写成科学计数法方式 \\<br>
+\end{aligned}<br>
+$</p>
+<p>因为8.25是正数，所以$S=0$，指数$E=3$，所以指数段为$3+127=130_{D}=10000010_{B}$，有效数字省略掉小数点左侧的$1$之后为00001，然后在右侧用零补齐。因此所得的最终结果为：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">0</th>
+<th style="text-align:center">10000010</th>
+<th style="text-align:center">00001000000000000000000</th>
+</tr>
+</thead>
+</table>
+<p>也可以转换成16进制数，每4位一组划分：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">0100</th>
+<th style="text-align:center">0001</th>
+<th style="text-align:center">0000</th>
+<th style="text-align:center">0100</th>
+<th style="text-align:center">0000</th>
+<th style="text-align:center">0000</th>
+<th style="text-align:center">0000</th>
+<th style="text-align:center">0000</th>
+</tr>
+</thead>
+</table>
+<p>即$41040000_{H}$</p>
+<p><img src="../images/binary2/float.jpg" alt="float"></p>
+<p>推荐一个工具地址<a href="https://www.h-schmidt.net/FloatConverter/IEEE754.html">FloatConverter</a>，可以清楚查看浮点数的二进制形式。</p>
+<p>也可以用java代码验证下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    System.out.println(Math.getExponent(<span class="number">8.25</span>)); <span class="comment">//指数E 3</span></span><br><span class="line">    System.out.println(Integer.toBinaryString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//二进制码正数省略了最前面的0 -&gt; 1000001000001000000000000000000</span></span><br><span class="line">    System.out.println(Integer.toHexString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//十六进制码 41040000</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>32位浮点数中, 规格数的取值范围: $(-2\times2^{127},-1\times2^{-126}] \cup [1\times2^{-126},2\times2^{127}) $</p>
+<p>我们知道规格数的尾数大于等于1，一个始终大于1的数 乘以 一个始终大于0的数, 永远无法等于0，事实上，$1(尾数最小值) \times 2^{-127}(指数最小值) = 2^{-127}$</p>
+<p>$2^{-127}$就是当前我们能表示的最小值，使用规格数时, 我们除了无法表示0, 也无法表示(0, 2^-127)之间的, 靠近0的极小数…，非规格化数解决了这个问题。</p>
+<h4 id="非规格化的值（subnormal-number）">非规格化的值（subnormal number）</h4>
+<p>当阶码位全为0时，表示的数就是非规格化的形式。这种情况下，阶码的值是$E=1−Bias$，和规格化数的阶码计算方式不一致，后面会讲到原因。<br>
+float是-126，double是-1022，而有效数字的值是$M=f$，也就是小数字段的值不包括隐含的1，范围是[0,1)。</p>
+<p><img src="../images/binary2/2-1PZ511393c48.jpg" alt="unnormal"></p>
+<p>非规格化的取值范围：所以尾数位的取值范围是[0.00000000000000000000000, 0.11111111111111111111111] (二进制)</p>
+<p>非规格数尾数的取值范围是[0, 1), 指数固定为-126. 这就很简单了, 让尾数取0不就能表示数值0了:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">符号位S</th>
+<th style="text-align:right">指数</th>
+<th style="text-align:center">实际指数</th>
+<th style="text-align:center">指数域E</th>
+<th style="text-align:center">尾数域M</th>
+<th style="text-align:center">数值</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:right">$e=e_{min}-1$</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0000 0000</td>
+<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
+<td style="text-align:center">+0</td>
+<td style="text-align:center">正数0</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:right">$e=e_{min}-1$</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0000 0000</td>
+<td style="text-align:center">100 0000 0000 0000 0000 0000</td>
+<td style="text-align:center">-0</td>
+<td style="text-align:center">负数0</td>
+</tr>
+</tbody>
+</table>
+<p>非规格数的取值范围: ($-1\times2^{-126}$,$1\times2^{-126}$)</p>
+<p>结合上面提到的规格数的取值范围：$(-2\times2^{127},-1\times2^{-126}] \cup [1\times2^{-126},2\times2^{127})$</p>
+<p>刚好组成一个完整的范围：$(-2\times2^{127},2\times2^{127})$</p>
+<p>非规格化数有两个用途。</p>
+<ol>
+<li>它们提供了一种表示数值0的方法，因为使用规格化数时，必须总是使$M \geq 1$，这样就不能表示0。实际上，+0.0的浮点表示的位模式为全0：符号位是0，阶码字段全为0（表示是一个非规格化的值），而小数域也全为0，这就得到$M=f=0$。但当符号位为1，其他域全为0时，会得到−0.0。根据IEEE的浮点格式，值 +0.0 和 −0.0在某些方面被认为是不同的，而在其他方面是相同的。</li>
+<li>另外一个功能是表示哪些非常接近于$0.0$的数。它们提供了一种属性，称为<strong>逐渐溢出</strong>（gradual underflow），其中，可能的数值分布均匀地接近于 0.0。</li>
+</ol>
+<h4 id="逐渐溢出（gradual-underflow）">逐渐溢出（gradual underflow）</h4>
+<p>前文说过, 非规格数尾数的取值范围是[0, 1), 指数固定-126，所以是尾数的变化在导致非规格数的值变大。</p>
+<p>$0 \ 00000000 \ 00000000000000000000001$ &gt; $0 \ 00000000 \ 00000000000000000000000$</p>
+<p>$0 \ 00000000 \ 11111111111111111111111$ 这是非规格数的最大值，此时尾数(带上隐藏的整数部分0.)其实是0.11111111111111111111111, 是个比1小一点点的数, 记做$(1 - \epsilon)$，此时非规格数的值就是: $(1-\epsilon) \times 2^{-126}$</p>
+<p>我们再往前前进一格, 就会进入<em>规格化数</em>的范围： $0 \ 00000001 \ 00000000000000000000000$ ，这是一个最小规格化数，其尾数位的值: 其实隐藏了1，或者说, 此时真正的尾数应该是1.00000000000000000000000 , 也就是1。其指数位的值是1, 则实际指数应该是$1-bias=1-127=-126$。</p>
+<p>我们来看一下：非规格化数的最大值是： $(1-\epsilon) \times 2^{-126}$，规格化数的最小值是： $1\times 2^{-126}$，两者实现了非常平滑的过度，非规格化数一点点逐渐变大，最后其最大值平稳的衔接上了规格化数的最小值。这种特性就叫做<em>逐渐溢出</em>。</p>
+<p>这就解释了两个问题：</p>
+<ol>
+<li>
+<p>为什么规定非规格数的尾数前隐藏的整数部分是 0. 而规格数尾数前隐藏的整数部分是1.</p>
+<p>因为非规格化数的尾数取值范围是[0,1)，而规格化数的尾数取值范围是[1,2)，两者平滑过度，紧密衔接。</p>
+</li>
+<li>
+<p>为什么非规格数的真实指数的计算公式是$1-bias$, 而规格数的真实指数的计算公式是$2^{k-1}-1 (k是存储指数的有效位数)$</p>
+<p>以32位浮点数为例：非规格化数的指数固定位-126，而规格化数的指数是[-126,127]，两者也平滑衔接。</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>描述</strong></th>
+<th style="text-align:center"><strong>指数段</strong></th>
+<th style="text-align:center"><strong>E</strong></th>
+<th style="text-align:center"><strong>小数段</strong></th>
+<th style="text-align:center"><strong>M</strong></th>
+<th style="text-align:center"><strong>二进制值</strong></th>
+<th style="text-align:center"><strong>十进制值</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">最小非规格化值</td>
+<td style="text-align:center">00000000</td>
+<td style="text-align:center">-126</td>
+<td style="text-align:center">00000000000000000000001</td>
+<td style="text-align:center">0.000000000000000000001</td>
+<td style="text-align:center">$-1 \times (2-2^{-23}) \times 2^{-126} $</td>
+<td style="text-align:center">$1.40129846432e-45$</td>
+</tr>
+<tr>
+<td style="text-align:center">最大非规格化值</td>
+<td style="text-align:center">00000000</td>
+<td style="text-align:center">-126</td>
+<td style="text-align:center">11111111111111111111111</td>
+<td style="text-align:center">0.11111111111111111111111</td>
+<td style="text-align:center">$(1-\epsilon) \times 2^{-126}$</td>
+<td style="text-align:center">$1.17549421069e-38$</td>
+</tr>
+<tr>
+<td style="text-align:center">最小规格化值</td>
+<td style="text-align:center">00000001</td>
+<td style="text-align:center">-126</td>
+<td style="text-align:center">00000000000000000000000</td>
+<td style="text-align:center">1.00000000000000000000000</td>
+<td style="text-align:center">$1\times 2^{-126}$</td>
+<td style="text-align:center">$2.35098856151e-38$</td>
+</tr>
+<tr>
+<td style="text-align:center">最大规格化值</td>
+<td style="text-align:center">11111110</td>
+<td style="text-align:center">127</td>
+<td style="text-align:center">11111111111111111111111</td>
+<td style="text-align:center">1.1111111111111111111111</td>
+<td style="text-align:center">$(2-\epsilon) \times 2^{127}$</td>
+<td style="text-align:center">$3.40282346639e+38$</td>
+</tr>
+</tbody>
+</table>
+<h4 id="特殊数值（non-number）">特殊数值（non-number）</h4>
+<p>IEEE 标准指定了以下特殊值:$\pm 0,+\infty,-\infty,NaN$，（如下表所示，以float为例）。<br>
+当阶码全为1时出现的。当小数域全为0时，得到的值表示无穷。当把两个非常大的数相乘，或者除以0时，无穷可以表示溢出的结果。当小数域为非零时，结果值被称为”NAN“。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">符号位S</th>
+<th style="text-align:right">指数</th>
+<th style="text-align:center">实际指数</th>
+<th style="text-align:center">指数域E</th>
+<th style="text-align:center">尾数域M</th>
+<th style="text-align:center">数值</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:right">$e=e^{max}+1$</td>
+<td style="text-align:center">255</td>
+<td style="text-align:center">1111 1111</td>
+<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
+<td style="text-align:center">$+\infty$</td>
+<td style="text-align:center">正无穷大</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:right">$e=e^{max}+1$</td>
+<td style="text-align:center">255</td>
+<td style="text-align:center">1111 1111</td>
+<td style="text-align:center">000 0000 0000 0000 0000 0000</td>
+<td style="text-align:center">$-\infty$</td>
+<td style="text-align:center">负无穷大</td>
+</tr>
+<tr>
+<td style="text-align:center">*</td>
+<td style="text-align:right">$e=e^{max}+1$</td>
+<td style="text-align:center">255</td>
+<td style="text-align:center">1111 1111</td>
+<td style="text-align:center">非0</td>
+<td style="text-align:center">NaN</td>
+<td style="text-align:center">非数字，用来表示一些特殊情况</td>
+</tr>
+</tbody>
+</table>
+<p>当要存储的数大于规格数取值范围的最大值时, 就会被记做+infinity, 比如2^128, 刚刚超过规格数的取值范围的最大值, 就会被记做+infinity</p>
+<p>当要存储的数小于规格数取值范围的最小值时, 就会被记做-infinity, 比如-2^128, 刚刚小于规格数的取值范围的最小值, 就会被记做-infinity</p>
+<p>规格化数的最大值是：$0 \ 11111110 \ 11111111111111111111111$，尾数位其实是1.11111111111111111111111, 非常接近2, 记做$2-\epsilon$，指数是127，</p>
+<p>所以最大值记作$(2-\epsilon) \times 2^{127}$。+infinity的内存状态则是:$0 \ 11111111 \ 00000000000000000000000$, 尾数其实是: 1.00000000000000000000000, 等于1，指数是128，可见规格数的最大值也能和$+infinity$平滑衔接. $-infinity$同理。</p>
+<p>三种状态结合起来就表示了整个数轴：</p>
+<p><img src="../images/binary2/v2-1b6f26cad2e694e143016cbe6094c80e_r.png" alt="数轴"></p>
+<p>NaN 简单说一下，其实就是一种标记状态，表示计算出来的不是一个数字，例如$\sqrt{-1}$</p>
+<p>下表是一些IEEE754示例：</p>
+<p><img src="../images/binary2/v2-6a0cba57252a92ddbd8afc9fd4b2922a_r.jpg" alt="example"></p>
+<h3 id="浮点数精度问题">浮点数精度问题</h3>
+<p>了解了浮点数在计算机中如何存储的后，就可以发现浮点数必定存在精度问题，因为有效位数的限制，超过的部分会被舍弃，就会出现精度丢失。</p>
+<p>例如：0.4，我们来用float表示一下，先转换成二进制：</p>
+<p>$<br>
+\begin{aligned}<br>
+0_{D}=0_{B}  \quad &amp;先转换整数位 \\<br>
+0.4_{D}=0.11001100110011001100110…{B} \quad &amp;再转换小数位 \\<br>
+0.4_{D}=0.011001100110011001100110…{B} （0011 无限循环） \quad &amp;组合起来 \\<br>
+0.011001100110011001100110_{B}=1.1001100110011001100110… \times 2^{-2} &amp;书写成科学计数法方式 \\<br>
+\end{aligned}<br>
+$</p>
+<p>因为8.25是正数，所以$S=0$，指数$E=-2$，所以指数段为$-2+127=125_{D}=01111101_{B}$，有效数字省略掉小数点左侧的$1$之后为10011001100110011001100…，由于单精度浮点数尾数只有23位，所以需要舍入（舍入方法见后），由于第24位为1，且之后不全为0，所以需要向第23位进1完成上舍入：1.10011001100110011001101。因此所得的最终结果为：$00111110110011001100110011001101$ (此时就出现了精度损失)。</p>
+<h3 id="浮点数的范围">浮点数的范围</h3>
+<p>我们再来看一下，用浮点数表示一个数字，其范围和精度能有多大？</p>
+<p>以float为例，它能表示的最大数肯定是指数域$E=127$，尾数域$M=1.111…1（小数点后23个1）$</p>
+<h3 id="浮点数的计算">浮点数的计算</h3>
+<h4 id="加减运算">加减运算</h4>
+<ul>
+<li>零操作数的判断
+<ul>
+<li>$a+b(b=0)=a$</li>
+<li>$a-b(b=0)=a, a-b(a=0)=-b$</li>
+</ul>
+</li>
+<li>对阶
+<ul>
+<li>已阶码大（绝对值）的为标准，阶码较小的，向较大的对齐，为了避免阶码较大的浮点数尾数左移导致最高位的丢失</li>
+<li>求阶差$\triangle M=E_x-E_y$</li>
+<li>调整阶码较小的数据
+<ul>
+<li>若$\triangle M &gt; 0$，则$M_Y$右移$\triangle M$位，结果的阶码为$E_X$</li>
+<li>若$\triangle M &lt; 0$，则$M_X$右移$\triangle M$位，结果的阶码为$E_Y$</li>
+</ul>
 </li>
 </ul>
-<h4 id="启动">启动</h4>
-<ol>
-<li>
-<p>安装完hexo执行以下命令</p>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 初始化 此folder 就是下面文档里的 $&#123;hexo-site&#125;</span></span><br><span class="line">$ hexo init &lt;folder&gt;</span><br><span class="line">$ <span class="built_in">cd</span> &lt;folder&gt;</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
 </li>
-<li>
-<p>执行完成后目标文件夹的目录结构</p>
- <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds</span><br><span class="line">├── source</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts</span><br><span class="line">└── themes</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>运行<em>hexo server</em>访问 (<a href="http://localhost:4000/">http://localhost:4000/</a>)</p>
-</li>
-</ol>
-<h3 id="配置">配置</h3>
-<h4 id="主题">主题</h4>
-<p>hexo 有很多主题 这里已Next为例 Next(<a href="https://theme-next.js.org/">https://theme-next.js.org/</a>)</p>
-<ol>
-<li>
-<p>安装</p>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 移动到hexo 安装目录</span></span><br><span class="line">$ <span class="built_in">cd</span> hexo-site</span><br><span class="line">$ <span class="built_in">ls</span></span><br><span class="line">_config.yml  node_modules  package-lock.json  package.json  scaffolds  <span class="built_in">source</span>  themes</span><br></pre></td></tr></table></figure>
-<ul>
-<li>npm安装</li>
+<li>尾数求和</li>
+<li>规格化</li>
+<li>舍入</li>
+<li>溢出判断</li>
 </ul>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-theme-next</span><br></pre></td></tr></table></figure>
+<p>浮点数的表示有一定的范围，超出范围时会产生溢出（Flow），一般称大于绝对值最大的数据为上溢（Overflow），小于绝对值最小的数据为下溢（Underflow）。</p>
+<h4 id="乘除运算">乘除运算</h4>
+<h4 id="浮点数舍入方式">浮点数舍入方式</h4>
+<p>舍入误差是指运算得到的近似值和精确值之间的差异。大家知道，由于计算机的字长有限，因此在进行数值计算的过程中，对计算得到的中间结果数据要使用相关的舍入规则来取近似值，而这导致计算结果产生误差。</p>
+<p>在浮点数的舍入问题上，IEEE浮点格式定义了 4 种不同的舍入方式，如下表所示。其中，默认的舍入方法是向偶数舍入，而其他三种可用于计算上界和下界。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>名称</strong></th>
+<th style="text-align:center"><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">向偶数舍入</td>
+<td style="text-align:center">也称为向最接近的值舍入，会将结果舍入为最接近且可以表示的值</td>
+</tr>
+<tr>
+<td style="text-align:center">向0舍入</td>
+<td style="text-align:center">会将结果朝0方向舍入</td>
+</tr>
+<tr>
+<td style="text-align:center">向上舍入</td>
+<td style="text-align:center">向$+\infty$方向舍入，会将结果朝正无穷大的方向舍入</td>
+</tr>
+<tr>
+<td style="text-align:center">向下舍入</td>
+<td style="text-align:center">向$-\infty$方向舍入，会将结果朝负无穷大的方向舍入</td>
+</tr>
+</tbody>
+</table>
+<p>举例说明:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>方式</strong></th>
+<th style="text-align:center"><strong>1.40</strong></th>
+<th style="text-align:center"><strong>1.60</strong></th>
+<th style="text-align:center"><strong>1.50</strong></th>
+<th style="text-align:center"><strong>2.50</strong></th>
+<th style="text-align:center"><strong>-1.50</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">向偶舍入</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">-2</td>
+</tr>
+<tr>
+<td style="text-align:center">向零舍入</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">-1</td>
+</tr>
+<tr>
+<td style="text-align:center">向下舍入</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">-2</td>
+</tr>
+<tr>
+<td style="text-align:center">向上舍入</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">-1</td>
+</tr>
+</tbody>
+</table>
+<p>为什么要使中间值向偶舍入呢？因为使用向上舍入或者向下舍入，会在计算这些值的平均数中引入统计偏差。如果两个数的中间值始终用向上舍入，那么得到的一组数的平均值将比这些数本身的平均值略高一些；相反，向下舍入得到的一组数的平均值将比这些数本身的平均值略低一些。</p>
+<p>向偶舍入在大多数情况中避免了这种统计偏差，在50%的时间里，它将向上舍入，而在50%的时间里，它将向下舍入。</p>
+<p>以23位尾数位的单精度浮点数为例，舍入时需要重点参考第24位</p>
 <ul>
-<li>git安装</li>
+<li>
+<p>若第24位为1，且第24位之后全部为0。此时就要使第23位为0：若第23位本来就是0则不管，若第23位为1，则第24位就要向第23位进一位，这样第23位就可以为0</p>
+</li>
+<li>
+<p>若第24位为1，且第24位之后不全为0，则第24位就要向第23位进一完成上舍入。</p>
+</li>
+<li>
+<p>若第24位为0，此时直接舍去不进位，称为下舍入。</p>
+</li>
 </ul>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>配置</p>
-<p>现在有两个配置文件 <em>_config.yml</em>， 一个是hexo的配置文件，一个是next主题的配置文件，不同的安装方式，所在的目录不同<br>
-(e.g. thems/next/_config.yml or node_modules/hexo-theme-next/_config.yml.</p>
-<p>不推荐直接修改主题里面的文件, 因为npm升级或者git更新会覆盖文件，hexo建议将主题文件复制到根目录并且修改名称为 <em><strong>_config.[theme].yml</strong></em></p>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Installed through npm</span></span><br><span class="line">$ <span class="built_in">cp</span> node_modules/hexo-theme-next/_config.yml _config.next.yml</span><br><span class="line"><span class="comment"># Installed through Git</span></span><br><span class="line">$ <span class="built_in">cp</span> themes/next/_config.yml _config.next.yml</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>修改配置文件 _config.yml</p>
- <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">Hexo</span> <span class="string">config</span> <span class="string">file</span></span><br><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>启动 <em>hexo s</em> 查看页面样式已经发生变化</p>
-</li>
-</ol>
-<h4 id="页面">页面</h4>
-<h5 id="标签页">标签页</h5>
-<ol>
-<li>
-<p>生成标签页</p>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> hexo-site</span><br><span class="line">$ hexo new page tags</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>配置标签页</p>
-<p>修改生成的source/tags/index.md 指定type</p>
- <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">Tags</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2014-12-22 12:39:04</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">tags</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>编辑菜单 <em>_config.next.yml</em></p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">   <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-home</span></span><br><span class="line">   <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-archive</span></span><br><span class="line">   <span class="attr">tags:</span> <span class="string">/tags/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-tags</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="attr">tagcloud:</span></span><br><span class="line">   <span class="comment"># 标签的样式</span></span><br><span class="line">   <span class="attr">min:</span> <span class="number">12</span> <span class="comment"># Minimum font size in px</span></span><br><span class="line">   <span class="attr">max:</span> <span class="number">30</span> <span class="comment"># Maximum font size in px</span></span><br><span class="line">   <span class="attr">amount:</span> <span class="number">200</span> <span class="comment"># Total amount of tags</span></span><br><span class="line">   <span class="attr">orderby:</span> <span class="string">name</span> <span class="comment"># Order of tags</span></span><br><span class="line">   <span class="attr">order:</span> <span class="number">1</span> <span class="comment"># Sort order</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>在文章里使用标签</p>
- <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">Hexo</span> <span class="string">Guide</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2022-07-11 17:33:53</span></span><br><span class="line"><span class="attr">tags:</span> [<span class="string">hexo</span>, <span class="string">next</span>]</span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h5 id="分类页">分类页</h5>
-<p>操作和上面的标签页一样, 只是把 <em><strong>tags</strong></em> 修改为 <em><strong>categories</strong></em> ,分类每个文章只支持一个</p>
-<h3 id="插件">插件</h3>
-<h4 id="搜索">搜索</h4>
-<p><a href="https://github.com/theme-next/hexo-generator-searchdb">hexo-generator-searchdb</a> 用于生成搜索索引文件，其中包含您的文章的所有必要数据。</p>
-<ol>
-<li>
-<p>安装</p>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>编辑 <em><strong>_config.yml</strong></em> 新增配置</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">search:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">search.xml</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">post</span></span><br><span class="line">  <span class="attr">content:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">format:</span> <span class="string">html</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>编辑 <em><strong>_config_next.yml</strong></em> 文件</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">local_search:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="评论">评论</h4>
-<p>hexo-next-utteranc (<a href="https://github.com/theme-next/hexo-next-utteranc">https://github.com/theme-next/hexo-next-utteranc</a>)</p>
-<p>next 支持很多评论系统 disqus | disqusjs | changyan | livere | gitalk | utterances  这里以utterances为例</p>
-<p>utterance(<a href="https://utteranc.es/">https://utteranc.es/</a>) 原理: 在博客页面上输入评论，utterance拿到这个评论后，自动的提交到上面刚创建仓库的Issues里。</p>
-<ol>
-<li>
-<p>授权</p>
-<p>点击(<a href="https://github.com/apps/utterances">https://github.com/apps/utterances</a>) 安装githubApp 并授权指定仓库</p>
-</li>
-<li>
-<p>配置 <em>_config.next.yml</em></p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">comments:</span></span><br><span class="line">  <span class="comment"># Available values: tabs | buttons</span></span><br><span class="line">  <span class="attr">style:</span> <span class="string">tabs</span></span><br><span class="line">  <span class="comment"># 指定评论系统</span></span><br><span class="line">  <span class="attr">active:</span> <span class="string">utterances</span></span><br><span class="line"></span><br><span class="line"> <span class="attr">utterance:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#仓库名字，格式：用户ID/仓库名称</span></span><br><span class="line">    <span class="attr">repo:</span> <span class="string">Molers/BlogComment</span></span><br><span class="line">    <span class="comment">#主题</span></span><br><span class="line">    <span class="attr">theme:</span> <span class="string">github-light</span></span><br><span class="line">    <span class="comment">#映射配置 这里是跳转github后重定向的地址 取的是 url + 当前path名称，所以需要在_config.yml里配置 url为你网站的域名，才能正常跳转</span></span><br><span class="line">    <span class="attr">issue_term:</span> <span class="string">pathname</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>让某些页面不支持comments 页头设置false就行</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="number">404</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2022-07-11 17:38:27</span></span><br><span class="line"><span class="attr">comments:</span> <span class="literal">false</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="Rss">Rss</h4>
-<p>hexo-generator-feed (<a href="https://github.com/hexojs/hexo-generator-feed">https://github.com/hexojs/hexo-generator-feed</a>)</p>
-<ol>
-<li>
-<p>安装</p>
- <figure class="highlight bash"><figcaption><span>下载</span></figcaption><table><tr><td class="code"><pre><span class="line">$ npm install hexo-generator-feed --save</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>配置</p>
-<figure class="highlight yml"><figcaption><span>_config.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">feed:</span></span><br><span class="line">   <span class="attr">enable:</span> <span class="literal">true</span> </span><br><span class="line">   <span class="attr">type:</span> <span class="string">atom</span> <span class="comment">#制定类型</span></span><br><span class="line">   <span class="attr">path:</span> <span class="string">atom.xml</span>  <span class="comment">#生成路径</span></span><br><span class="line">   <span class="attr">limit:</span> <span class="number">20</span> <span class="comment"># 文章数量限制 0/false 表示所有文章</span></span><br><span class="line">   <span class="attr">hub:</span></span><br><span class="line">   <span class="attr">content:</span></span><br><span class="line">   <span class="attr">content_limit:</span> <span class="number">140</span> <span class="comment">#文章内容限制</span></span><br><span class="line">   <span class="attr">content_limit_delim:</span> <span class="string">&#x27; &#x27;</span></span><br><span class="line">   <span class="attr">order_by:</span> <span class="string">-date</span> <span class="comment">#排序</span></span><br><span class="line">   <span class="attr">icon:</span> <span class="string">icon.png</span></span><br><span class="line">   <span class="attr">autodiscovery:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">template:</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>展示</p>
-<p>两种展示位置, 一个在文章底部, 一个在菜单栏</p>
- <figure class="highlight yml"><figcaption><span>_config.next.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">follow_me:</span></span><br><span class="line">    <span class="comment"># 文章底部</span></span><br><span class="line">   <span class="attr">RSS:</span> <span class="string">/atom.xml</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-rss</span></span><br><span class="line"></span><br><span class="line"><span class="attr">menu:</span></span><br><span class="line">    <span class="comment"># 菜单栏</span></span><br><span class="line">   <span class="attr">RSS:</span> <span class="string">/atom.xml</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-rs</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="字体统计">字体统计</h4>
-<p>hexo-word-counter (<a href="https://github.com/next-theme/hexo-word-counter">https://github.com/next-theme/hexo-word-counter</a>)</p>
-<ol>
-<li>
-<p>安装</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-word-counter</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>配置 <em>_config.yml</em></p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">symbols_count_time:</span></span><br><span class="line">   <span class="attr">symbols:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">time:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">total_symbols:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">total_time:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">exclude_codeblock:</span> <span class="literal">false</span></span><br><span class="line">   <span class="attr">awl:</span> <span class="number">4</span></span><br><span class="line">   <span class="attr">wpm:</span> <span class="number">275</span></span><br><span class="line">   <span class="attr">suffix:</span> <span class="string">&quot;mins.&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>配置 *_config.next.yml</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">symbols_count_time:</span></span><br><span class="line">   <span class="attr">separated_meta:</span> <span class="literal">true</span></span><br><span class="line">   <span class="attr">item_text_total:</span> <span class="literal">false</span></span><br><span class="line">   <span class="attr">symbols:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="脚注">脚注</h4>
-<p>hexo-footnotes (<a href="https://github.com/LouisBarranqueiro/hexo-footnotes">https://github.com/LouisBarranqueiro/hexo-footnotes</a>)</p>
-<ol>
-<li>
-<p>安装</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-footnotes --save</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="支持Latex公式">支持Latex公式</h4>
-<p>hexo-footnotes (<a href="https://github.com/LouisBarranqueiro/hexo-footnotes">https://github.com/LouisBarranqueiro/hexo-footnotes</a>)</p>
-<ol>
-<li>
-<p>配置 *_config.next.yml</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">math:</span></span><br><span class="line">  <span class="attr">every_page:</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">mathjax:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># Available values: none | ams | all</span></span><br><span class="line">    <span class="attr">tags:</span> <span class="string">none</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>配置文档</p>
- <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">mathjax:</span> <span class="literal">true</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>处理步骤</p>
-<p>Hexo 中的 Markdown 引擎把 Markdown 变为 html 文件<br>
-MathJax 负责解释 html 的数学公式</p>
-<p>第一步中，由于 backslash 在 Markdown 属于特殊字符，用于字符转义，所以两个 backslash 经过 Markdown 引擎处理，只剩下一个，等到 MathJax 引擎处理时，实际上 MathJax 只看到一个 backslash，MathJax 把它当作 LaTeX 中的空格，因此我们见到了上图所示的渲染结果。</p>
-<p>知道了渲染错误的原因，解决办法也很简单，就是用四个 backslash 代替两个 backslash，确保 MathJax 的引擎看到的是两个 backslash，对于公式换行，把公式里的2个{\} 变成4个{\}</p>
-</li>
-</ol>
-<h3 id="部署">部署</h3>
-<h4 id="Git">Git</h4>
-<h5 id="git管理源码">git管理源码</h5>
-<p>推荐使用 <em><strong>${username}.github.io</strong></em> 仓库管理源代码，两个分支 一个hexo保存源码信息， 一个main保存生成的静态文件用于部署。</p>
-<ol>
-<li>在你的hexo 目录下执行 <em>git init</em></li>
-<li>git checout ${branchname}</li>
-<li>git remote add ${name} <code>https://github.com/username/username.github.io</code></li>
-<li>git add .</li>
-<li>git commit -m “init hexo”;</li>
-<li>git push</li>
-</ol>
-<h5 id="部署静态文件">部署静态文件</h5>
-<p>Hexo 提供了快速方便的一键部署功能，让您只需一条命令就能将网站部署到服务器上。 这里推荐git部署</p>
-<ol>
-<li>
-<p>安装 hexo-deployer-git</p>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装</span></span><br><span class="line">$ npm install hexo-deployer-git</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>修改**_config.yml**文件里的deploy值</p>
- <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">   <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">   <span class="attr">repo:</span> <span class="string">git@github.com:&#123;$username&#125;/&#123;$username&#125;.github.io.git</span> <span class="comment"># Repository</span></span><br><span class="line">   <span class="attr">branch:</span> <span class="string">main</span> <span class="comment">#[branch]</span></span><br><span class="line">   <span class="attr">message:</span> <span class="string">update</span> <span class="string">Hexo</span> <span class="string">Static</span> <span class="string">Content</span> <span class="comment">#commit message</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>生成站点文件并推送至远程库执行</p>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 清理并发布</span></span><br><span class="line">$ hexo clean &amp;&amp; hexo deploy</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>登入Github，请在库设置（Repository Settings）中将默认分支设置为<em>步骤2</em> _config.yml配置中的分支名称。</p>
-</li>
-<li>
-<p>稍等片刻，您的站点就会显示在您的Github Pages中 <code>https://$&#123;username&#125;.github.io</code></p>
-</li>
-</ol>
-<h5 id="这一切是如何发生的">这一切是如何发生的</h5>
-<p>当执行 hexo deploy 时，Hexo 会将 public 目录中的文件和目录推送至 _config.yml 中指定的远端仓库和分支中，并且完全覆盖该分支下的已有内容。</p>
-<h4 id="疑难解答">疑难解答</h4>
-<ol>
-<li>
-<p>Spawn failed</p>
- <figure class="highlight plaintext"><figcaption><span>问题</span></figcaption><table><tr><td class="code"><pre><span class="line">fatal: unable to access &#x27;https://github.com/$&#123;username&#125;/$&#123;username&#125;.github.io/&#x27;: OpenSSL SSL_read: Connection was reset, errno 10054</span><br><span class="line">FATAL &#123;</span><br><span class="line">err: Error: Spawn failed</span><br><span class="line">    at ChildProcess.&lt;anonymous&gt; (E:\develop\hello\node_modules\hexo-util\lib\spawn.js:51:21)</span><br><span class="line">    at ChildProcess.emit (node:events:527:28)</span><br><span class="line">    at ChildProcess.cp.emit (E:\develop\hello\node_modules\cross-spawn\lib\enoent.js:34:29)</span><br><span class="line">    at Process.ChildProcess._handle.onexit (node:internal/child_process:291:12) &#123;</span><br><span class="line">    code: 128</span><br><span class="line">&#125;</span><br><span class="line">&#125; Something&#x27;s wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html</span><br><span class="line"></span><br></pre></td></tr></table></figure>
- <figure class="highlight bash"><figcaption><span>解决</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment"># 切换到博客根目录</span></span><br><span class="line"><span class="built_in">cd</span> hexo-site</span><br><span class="line"><span class="comment"># 删除此文件</span></span><br><span class="line"><span class="built_in">rm</span> -rf .deploy_git/</span><br><span class="line"><span class="comment"># git 配置换行符转换</span></span><br><span class="line">git config --global core.autocrlf <span class="literal">false</span></span><br><span class="line"><span class="comment"># 部署</span></span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br><span class="line"><span class="comment"># 修改部署的仓库地址http地址为git@github.com开通的地址</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-]]></content>
+<h3 id="小结">小结</h3>
+<h2 id="参考文章-2">参考文章</h2>
+<p><a href="https://zhuanlan.zhihu.com/p/339949186">什么是浮点数</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/338588296">什么是定点数</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/349572768">一文读懂浮点数</a></p>
+<p><a href="http://www.ideabuffer.cn/2017/05/17/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA/">计算机中浮点数的二进制表示</a></p>
+<p><a href="http://c.biancheng.net/view/314.html">IEEE 754浮点数标准详解</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/343049681">IEEE规范</a></p>
+<div id="footnotes"><hr><div id="footnotelist"><ol style="list-style:none; padding-left: 0;"><li id="fn:1"><span style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span style="display: inline-block; vertical-align: top;">Float和Double的最小值和最大值都是以科学记数法的形式输出的，结尾的&quot;E+数字&quot;表示E之前的数字要乘以10的多少次方。例如：$19971400000000=1.99714×10^{13}$。计算器表达10的幂是一般是用$E$或e，也就是$1.99714E13=19971400000000$。</span><a href="#fnref:1" rev="footnote"> ↩</a></li><li id="fn:2"><span style="display: inline-block; vertical-align: top; padding-right: 10px;">2.</span><span style="display: inline-block; vertical-align: top;">机器码ε表示1与大于1的最小浮点数之差，。不同精度定义的机器ε不同，float $\epsilon=2^{-23}$， double $\epsilon=2^{-52}$</span><a href="#fnref:2" rev="footnote"> ↩</a></li></ol></div></div>]]></content>
       <categories>
-        <category>博客指南</category>
+        <category>计算机原理</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
-        <tag>next</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>单例模式</title>
-    <url>/2023/04/07/singleton/</url>
-    <content><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><blockquote>
-<p>Java单例模式是常见设计模式之一，从定义上看，它似乎是一种简单的设计模式，但当涉及到实现时，它会带来很多问题。在本文中，我们将了解单例设计模式的原则，探索实现单例设计模式的不同方法，以及使用它的一些最佳实践。</p>
-</blockquote>
-<h2 id="单例模式原则">单例模式原则</h2>
-<ul>
-<li>私有构造方法，限制其他类实例化该类。</li>
-<li>私有静态示例变量，该类的唯一实例。</li>
-<li>公共静态方法，返回该类的唯一实例。</li>
-</ul>
-<h2 id="单例模式实现">单例模式实现</h2>
-<h3 id="饿汉">饿汉</h3>
-<p>在类加载的时候创建实例。快速初始化的缺点是，即使应用程序可能没有使用该方法，也会创建该实例。</p>
-<p>如果您的单例类没有使用大量资源，则可以使用这种方法。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EagerInitializedSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">EagerInitializedSingleton</span> <span class="variable">instance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">EagerInitializedSingleton</span>();</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">EagerInitializedSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> EagerInitializedSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h3 id="静态代码块">静态代码块</h3>
-<p>静态代码块和上面的饿汉基本一致，就是可以进行异常处理，当然缺点也一样。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StaticBlockSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> StaticBlockSingleton instance;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">StaticBlockSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// static block initialization for exception handling</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> <span class="title class_">StaticBlockSingleton</span>();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Exception occurred in creating singleton instance&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> StaticBlockSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="懒汉">懒汉</h3>
-<p>在调用方法的时候才会创建实例。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LazyInitializedSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> LazyInitializedSingleton instance;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">LazyInitializedSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> LazyInitializedSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="literal">null</span>) &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> <span class="title class_">LazyInitializedSingleton</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在多线程环境下，如果多个线程同时在if条件中，调用会存在线程安全问题，会破坏单例模式。</p>
-<h3 id="线程安全">线程安全</h3>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadSafeSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadSafeSingleton instance;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">ThreadSafeSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> ThreadSafeSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="literal">null</span>) &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> <span class="title class_">ThreadSafeSingleton</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// double-checked</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> ThreadSafeSingleton <span class="title function_">getInstanceUsingDoubleLocking</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (instance == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (ThreadSafeSingleton.class) &#123;</span><br><span class="line">            <span class="keyword">if</span> (instance == <span class="literal">null</span>) &#123;</span><br><span class="line">                instance = <span class="keyword">new</span> <span class="title class_">ThreadSafeSingleton</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="静态内部类">静态内部类</h3>
-<p>注意包含单例类实例的私有内部静态类。当加载单例类时，SingletonHelper类不会加载到内存中，只有当有人调用getInstance()方法时，该类才会加载并创建单例类实例。这是单例类使用最广泛的方法，因为它不需要同步。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BillPughSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">BillPughSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">SingletonHelper</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">BillPughSingleton</span> <span class="variable">INSTANCE</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BillPughSingleton</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> BillPughSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> SingletonHelper.INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>反射可以破坏上面的所有单例实现。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ReflectionSingletonTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">EagerInitializedSingleton</span> <span class="variable">instanceOne</span> <span class="operator">=</span> EagerInitializedSingleton.getInstance();</span><br><span class="line">        <span class="type">EagerInitializedSingleton</span> <span class="variable">instanceTwo</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Constructor[] constructors = EagerInitializedSingleton.class.getDeclaredConstructors();</span><br><span class="line">            <span class="keyword">for</span> (Constructor constructor : constructors) &#123;</span><br><span class="line">                <span class="comment">// This code will destroy the singleton pattern</span></span><br><span class="line">                constructor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">                instanceTwo = (EagerInitializedSingleton) constructor.newInstance();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(instanceOne.hashCode());</span><br><span class="line">        System.out.println(instanceTwo.hashCode());</span><br><span class="line">        <span class="comment">// not equal</span></span><br><span class="line">        System.out.println(instanceOne.equals(instanceTwo));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="枚举">枚举</h3>
-<p>因为Java确保任何enum值在Java程序中只实例化一次。因为Java Enum值是全局可访问的，所以单例也是如此。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">EnumSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    INSTANCE;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">doSomething</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="序列化和单例">序列化和单例</h3>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SerializedSingleton</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> -<span class="number">7604766932017737115L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">SerializedSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">SingletonHelper</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">SerializedSingleton</span> <span class="variable">instance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SerializedSingleton</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> SerializedSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> SingletonHelper.instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectInput;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutput;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SingletonSerializedTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> FileNotFoundException, IOException, ClassNotFoundException &#123;</span><br><span class="line">        <span class="type">SerializedSingleton</span> <span class="variable">instanceOne</span> <span class="operator">=</span> SerializedSingleton.getInstance();</span><br><span class="line">        <span class="type">ObjectOutput</span> <span class="variable">out</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(</span><br><span class="line">                <span class="string">&quot;filename.ser&quot;</span>));</span><br><span class="line">        out.writeObject(instanceOne);</span><br><span class="line">        out.close();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// deserialize from file to object</span></span><br><span class="line">        <span class="type">ObjectInput</span> <span class="variable">in</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span> <span class="title class_">FileInputStream</span>(</span><br><span class="line">                <span class="string">&quot;filename.ser&quot;</span>));</span><br><span class="line">        <span class="type">SerializedSingleton</span> <span class="variable">instanceTwo</span> <span class="operator">=</span> (SerializedSingleton) in.readObject();</span><br><span class="line">        in.close();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// not equal</span></span><br><span class="line">        System.out.println(<span class="string">&quot;instanceOne hashCode=&quot;</span>+instanceOne.hashCode());</span><br><span class="line">        System.out.println(<span class="string">&quot;instanceTwo hashCode=&quot;</span>+instanceTwo.hashCode());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>序列化破坏了单例模式，但是可以通过readResolve()解决。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> Object <span class="title function_">readResolve</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> getInstance();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">instanceOne hashCode=1359484306</span><br><span class="line">instanceTwo hashCode=1359484306</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>design</tag>
-        <tag>singleton</tag>
+        <tag>binary</tag>
+        <tag>math</tag>
       </tags>
   </entry>
 </search>

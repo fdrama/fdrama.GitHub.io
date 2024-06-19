@@ -154,12 +154,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -528,133 +528,6 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://fdrama.github.io/2023/04/07/singleton/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="穷野">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="随园">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 随园">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/04/07/singleton/" class="post-title-link" itemprop="url">单例模式</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2023-04-07 15:58:19" itemprop="dateCreated datePublished" datetime="2023-04-07T15:58:19+08:00">2023-04-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>4.9k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><blockquote>
-<p>Java单例模式是常见设计模式之一，从定义上看，它似乎是一种简单的设计模式，但当涉及到实现时，它会带来很多问题。在本文中，我们将了解单例设计模式的原则，探索实现单例设计模式的不同方法，以及使用它的一些最佳实践。</p>
-</blockquote>
-<h2 id="单例模式原则">单例模式原则</h2>
-<ul>
-<li>私有构造方法，限制其他类实例化该类。</li>
-<li>私有静态示例变量，该类的唯一实例。</li>
-<li>公共静态方法，返回该类的唯一实例。</li>
-</ul>
-<h2 id="单例模式实现">单例模式实现</h2>
-<h3 id="饿汉">饿汉</h3>
-<p>在类加载的时候创建实例。快速初始化的缺点是，即使应用程序可能没有使用该方法，也会创建该实例。</p>
-<p>如果您的单例类没有使用大量资源，则可以使用这种方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EagerInitializedSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">EagerInitializedSingleton</span> <span class="variable">instance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">EagerInitializedSingleton</span>();</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">EagerInitializedSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> EagerInitializedSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h3 id="静态代码块">静态代码块</h3>
-<p>静态代码块和上面的饿汉基本一致，就是可以进行异常处理，当然缺点也一样。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StaticBlockSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> StaticBlockSingleton instance;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">StaticBlockSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// static block initialization for exception handling</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> <span class="title class_">StaticBlockSingleton</span>();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Exception occurred in creating singleton instance&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> StaticBlockSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="懒汉">懒汉</h3>
-<p>在调用方法的时候才会创建实例。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LazyInitializedSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> LazyInitializedSingleton instance;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">LazyInitializedSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> LazyInitializedSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="literal">null</span>) &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> <span class="title class_">LazyInitializedSingleton</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在多线程环境下，如果多个线程同时在if条件中，调用会存在线程安全问题，会破坏单例模式。</p>
-<h3 id="线程安全">线程安全</h3>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadSafeSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadSafeSingleton instance;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">ThreadSafeSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> ThreadSafeSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="literal">null</span>) &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> <span class="title class_">ThreadSafeSingleton</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// double-checked</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> ThreadSafeSingleton <span class="title function_">getInstanceUsingDoubleLocking</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (instance == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (ThreadSafeSingleton.class) &#123;</span><br><span class="line">            <span class="keyword">if</span> (instance == <span class="literal">null</span>) &#123;</span><br><span class="line">                instance = <span class="keyword">new</span> <span class="title class_">ThreadSafeSingleton</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="静态内部类">静态内部类</h3>
-<p>注意包含单例类实例的私有内部静态类。当加载单例类时，SingletonHelper类不会加载到内存中，只有当有人调用getInstance()方法时，该类才会加载并创建单例类实例。这是单例类使用最广泛的方法，因为它不需要同步。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BillPughSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">BillPughSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">SingletonHelper</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">BillPughSingleton</span> <span class="variable">INSTANCE</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BillPughSingleton</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> BillPughSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> SingletonHelper.INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>反射可以破坏上面的所有单例实现。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ReflectionSingletonTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">EagerInitializedSingleton</span> <span class="variable">instanceOne</span> <span class="operator">=</span> EagerInitializedSingleton.getInstance();</span><br><span class="line">        <span class="type">EagerInitializedSingleton</span> <span class="variable">instanceTwo</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Constructor[] constructors = EagerInitializedSingleton.class.getDeclaredConstructors();</span><br><span class="line">            <span class="keyword">for</span> (Constructor constructor : constructors) &#123;</span><br><span class="line">                <span class="comment">// This code will destroy the singleton pattern</span></span><br><span class="line">                constructor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">                instanceTwo = (EagerInitializedSingleton) constructor.newInstance();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(instanceOne.hashCode());</span><br><span class="line">        System.out.println(instanceTwo.hashCode());</span><br><span class="line">        <span class="comment">// not equal</span></span><br><span class="line">        System.out.println(instanceOne.equals(instanceTwo));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="枚举">枚举</h3>
-<p>因为Java确保任何enum值在Java程序中只实例化一次。因为Java Enum值是全局可访问的，所以单例也是如此。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">EnumSingleton</span> &#123;</span><br><span class="line"></span><br><span class="line">    INSTANCE;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">doSomething</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="序列化和单例">序列化和单例</h3>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SerializedSingleton</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> -<span class="number">7604766932017737115L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">SerializedSingleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">SingletonHelper</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">SerializedSingleton</span> <span class="variable">instance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SerializedSingleton</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> SerializedSingleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> SingletonHelper.instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectInput;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutput;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SingletonSerializedTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> FileNotFoundException, IOException, ClassNotFoundException &#123;</span><br><span class="line">        <span class="type">SerializedSingleton</span> <span class="variable">instanceOne</span> <span class="operator">=</span> SerializedSingleton.getInstance();</span><br><span class="line">        <span class="type">ObjectOutput</span> <span class="variable">out</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(</span><br><span class="line">                <span class="string">&quot;filename.ser&quot;</span>));</span><br><span class="line">        out.writeObject(instanceOne);</span><br><span class="line">        out.close();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// deserialize from file to object</span></span><br><span class="line">        <span class="type">ObjectInput</span> <span class="variable">in</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span> <span class="title class_">FileInputStream</span>(</span><br><span class="line">                <span class="string">&quot;filename.ser&quot;</span>));</span><br><span class="line">        <span class="type">SerializedSingleton</span> <span class="variable">instanceTwo</span> <span class="operator">=</span> (SerializedSingleton) in.readObject();</span><br><span class="line">        in.close();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// not equal</span></span><br><span class="line">        System.out.println(<span class="string">&quot;instanceOne hashCode=&quot;</span>+instanceOne.hashCode());</span><br><span class="line">        System.out.println(<span class="string">&quot;instanceTwo hashCode=&quot;</span>+instanceTwo.hashCode());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>序列化破坏了单例模式，但是可以通过readResolve()解决。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Object <span class="title function_">readResolve</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> getInstance();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">instanceOne hashCode=1359484306</span><br><span class="line">instanceTwo hashCode=1359484306</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://fdrama.github.io/2022/08/11/binary2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -811,9 +684,9 @@ $</p>
 <p>举例来说：</p>
 <p>10进制中的$9.0$在二进制中写成$1001.0$，也就是 $1.001×2^3$，按照上面的格式，可以算出 $S=0, M=1.001, E=3$。</p>
 <p>IEEE754规定，对于32位的浮点数，最高的1位是符号位$S$，接着的8位是指数$E$，剩下的23位为有效数字$M$。</p>
-<img src="/2022/08/11/binary2/v2-32e425cdb908c47586267e59228fcd22_720w.png" class="" title="bin-32">
+<p><img src="../images/binary2/v2-32e425cdb908c47586267e59228fcd22_720w.png" alt="bin-32"></p>
 <p>对于64位的浮点数，最高的1位是符号位$S$，接着的11位是指数$E$，剩下的52位为有效数字$M$。</p>
-<img src="/2022/08/11/binary2/bin-64.png" class="" title="bin-64">
+<p><img src="../images/binary2/bin-64.png" alt="bin-64"></p>
 <table>
 <thead>
 <tr>
@@ -857,7 +730,7 @@ $</p>
 <p>如果8位指数不全为0, 也不全为1(也就是除去以上两种状态外, 剩下的所有状态), 这个数就是规格数。 用于表示最常见的数值, 比如1.2, 34567, 7.996, 0.2. 但规格数不能表示0和非常靠近0的数.</p>
 </li>
 </ol>
-<img src="/2022/08/11/binary2/v2-e122b76cc864dec6b9317a1bb0e76f9b_r.png" class="" title="浮点数">
+<p><img src="../images/binary2/v2-e122b76cc864dec6b9317a1bb0e76f9b_r.png" alt="浮点数"></p>
 <p>↑ 绿色区域就是32位浮点数中规格数的取值范围, 可见它取不到0和靠近0的极小数</p>
 <p>↑ 红色区域包含0和靠近0的极小数, 红色区域其实是非规格数的取值范围。</p>
 <p>下面分别对三种状态进行详细展开：</p>
@@ -907,7 +780,7 @@ $</p>
 </thead>
 </table>
 <p>即$41040000_{H}$</p>
-<img src="/2022/08/11/binary2/float.jpg" class="" title="float">
+<p><img src="../images/binary2/float.jpg" alt="float"></p>
 <p>推荐一个工具地址<a target="_blank" rel="noopener" href="https://www.h-schmidt.net/FloatConverter/IEEE754.html">FloatConverter</a>，可以清楚查看浮点数的二进制形式。</p>
 <p>也可以用java代码验证下</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">    System.out.println(Math.getExponent(<span class="number">8.25</span>)); <span class="comment">//指数E 3</span></span><br><span class="line">    System.out.println(Integer.toBinaryString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//二进制码正数省略了最前面的0 -&gt; 1000001000001000000000000000000</span></span><br><span class="line">    System.out.println(Integer.toHexString(Float.floatToIntBits(<span class="number">8.25f</span>))); <span class="comment">//十六进制码 41040000</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -917,7 +790,7 @@ $</p>
 <h4 id="非规格化的值（subnormal-number）">非规格化的值（subnormal number）</h4>
 <p>当阶码位全为0时，表示的数就是非规格化的形式。这种情况下，阶码的值是$E=1−Bias$，和规格化数的阶码计算方式不一致，后面会讲到原因。<br>
 float是-126，double是-1022，而有效数字的值是$M=f$，也就是小数字段的值不包括隐含的1，范围是[0,1)。</p>
-<img src="/2022/08/11/binary2/2-1PZ511393c48.jpg" class="" title="unnormal">
+<p><img src="../images/binary2/2-1PZ511393c48.jpg" alt="unnormal"></p>
 <p>非规格化的取值范围：所以尾数位的取值范围是[0.00000000000000000000000, 0.11111111111111111111111] (二进制)</p>
 <p>非规格数尾数的取值范围是[0, 1), 指数固定为-126. 这就很简单了, 让尾数取0不就能表示数值0了:</p>
 <table>
@@ -1079,10 +952,10 @@ float是-126，double是-1022，而有效数字的值是$M=f$，也就是小数�
 <p>规格化数的最大值是：$0 \ 11111110 \ 11111111111111111111111$，尾数位其实是1.11111111111111111111111, 非常接近2, 记做$2-\epsilon$，指数是127，</p>
 <p>所以最大值记作$(2-\epsilon) \times 2^{127}$。+infinity的内存状态则是:$0 \ 11111111 \ 00000000000000000000000$, 尾数其实是: 1.00000000000000000000000, 等于1，指数是128，可见规格数的最大值也能和$+infinity$平滑衔接. $-infinity$同理。</p>
 <p>三种状态结合起来就表示了整个数轴：</p>
-<img src="/2022/08/11/binary2/v2-1b6f26cad2e694e143016cbe6094c80e_r.png" class="" title="数轴">
+<p><img src="../images/binary2/v2-1b6f26cad2e694e143016cbe6094c80e_r.png" alt="数轴"></p>
 <p>NaN 简单说一下，其实就是一种标记状态，表示计算出来的不是一个数字，例如$\sqrt{-1}$</p>
 <p>下表是一些IEEE754示例：</p>
-<img src="/2022/08/11/binary2/v2-6a0cba57252a92ddbd8afc9fd4b2922a_r.jpg" class="" title="example">
+<p><img src="../images/binary2/v2-6a0cba57252a92ddbd8afc9fd4b2922a_r.jpg" alt="example"></p>
 <h3 id="浮点数精度问题">浮点数精度问题</h3>
 <p>了解了浮点数在计算机中如何存储的后，就可以发现浮点数必定存在精度问题，因为有效位数的限制，超过的部分会被舍弃，就会出现精度丢失。</p>
 <p>例如：0.4，我们来用float表示一下，先转换成二进制：</p>
@@ -1217,7 +1090,7 @@ $</p>
 </li>
 </ul>
 <h3 id="小结">小结</h3>
-<h2 id="参考文章">参考文章</h2>
+<h2 id="参考文章-2">参考文章</h2>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/339949186">什么是浮点数</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/338588296">什么是定点数</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/349572768">一文读懂浮点数</a></p>
@@ -1453,7 +1326,7 @@ $</li>
 <li>
 <p><em>整数部分的转换</em></p>
 <p>整数部分的转换方法就是 <strong>除基取余，上右下左</strong>。也就是说，用要转换的十进制整数除以基数R，将得到的余数作为结果数据中各位的数字，直到商0为止。上面的余数（即先得到的余数）作为右边的低位数位，下面的余数作为左边的高位数位。</p>
-  <img src="/2022/08/05/binary/fc173747e8ee9e6e7f57cfc69458e042.jpg" class="" title="如图">
+<p><img src="../images/binary/fc173747e8ee9e6e7f57cfc69458e042.jpg" alt="如图"></p>
 </li>
 </ul>
 <hr>
@@ -1960,7 +1833,7 @@ MathJax 负责解释 html 的数学公式</p>
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -1971,13 +1844,13 @@ MathJax 负责解释 html 的数学公式</p>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">26k</span>
+    <span title="站点总字数">22k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">24 分钟</span>
+    <span title="站点阅读时长">20 分钟</span>
   </span>
 </div>
 
