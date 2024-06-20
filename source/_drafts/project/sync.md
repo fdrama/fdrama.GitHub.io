@@ -8,6 +8,18 @@
 
 ### Thread
 
+#### State
+
+NEW 就绪状态 尚未启动的线程
+RUNNABLE 可运行状态  
+BLOCKED 等待锁 正在等待锁进入同步块方法
+WAITING 等待状态
+    Object.wait()、Thread.join()、LockSupport.park()等方法
+    notify()、notifyAll()、LockSupport.unpark()等方法 恢复RUNNABLE状态
+TIMED_WAITING 超时等待状态
+    Thread.sleep()、Object.wait(long)、Thread.join(long)、LockSupport.parkNanos()、LockSupport.parkUntil()等方法
+TERMINATED 终止状态 线程执行完毕
+
 ### Sychronized
 
 #### 实现原理
