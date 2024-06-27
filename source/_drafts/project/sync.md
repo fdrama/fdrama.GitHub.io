@@ -190,15 +190,14 @@ static final class NonfairSync extends Sync {
             acquire(1);
     }
 
-    protected final boolean tryAcquire(int acquires) {
-        return nonfairTryAcquire(acquires);
-    }
 }
 
 protected final boolean compareAndSetState(int expect, int update) {
     // See below for intrinsics setup to support this
     return unsafe.compareAndSwapInt(this, stateOffset, expect, update);
 }
+
+
 ```
 
 - 无冲突加锁步骤
@@ -223,8 +222,8 @@ protected final boolean tryAcquire(int acquires) {
 
 final boolean nonfairTryAcquire(int acquires) {
     final Thread current = Thread.currentThread();
-    int c = getState();
-    if (c == 0) {
+    int c = getState(); // 获取state
+    if (c == 0) { // 如果state为0，表示锁没有被占用
         if (compareAndSetState(0, acquires)) {
             setExclusiveOwnerThread(current);
             return true;
@@ -241,11 +240,71 @@ final boolean nonfairTryAcquire(int acquires) {
     return false;
 }
 
+/**
+ * 阻塞线程加入等待队列后的动作
+ */
+final boolean acquireQueued(final Node node, int arg) {
+    boolean interrupted = false;
+    try {
+        for (;;) {
+            final Node p = node.predecessor(); // 获取前置节点
+            if (p == head && tryAcquire(arg)) { // 如果前置节点是头节点，再次尝试获取锁
+                setHead(node);
+                p.next = null; // help GC
+                return interrupted;
+            }
+            if (shouldParkAfterFailedAcquire(p, node))
+                interrupted |= parkAndCheckInterrupt();
+        }
+    } catch (Throwable t) {
+        cancelAcquire(node);
+        if (interrupted)
+            selfInterrupt();
+        throw t;
+    }
+}
+
+private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+    int ws = pred.waitStatus; // 获取前置节点的状态
+    if (ws == Node.SIGNAL) // 如果前置节点状态为SIGNAL，表示当前节点可以park
+        return true;
+    if (ws > 0) {
+        /*
+            * Predecessor was cancelled. Skip over predecessors and
+            * indicate retry. 前置节点状态大于0，表示前置节点被取消，移除前置节点
+            */
+        do {
+            node.prev = pred = pred.prev;
+        } while (pred.waitStatus > 0);
+        pred.next = node;
+    } else {
+        /*
+            * waitStatus must be 0 or PROPAGATE.  Indicate that we
+            * need a signal, but don't park yet.  Caller will need to
+            * retry to make sure it cannot acquire before parking.
+            * 前置节点状态为0或者PROPAGATE，表示需要一个信号，但是不park，需要重试
+            * unlock时会将唤醒SIGNAL状态的节点争抢锁
+            */
+        pred.compareAndSetWaitStatus(ws, Node.SIGNAL);
+    }
+    return false;
+}
+
+
+private final boolean parkAndCheckInterrupt() {
+    LockSupport.park(this);
+    return Thread.interrupted();
+}
+
+static void selfInterrupt() {
+    Thread.currentThread().interrupt();
+}
+
 private Node addWaiter(Node mode) {
     Node node = new Node(Thread.currentThread(), mode);
     // Try the fast path of enq; backup to full enq on failure
     Node pred = tail;
-    if (pred != null) {
+    if (pred != null) { // 第一次进入，tail为null
         node.prev = pred;
         // 双向链表
         if (compareAndSetTail(pred, node)) {
@@ -278,6 +337,32 @@ private Node enq(final Node node) {
     }
 }
 ```
+
+为什么需要interrupted标志位？
+
+1. Park 的作用：
+
+- park() 方法（来自 LockSupport 类）用于阻塞当前线程，使其等待被唤醒。
+- 当一个线程调用 park() 时，它会被挂起，直到某个其他线程调用 unpark(Thread) 来唤醒它，或者发生中断。
+
+2. Interrupt 的作用：
+
+- 中断是一种机制，用于请求线程终止正在做的事情。
+- 当一个线程被中断时，它的中断状态被设置。
+
+3. Park 和 Interrupt 的交互：
+
+- 如果一个线程在 park 状态下被中断，它会立即从 park 状态返回。
+- 然而，park 方法本身并不会抛出 InterruptedException。
+- 相反，它只是返回，让调用者自己检查中断状态并决定如何处理。
+
+4. parkAndCheckInterrupt 这个方法首先 park 当前线程，然后检查并清除中断状态。
+
+5. 为什么这样设计：
+
+- 这种设计允许更灵活的中断处理。
+- 线程可以在被中断后继续尝试获取锁，而不是立即退出。
+- 中断状态被保存下来，可以在之后的适当时机处理。
 
 ![alt text](image-2.png)
 
@@ -337,6 +422,7 @@ private void unparkSuccessor(Node node) {
   Node s = node.next;
   if (s == null || s.waitStatus > 0) {
     s = null;
+    // 从后往前找到第一个waitStatus<=0的节点
     for (Node t = tail; t != null && t != node; t = t.prev)
       if (t.waitStatus <= 0)
         s = t;
@@ -346,6 +432,56 @@ private void unparkSuccessor(Node node) {
     // 唤醒线程
     LockSupport.unpark(s.thread);
 }
+
+private void cancelAcquire(Node node) {
+    // Ignore if node doesn't exist
+    if (node == null)
+        return;
+
+    node.thread = null;
+
+    // Skip cancelled predecessors
+    Node pred = node.prev;
+    while (pred.waitStatus > 0)
+        node.prev = pred = pred.prev;
+
+    // predNext is the apparent node to unsplice. CASes below will
+    // fail if not, in which case, we lost race vs another cancel
+    // or signal, so no further action is necessary, although with
+    // a possibility that a cancelled node may transiently remain
+    // reachable.
+    Node predNext = pred.next;
+
+    // Can use unconditional write instead of CAS here.
+    // After this atomic step, other Nodes can skip past us.
+    // Before, we are free of interference from other threads.
+    node.waitStatus = Node.CANCELLED;
+
+    // If we are the tail, remove ourselves.
+    if (node == tail && compareAndSetTail(node, pred)) {
+        pred.compareAndSetNext(predNext, null);
+    } else {
+        /**
+         * 如果下一个节点需要唤醒，尝试把上一个节点的next指向下一个节点
+         * 
+         */
+        int ws;
+        if (pred != head &&
+            ((ws = pred.waitStatus) == Node.SIGNAL ||
+                (ws <= 0 && pred.compareAndSetWaitStatus(ws, Node.SIGNAL))) &&
+            pred.thread != null) {
+            Node next = node.next;
+            if (next != null && next.waitStatus <= 0)
+                pred.compareAndSetNext(predNext, next);
+        } else { // 如果当前节点的前置节点是头节点，直接唤醒下一个节点
+            unparkSuccessor(node);
+        }
+
+        node.next = node; // help GC
+    }
+}
+
+
 ```
 
 #### 公平锁，非公平锁
@@ -384,6 +520,13 @@ private void unparkSuccessor(Node node) {
 ### Atomic = Volatile + CAS
 
 ### CountDownLatch = Volatile + AQS
+
+```java
+public CountDownLatch(int count) {
+    if (count < 0) throw new IllegalArgumentException("count < 0");
+    this.sync = new Sync(count); //count 就是加锁的次数
+}
+```
 
 ### Smeaphore = Volatile + AQS
 

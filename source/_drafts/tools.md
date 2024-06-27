@@ -114,6 +114,8 @@ Memory Analyzer (MAT): 这是一个用于分析Java堆内存的工具，特别�
 
 JD-GUI (Java Decompiler): 这是一个用于反编译Java字节码的工具，可以将Java字节码反编译为Java源代码。对于那些想要了解某个Java类的实现细节的开发者来说，这个工具是非常有用的。
 
+JAD (Java Decompiler): 这是另一个用于反编译Java字节码的工具，可以将Java字节码反编译为Java源代码。与JD-GUI相比，JAD的反编译速度更快，但功能相对较少。
+
 ## 10. 阅读工具
 
 - Koodo Reader
